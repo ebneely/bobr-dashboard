@@ -1,0 +1,32 @@
+{
+  "common": {
+    "appName": "BOBR",
+    "logout": "Log out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "language": "Language"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "myDiet": "My diet",
+    "mealTracking": "Meal tracking",
+    "calendar": "Calendar",
+    "orders": "Orders",
+    "consultations": "Consultations",
+    "notes": "Notes and complaints",
+    "profile": "Profile",
+    "customers": "Customers",
+    "meals": "Meals"
+  },
+  "notes": {
+    "nudge": "Nudge",
+    "complaint": "Complaint",
+    "note": "Note"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Could not reach the server."
+  }
+}

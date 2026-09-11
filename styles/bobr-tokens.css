@@ -1,0 +1,71 @@
+/* BOBR design tokens.
+ *
+ * Every colour, size and duration in the app resolves to one of these. A raw
+ * hex in a component is a bug — it is the thing that makes a rebrand a
+ * find-and-replace across 200 files.
+ *
+ * Placeholder palette: fresh greens for a food/health brand. Swap the values,
+ * keep the names. */
+:root {
+  /* Brand — green, for a diet catering business */
+  --bobr-green-50: #f0f9f1;
+  --bobr-green-100: #dcf0de;
+  --bobr-green-300: #8fd39a;
+  --bobr-green-500: #3d9c55;
+  --bobr-green-700: #26693a;
+  --bobr-green-900: #123a20;
+
+  /* Neutrals */
+  --bobr-ink-900: #12160f;
+  --bobr-ink-700: #3a4038;
+  --bobr-ink-500: #6b7268;
+  --bobr-ink-300: #b6bcb2;
+  --bobr-cream-100: #fcfdfb;
+  --bobr-cream-200: #f5f7f2;
+  --bobr-cream-300: #e9ece4;
+
+  /* Accents */
+  --bobr-amber-500: #e0a23c;
+  --bobr-red-500: #c0442f;
+
+  /* Semantic surfaces — components reference THESE, not the palette above, so
+     a palette change does not mean auditing every usage. */
+  --bobr-bg: var(--bobr-cream-200);
+  --bobr-surface: var(--bobr-cream-100);
+  --bobr-surface-sunken: var(--bobr-cream-300);
+  --bobr-border: var(--bobr-cream-300);
+  --bobr-fg: var(--bobr-ink-900);
+  --bobr-fg-muted: var(--bobr-ink-500);
+  --bobr-accent: var(--bobr-green-500);
+  --bobr-accent-hover: var(--bobr-green-700);
+  --bobr-on-accent: #ffffff;
+  --bobr-danger: var(--bobr-red-500);
+  --bobr-warning: var(--bobr-amber-500);
+
+  /* Type scale */
+  --bobr-text-xs: 0.75rem;
+  --bobr-text-sm: 0.875rem;
+  --bobr-text-base: 1rem;
+  --bobr-text-lg: 1.125rem;
+  --bobr-text-xl: 1.375rem;
+  --bobr-text-2xl: 1.75rem;
+  --bobr-text-3xl: 2.25rem;
+  --bobr-text-4xl: 3rem;
+
+  /* Radii + elevation */
+  --bobr-radius-sm: 6px;
+  --bobr-radius: 12px;
+  --bobr-radius-lg: 20px;
+  --bobr-shadow-sm: 0 1px 2px rgb(18 22 15 / 0.06);
+  --bobr-shadow: 0 4px 16px rgb(18 22 15 / 0.08);
+
+  /* Motion */
+  --bobr-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --bobr-duration: 220ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --bobr-duration: 0ms;
+  }
+}

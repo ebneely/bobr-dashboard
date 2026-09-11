@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+@import '../styles/bobr-tokens.css';
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bobr-bg);
+  color: var(--bobr-fg);
+  /* `clip`, not `hidden`: overflow:hidden makes this a scroll container, which
+     silently kills position:sticky on every descendant. `clip` paints nothing
+     outside the box and creates no scroll container. */
+  overflow-x: clip;
+}
+
+html {
+  /* Light-only design. Without this a dark-mode OS paints a dark canvas before
+     our CSS lands, which reads as a flash between pages. */
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}

@@ -1,0 +1,32 @@
+{
+  "common": {
+    "appName": "BOBR",
+    "logout": "Wyloguj się",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "loading": "Ładowanie…",
+    "language": "Język"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "overview": "Przegląd",
+    "myDiet": "Moja dieta",
+    "mealTracking": "Śledzenie posiłków",
+    "calendar": "Kalendarz",
+    "orders": "Zamówienia",
+    "consultations": "Konsultacje",
+    "notes": "Uwagi i zgłoszenia",
+    "profile": "Profil",
+    "customers": "Klienci",
+    "meals": "Posiłki"
+  },
+  "notes": {
+    "nudge": "Przypomnienie",
+    "complaint": "Reklamacja",
+    "note": "Notatka"
+  },
+  "errors": {
+    "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+    "network": "Brak połączenia z serwerem."
+  }
+}
