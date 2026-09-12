@@ -148,3 +148,123 @@ export function apiAdminReplyToNote(id: string, adminReply: string) {
     body: { adminReply },
   });
 }
+
+// ---------------------------------------------------------------------------
+// Admin: the meal catalogue
+//
+// Mirrors bobr_backend/src/catalog/admin-catalog.controller.ts. The admin list
+// is the MANAGEMENT view — it includes deactivated meals, which the public
+// `GET /meals` deliberately hides.
+// ---------------------------------------------------------------------------
+
+export type MealType = 'KETOGENIC' | 'GLUTEN_FREE' | 'ALLERGIES';
+
+export const MEAL_TYPES: readonly MealType[] = [
+  'KETOGENIC',
+  'GLUTEN_FREE',
+  'ALLERGIES',
+];
+
+/**
+ * A meal as the ADMIN endpoints return it.
+ *
+ * `imageKey` is the storage object key and never renderable on its own; the
+ * API resolves it to `imageUrl` at read time. The list endpoint returns the
+ * raw row and so carries no `imageUrl` at all, and the upload endpoint returns
+ * one that is null whenever no bucket is configured. Both cases mean the same
+ * thing to the UI — no picture to show — so both must land on the placeholder
+ * rather than on an <img> pointed at nothing.
+ */
+export interface AdminMeal {
+  id: string;
+  type: MealType;
+  namePl: string;
+  nameEn: string;
+  descriptionPl: string | null;
+  descriptionEn: string | null;
+  /** Integer grosze, as everywhere else. */
+  priceGrosze: number;
+  isActive: boolean;
+  imageKey: string | null;
+  imageUrl?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MealInput {
+  type: MealType;
+  namePl: string;
+  nameEn: string;
+  descriptionPl?: string | null;
+  descriptionEn?: string | null;
+  priceGrosze: number;
+  isActive?: boolean;
+}
+
+/** Every meal, deactivated ones included. */
+export function apiAdminListMeals() {
+  return apiFetch<AdminMeal[]>('/meals/admin');
+}
+
+export function apiAdminCreateMeal(input: MealInput) {
+  return apiFetch<AdminMeal>('/meals/admin', { method: 'POST', body: input });
+}
+
+export function apiAdminUpdateMeal(id: string, input: Partial<MealInput>) {
+  return apiFetch<AdminMeal>(`/meals/admin/${id}`, {
+    method: 'PATCH',
+    body: input,
+  });
+}
+
+/**
+ * Replaces the meal's photograph.
+ *
+ * The body is a FormData and the field name is `file`, matching the backend's
+ * FileInterceptor. No Content-Type is set here on purpose — apiFetch omits it
+ * for FormData so the browser can add its own multipart boundary, and forcing
+ * one makes the body unparseable server-side with no useful error.
+ */
+export function apiAdminUploadMealImage(id: string, file: File) {
+  const form = new FormData();
+  form.append('file', file);
+  return apiFetch<AdminMeal>(`/meals/admin/${id}/image`, {
+    method: 'POST',
+    body: form,
+  });
+}
+
+/**
+ * DEACTIVATES the meal — the endpoint is a DELETE, the effect is isActive:false.
+ *
+ * Orders reference meals and a placed order must keep naming what was bought,
+ * so nothing is ever removed. The UI must say "deactivate", not "delete".
+ */
+export function apiAdminDeactivateMeal(id: string) {
+  return apiFetch<AdminMeal>(`/meals/admin/${id}`, { method: 'DELETE' });
+}
+
+/**
+ * The admin types złote; the API stores grosze.
+ *
+ * Parsed with integer arithmetic rather than `parseFloat(x) * 100`, which for
+ * "45.10" gives 4509.999999999999 and rounds its way to a figure that is wrong
+ * in a reconciliation nobody runs until the year is over. Returns null for
+ * anything that is not a plain amount with at most two decimal places, so the
+ * form can refuse it instead of sending a NaN.
+ */
+export function zloteToGrosze(input: string): number | null {
+  const normalised = input.trim().replace(',', '.');
+  if (!/^\d+(\.\d{1,2})?$/.test(normalised)) return null;
+
+  const [whole, fraction = ''] = normalised.split('.');
+  return Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
+}
+
+/** The inverse, for pre-filling the edit form's price field. Never Intl — this
+ *  feeds an <input>, which wants 45.00 and not "45,00 zł". */
+export function groszeToZloteInput(grosze: number): string {
+  const whole = Math.trunc(grosze / 100);
+  const fraction = Math.abs(grosze % 100);
+  return `${whole}.${String(fraction).padStart(2, '0')}`;
+}
