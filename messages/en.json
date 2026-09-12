@@ -44,5 +44,48 @@
     "title": "No access",
     "body": "Your role does not have access to this part of the dashboard.",
     "back": "Back to the dashboard"
+  },
+  "tracking": {
+    "title": "Meal tracking",
+    "subtitle": "Tick off what you have eaten. This is your log.",
+    "noOrders": "You have no orders yet.",
+    "orderOf": "Order from {date}",
+    "days": "days",
+    "eaten": "Eaten",
+    "notEaten": "To eat",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "total": "Total",
+    "discount": "Discount",
+    "freeShipping": "Free delivery",
+    "status": "Status"
+  },
+  "notesPage": {
+    "title": "Notes and complaints",
+    "subtitle": "Write to us — we answer here.",
+    "kind": "Kind",
+    "body": "Message",
+    "submit": "Send",
+    "sending": "Sending…",
+    "mine": "Your messages",
+    "none": "Nothing here yet.",
+    "awaiting": "Awaiting a reply",
+    "answered": "Answered",
+    "reply": "Reply",
+    "queue": "Message queue",
+    "unansweredOnly": "Unanswered only",
+    "replyPlaceholder": "Write a reply…",
+    "sendReply": "Reply",
+    "from": "from"
+  },
+  "adminOrders": {
+    "title": "Orders",
+    "none": "No orders.",
+    "customer": "Customer",
+    "meal": "Diet",
+    "days": "Days",
+    "total": "Amount",
+    "status": "Status",
+    "advance": "Change status"
   }
 }

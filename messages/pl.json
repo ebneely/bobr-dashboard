@@ -44,5 +44,48 @@
     "title": "Brak dostępu",
     "body": "Twoja rola nie ma dostępu do tej części panelu.",
     "back": "Wróć do panelu"
+  },
+  "tracking": {
+    "title": "Śledzenie posiłków",
+    "subtitle": "Zaznacz, co zjedzone. To Twój dziennik.",
+    "noOrders": "Nie masz jeszcze zamówień.",
+    "orderOf": "Zamówienie z {date}",
+    "days": "dni",
+    "eaten": "Zjedzone",
+    "notEaten": "Do zjedzenia",
+    "upcoming": "Nadchodzące",
+    "past": "Minione",
+    "total": "Razem",
+    "discount": "Rabat",
+    "freeShipping": "Dostawa gratis",
+    "status": "Status"
+  },
+  "notesPage": {
+    "title": "Uwagi i zgłoszenia",
+    "subtitle": "Napisz do nas — odpowiemy tutaj.",
+    "kind": "Rodzaj",
+    "body": "Treść",
+    "submit": "Wyślij",
+    "sending": "Wysyłam…",
+    "mine": "Twoje zgłoszenia",
+    "none": "Nic tu jeszcze nie ma.",
+    "awaiting": "Czeka na odpowiedź",
+    "answered": "Odpowiedziano",
+    "reply": "Odpowiedź",
+    "queue": "Kolejka zgłoszeń",
+    "unansweredOnly": "Tylko bez odpowiedzi",
+    "replyPlaceholder": "Napisz odpowiedź…",
+    "sendReply": "Odpowiedz",
+    "from": "od"
+  },
+  "adminOrders": {
+    "title": "Zamówienia",
+    "none": "Brak zamówień.",
+    "customer": "Klient",
+    "meal": "Dieta",
+    "days": "Dni",
+    "total": "Kwota",
+    "status": "Status",
+    "advance": "Zmień status"
   }
 }
