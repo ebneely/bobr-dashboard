@@ -1,10 +1,16 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { cardsFor } from '@/lib/auth/roles';
+import { getServerSession } from '@/lib/auth/session';
+
 /**
- * Placeholder shell. What actually goes here — meal tracking, the calendar,
- * orders, consultations, notes — depends on the business-logic conversation
- * still to be had, and on whether this surface is customer-facing,
- * admin-facing or both (see the open questions in ../../docs/SPEC.md).
+ * Placeholder cards, split by role from lib/auth/roles.ts rather than from a
+ * fixed list: a customer has no business seeing an "Orders" tile that 404s
+ * for them, and an admin has no "My diet".
+ *
+ * The session is read again here — `getServerSession` is request-cached, so
+ * this costs nothing — rather than threaded down from the layout, because a
+ * page that depends on the role should say so where it is read.
  */
 export default async function DashboardPage({
   params,
@@ -15,15 +21,11 @@ export default async function DashboardPage({
   setRequestLocale(locale);
 
   const t = await getTranslations('dashboard');
+  const session = await getServerSession();
 
-  const sections = [
-    'myDiet',
-    'mealTracking',
-    'calendar',
-    'orders',
-    'consultations',
-    'notes',
-  ] as const;
+  // The layout above has already redirected anyone without a session, so this
+  // branch is only reachable in the instant between the two renders.
+  const cards = session ? cardsFor(session.user.role) : [];
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
@@ -35,7 +37,7 @@ export default async function DashboardPage({
       </h1>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {sections.map((key) => (
+        {cards.map((key) => (
           <section
             key={key}
             className="p-5"

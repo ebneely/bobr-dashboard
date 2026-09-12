@@ -28,5 +28,21 @@
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "network": "Could not reach the server."
+  },
+  "shell": {
+    "navLabel": "Dashboard navigation",
+    "signedInAs": "Signed in as",
+    "signingOut": "Signing out…",
+    "stubbedSession": "Stubbed session (development only)",
+    "role": {
+      "CUSTOMER": "Customer",
+      "ADMIN": "Administrator",
+      "DOCTOR": "Doctor"
+    }
+  },
+  "accessDenied": {
+    "title": "No access",
+    "body": "Your role does not have access to this part of the dashboard.",
+    "back": "Back to the dashboard"
   }
 }

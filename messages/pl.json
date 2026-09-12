@@ -28,5 +28,21 @@
   "errors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie.",
     "network": "Brak połączenia z serwerem."
+  },
+  "shell": {
+    "navLabel": "Nawigacja panelu",
+    "signedInAs": "Zalogowano jako",
+    "signingOut": "Wylogowywanie…",
+    "stubbedSession": "Sesja testowa (tryb deweloperski)",
+    "role": {
+      "CUSTOMER": "Klient",
+      "ADMIN": "Administrator",
+      "DOCTOR": "Lekarz"
+    }
+  },
+  "accessDenied": {
+    "title": "Brak dostępu",
+    "body": "Twoja rola nie ma dostępu do tej części panelu.",
+    "back": "Wróć do panelu"
   }
 }
