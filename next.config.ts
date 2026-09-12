@@ -14,29 +14,28 @@ const isProd = process.env.NODE_ENV === 'production';
  */
 const httpsEnabled = process.env.HTTPS_ENABLED === 'true';
 
-/**
- * The API origin, as a CSP source.
- *
- * Meal photos are served BY THE API, not by this app, so `img-src 'self'` does
- * not cover them: the browser blocks the request and the admin sees an empty
- * frame after a successful upload, with the only evidence in the console. That
- * is true over https too — a different origin is a different origin — so this
- * is not an http-only concession.
- *
- * Derived from the same variable the client fetches from, so the allowance
- * cannot drift from the origin actually in use. NEXT_PUBLIC_ vars are inlined
- * at build time, and this is read at config load, so a changed API origin needs
- * a rebuild either way.
- */
-const apiOrigin = (() => {
-  const raw = process.env.NEXT_PUBLIC_API_URL;
-  if (!raw) return null;
-  try {
-    return new URL(raw).origin;
-  } catch {
-    // A malformed value must not take the whole config down at boot.
-    return null;
+const imageOrigins = (() => {
+  // Where meal photographs are actually fetched FROM.
+  //
+  // Not necessarily the API: with imgproxy configured the API hands out URLs on
+  // the imgproxy host, and with neither imgproxy nor a bucket it serves the
+  // bytes itself at /v1/files. Both are cross-origin to this app, so `'self'`
+  // covers neither, and `https:` covers neither on the http-only host this
+  // project targets.
+  //
+  // Getting this wrong fails silently in the one way that matters: the request
+  // is blocked, the card draws an empty frame, and nothing but the console says
+  // why. So every origin an image can come from is listed here.
+  const origins = new Set();
+  for (const raw of [process.env.NEXT_PUBLIC_API_URL, process.env.NEXT_PUBLIC_IMAGE_HOST]) {
+    if (!raw) continue;
+    try {
+      origins.add(new URL(raw).origin);
+    } catch {
+      // A malformed value must not take the whole config down at boot.
+    }
   }
+  return [...origins];
 })();
 
 // Stricter than the storefront's: the dashboard is behind a login, shows
@@ -49,7 +48,7 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   `script-src 'self' 'unsafe-inline'${isProd ? '' : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob:${apiOrigin ? ` ${apiOrigin}` : ''}`,
+  `img-src 'self' data: blob:${imageOrigins.map((o) => ` ${o}`).join('')}`,
   "font-src 'self' data:",
   // http: stays allowed without HTTPS — the API is on another subdomain and
   // every call to it is 'http:' in that case.
