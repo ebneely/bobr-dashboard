@@ -14,6 +14,31 @@ const isProd = process.env.NODE_ENV === 'production';
  */
 const httpsEnabled = process.env.HTTPS_ENABLED === 'true';
 
+/**
+ * The API origin, as a CSP source.
+ *
+ * Meal photos are served BY THE API, not by this app, so `img-src 'self'` does
+ * not cover them: the browser blocks the request and the admin sees an empty
+ * frame after a successful upload, with the only evidence in the console. That
+ * is true over https too — a different origin is a different origin — so this
+ * is not an http-only concession.
+ *
+ * Derived from the same variable the client fetches from, so the allowance
+ * cannot drift from the origin actually in use. NEXT_PUBLIC_ vars are inlined
+ * at build time, and this is read at config load, so a changed API origin needs
+ * a rebuild either way.
+ */
+const apiOrigin = (() => {
+  const raw = process.env.NEXT_PUBLIC_API_URL;
+  if (!raw) return null;
+  try {
+    return new URL(raw).origin;
+  } catch {
+    // A malformed value must not take the whole config down at boot.
+    return null;
+  }
+})();
+
 // Stricter than the storefront's: the dashboard is behind a login, shows
 // customer data, and has no reason to load a third-party image or script.
 const contentSecurityPolicy = [
@@ -24,7 +49,7 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   `script-src 'self' 'unsafe-inline'${isProd ? '' : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  `img-src 'self' data: blob:${apiOrigin ? ` ${apiOrigin}` : ''}`,
   "font-src 'self' data:",
   // http: stays allowed without HTTPS — the API is on another subdomain and
   // every call to it is 'http:' in that case.

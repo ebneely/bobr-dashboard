@@ -1,0 +1,18 @@
+# Line endings are normalised to LF in the repository, on every platform.
+#
+# Without this, git checks source out with CRLF on Windows while prettier (run
+# through eslint-plugin-prettier) expects LF — so `eslint` fails with hundreds of
+# "Delete ␍" errors that have nothing to do with the code. It surfaced after a
+# merge plus a reinstall rewrote endings across files nobody had edited: 758
+# errors, zero of them real.
+#
+# Fixing it here rather than by setting prettier's endOfLine to "auto" keeps the
+# committed bytes identical whoever commits them, which is what stops the next
+# person seeing a diff of the whole file.
+* text=auto eol=lf
+
+# Binary: never touch these.
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
