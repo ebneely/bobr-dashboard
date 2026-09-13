@@ -28,7 +28,7 @@ export default async function DashboardPage({
   const cards = session ? cardsFor(session.user.role) : [];
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
+    <main className="mx-auto max-w-5xl">
       <h1
         className="mb-8 font-semibold"
         style={{ fontSize: 'var(--bobr-text-3xl)' }}

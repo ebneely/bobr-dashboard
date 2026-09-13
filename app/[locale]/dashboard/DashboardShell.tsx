@@ -156,7 +156,9 @@ export function DashboardShell({
       {/* `min-w-0` so a wide child (a table) scrolls inside itself instead of
           stretching the grid column and giving the whole page a sideways
           scrollbar on a phone. */}
-      <div className="min-w-0">
+      {/* The gutter lives here, once, for every page: without it headings sat
+          at x=0 on a phone and flush against the sidebar on desktop. */}
+      <div className="min-w-0 px-4 py-6 md:px-8 md:py-8">
         {allowed ? children : <AccessDenied role={role} />}
       </div>
     </div>
