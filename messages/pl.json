@@ -270,7 +270,9 @@
     "loadFailed": "Nie udało się wczytać ustawień płatności.",
     "saveFailed": "Nie udało się zapisać danych BLIK.",
     "zonesNote": "Koszt dostawy zamówień jednorazowych ustalasz teraz w strefach dostaw.",
-    "zonesLink": "Przejdź do stref dostaw"
+    "zonesLink": "Przejdź do stref dostaw",
+    "blikRequirementTitle": "Zanim podasz numer",
+    "blikRequirement": "Numer musi być zarejestrowany do odbioru przelewów na telefon BLIK w aplikacji Twojego banku i powiązany z kontem, na które mają trafiać wpłaty — inaczej klient zobaczy, że ten numer nie przyjmuje przelewów BLIK. Nie każdy bank pozwala podpiąć konto firmowe. Wpłaty nie potwierdzają się same: sprawdź je w banku i oznacz konsultację jako opłaconą."
   },
   "consultationsPage": {
     "title": "Konsultacje",

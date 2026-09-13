@@ -119,6 +119,14 @@ export function SettingsClient() {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-4">
+          {/* The one thing that makes customers' payments fail: a BLIK phone
+              transfer only reaches a number registered for receiving in the
+              owner's bank app. Payments are not confirmed automatically. */}
+          <Alert data-testid="blik-requirement">
+            <AlertTitle>{t('blikRequirementTitle')}</AlertTitle>
+            <AlertDescription>{t('blikRequirement')}</AlertDescription>
+          </Alert>
+
           {current === null ? (
             <div className="flex flex-col gap-3" aria-busy="true">
               <Skeleton className="h-5 w-48" />
