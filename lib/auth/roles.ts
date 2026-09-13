@@ -38,6 +38,7 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   // CUSTOMER sees their own bookings; ADMIN/DOCTOR see all and confirm them.
   { path: '/dashboard/consultations', messageKey: 'consultations', roles: ALL, nav: true },
   { path: '/dashboard/notes', messageKey: 'notes', roles: ALL, nav: true },
+  { path: '/dashboard/zones', messageKey: 'zones', roles: ['ADMIN'], nav: true },
   { path: '/dashboard/settings', messageKey: 'settings', roles: ['ADMIN'], nav: true },
   { path: '/dashboard/profile', messageKey: 'profile', roles: ALL, nav: false },
 ];
@@ -55,6 +56,7 @@ export const DASHBOARD_CARDS: readonly {
   { messageKey: 'customers', roles: ['ADMIN'] },
   { messageKey: 'consultations', roles: ALL },
   { messageKey: 'notes', roles: ['CUSTOMER', 'DOCTOR'] },
+  { messageKey: 'zones', roles: ['ADMIN'] },
   { messageKey: 'settings', roles: ['ADMIN'] },
 ];
 

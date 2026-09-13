@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -18,21 +18,16 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiError, formatApiError } from '@/lib/api/client';
 import {
-  formatGrosze,
-  groszeToZloteInput,
-  zloteToGrosze,
-} from '@/lib/api/orders';
-import { apiAdminSetShipping, apiGetShipping } from '@/lib/api/settings';
+  apiAdminSetPaymentSettings,
+  apiGetPaymentSettings,
+  formatBlikPhone,
+  type PaymentSettings,
+} from '@/lib/api/settings';
+import { Link } from '@/lib/i18n/navigation';
 
 function describeError(error: unknown, fallback: string): string {
   if (error instanceof ApiError) return formatApiError(error.body) || fallback;
   return fallback;
-}
-
-/** "15.00" → "15,00" for Polish; the parser accepts either separator. */
-function toInput(grosze: number, locale: string): string {
-  const value = groszeToZloteInput(grosze);
-  return locale === 'pl' ? value.replace('.', ',') : value;
 }
 
 type Feedback =
@@ -40,23 +35,41 @@ type Feedback =
   | { kind: 'error'; message: string }
   | null;
 
+/** An empty field means "remove it" — the API takes null, not "". */
+function orNull(value: string): string | null {
+  const trimmed = value.trim();
+  return trimmed === '' ? null : trimmed;
+}
+
+/**
+ * The BLIK details customers pay consultations to.
+ *
+ * One-time shipping used to be edited here as a single flat price; it now
+ * comes from delivery zones. The flat value stays in the backend only as the
+ * fallback for the old storefront, so it is deliberately not shown.
+ */
 export function SettingsClient() {
   const t = useTranslations('settingsPage');
-  const locale = useLocale();
 
-  const [current, setCurrent] = useState<number | null>(null);
-  const [value, setValue] = useState('');
+  const [current, setCurrent] = useState<PaymentSettings | null>(null);
+  const [phone, setPhone] = useState('');
+  const [recipient, setRecipient] = useState('');
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
 
+  function apply(settings: PaymentSettings) {
+    setCurrent(settings);
+    setPhone(settings.blikPhone ? formatBlikPhone(settings.blikPhone) : '');
+    setRecipient(settings.blikRecipientName ?? '');
+  }
+
   useEffect(() => {
     let alive = true;
-    apiGetShipping()
+    apiGetPaymentSettings()
       .then((settings) => {
         if (!alive) return;
-        setCurrent(settings.oneTimeShippingGrosze);
-        setValue(toInput(settings.oneTimeShippingGrosze, locale));
+        apply(settings);
         setLoadError(null);
       })
       .catch((error: unknown) => {
@@ -70,24 +83,17 @@ export function SettingsClient() {
 
   async function save() {
     setFeedback(null);
-    // String parsing, never parseFloat * 100 — see zloteToGrosze.
-    const grosze = zloteToGrosze(value);
-    if (grosze === null) {
-      setFeedback({ kind: 'error', message: t('invalid') });
-      return;
-    }
-
     setSaving(true);
     try {
-      const saved = await apiAdminSetShipping(grosze);
-      setCurrent(saved.oneTimeShippingGrosze);
-      setValue(toInput(saved.oneTimeShippingGrosze, locale));
-      setFeedback({
-        kind: 'success',
-        message: t('saved', {
-          amount: formatGrosze(saved.oneTimeShippingGrosze, locale),
+      // Normalising the phone is the backend's job: it accepts spaces, dashes
+      // and +48 / 0048, and answers 422 with the field when it cannot.
+      apply(
+        await apiAdminSetPaymentSettings({
+          blikPhone: orNull(phone),
+          blikRecipientName: orNull(recipient),
         }),
-      });
+      );
+      setFeedback({ kind: 'success', message: t('saved') });
     } catch (error) {
       setFeedback({ kind: 'error', message: describeError(error, t('saveFailed')) });
     } finally {
@@ -105,71 +111,110 @@ export function SettingsClient() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">{t('shippingTitle')}</CardTitle>
-        <CardDescription>{t('shippingDescription')}</CardDescription>
-      </CardHeader>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">{t('blikTitle')}</CardTitle>
+          <CardDescription>{t('blikDescription')}</CardDescription>
+        </CardHeader>
 
-      <CardContent className="flex flex-col gap-4">
-        {current === null ? (
-          <div className="flex flex-col gap-3" aria-busy="true">
-            <Skeleton className="h-5 w-40" />
-            <Skeleton className="h-9 w-full max-w-xs" />
-          </div>
-        ) : (
-          <>
-            <p className="text-sm">
-              {t('current', { amount: formatGrosze(current, locale) })}
-            </p>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="one-time-shipping">{t('amountLabel')}</Label>
-              <Input
-                id="one-time-shipping"
-                name="oneTimeShipping"
-                inputMode="decimal"
-                autoComplete="off"
-                className="max-w-xs"
-                value={value}
-                aria-describedby="one-time-shipping-hint"
-                onChange={(event) => setValue(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') void save();
-                }}
-              />
-              <p id="one-time-shipping-hint" className="text-xs text-muted-foreground">
-                {t('amountHint')}
-              </p>
+        <CardContent className="flex flex-col gap-4">
+          {current === null ? (
+            <div className="flex flex-col gap-3" aria-busy="true">
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-9 w-full max-w-xs" />
+              <Skeleton className="h-9 w-full max-w-sm" />
             </div>
+          ) : (
+            <>
+              {current.blikPhone ? (
+                <div className="flex flex-col gap-0.5 text-sm" data-testid="blik-current">
+                  <p>
+                    {t('current', { phone: formatBlikPhone(current.blikPhone) })}
+                  </p>
+                  {current.blikRecipientName ? (
+                    <p className="text-muted-foreground">
+                      {t('currentRecipient', { name: current.blikRecipientName })}
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground" data-testid="blik-current">
+                  {t('notSet')}
+                </p>
+              )}
 
-            <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
-              <li>{t('calendarFree')}</li>
-              <li>{t('placedKeep')}</li>
-            </ul>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="blik-phone">{t('phoneLabel')}</Label>
+                <Input
+                  id="blik-phone"
+                  name="blikPhone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="off"
+                  placeholder="+48 600 123 456"
+                  className="max-w-xs"
+                  value={phone}
+                  aria-describedby="blik-phone-hint"
+                  onChange={(event) => setPhone(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') void save();
+                  }}
+                />
+                <p id="blik-phone-hint" className="text-xs text-muted-foreground">
+                  {t('phoneHint')}
+                </p>
+              </div>
 
-            {feedback ? (
-              <Alert
-                variant={feedback.kind === 'error' ? 'destructive' : 'default'}
-                data-testid={`settings-${feedback.kind}`}
-              >
-                <AlertTitle>
-                  {feedback.kind === 'error' ? t('errorTitle') : t('savedTitle')}
-                </AlertTitle>
-                <AlertDescription className="whitespace-pre-line">
-                  {feedback.message}
-                </AlertDescription>
-              </Alert>
-            ) : null}
-          </>
-        )}
-      </CardContent>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="blik-recipient">{t('recipientLabel')}</Label>
+                <Input
+                  id="blik-recipient"
+                  name="blikRecipientName"
+                  autoComplete="off"
+                  className="max-w-sm"
+                  value={recipient}
+                  aria-describedby="blik-recipient-hint"
+                  onChange={(event) => setRecipient(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') void save();
+                  }}
+                />
+                <p id="blik-recipient-hint" className="text-xs text-muted-foreground">
+                  {t('recipientHint')}
+                </p>
+              </div>
 
-      <CardFooter>
-        <Button onClick={() => void save()} disabled={saving || current === null}>
-          {saving ? t('saving') : t('save')}
+              {feedback ? (
+                <Alert
+                  variant={feedback.kind === 'error' ? 'destructive' : 'default'}
+                  data-testid={`settings-${feedback.kind}`}
+                >
+                  <AlertTitle>
+                    {feedback.kind === 'error' ? t('errorTitle') : t('savedTitle')}
+                  </AlertTitle>
+                  <AlertDescription className="whitespace-pre-line">
+                    {feedback.message}
+                  </AlertDescription>
+                </Alert>
+              ) : null}
+            </>
+          )}
+        </CardContent>
+
+        <CardFooter>
+          <Button onClick={() => void save()} disabled={saving || current === null}>
+            {saving ? t('saving') : t('save')}
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <div className="flex flex-col items-start gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <p>{t('zonesNote')}</p>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/dashboard/zones">{t('zonesLink')}</Link>
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </>
   );
 }

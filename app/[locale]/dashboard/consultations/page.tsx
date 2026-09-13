@@ -35,7 +35,12 @@ export default async function ConsultationsPage({
           {staff ? t('subtitleStaff') : t('subtitleCustomer')}
         </p>
       </header>
-      {staff ? <StaffConsultationsClient /> : <CustomerConsultationsClient />}
+      {staff ? (
+        // Only ADMIN marks payments; the backend answers a DOCTOR with 403.
+        <StaffConsultationsClient canMarkPaid={role === 'ADMIN'} />
+      ) : (
+        <CustomerConsultationsClient />
+      )}
     </main>
   );
 }

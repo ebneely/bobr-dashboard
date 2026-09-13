@@ -14,12 +14,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -35,6 +37,7 @@ import { ApiError, formatApiError } from '@/lib/api/client';
 import {
   CONSULTATION_STATUS_MOVES,
   apiAdminListConsultations,
+  apiAdminSetConsultationPaid,
   apiAdminSetConsultationStatus,
   formatWarsawDateTime,
   type AdminConsultation,
@@ -51,9 +54,15 @@ function describeError(error: unknown, fallback: string): string {
 
 type StatusMove = { row: AdminConsultation; status: 'COMPLETED' | 'CANCELLED' };
 
-export function StaffConsultationsClient() {
+/**
+ * Every booking, for ADMIN and DOCTOR. `canMarkPaid` is true for ADMIN only —
+ * a UI courtesy; the backend refuses the paid PATCH from a DOCTOR regardless.
+ */
+export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean }) {
   const t = useTranslations('consultationsPage');
   const locale = useLocale();
+  const [paidBusyId, setPaidBusyId] = useState<string | null>(null);
+  const [paidError, setPaidError] = useState<string | null>(null);
 
   const [rows, setRows] = useState<AdminConsultation[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -102,6 +111,18 @@ export function StaffConsultationsClient() {
     }
   }
 
+  async function setPaid(row: AdminConsultation, paid: boolean) {
+    setPaidBusyId(row.id);
+    setPaidError(null);
+    try {
+      applyUpdate(await apiAdminSetConsultationPaid(row.id, paid));
+    } catch (error) {
+      setPaidError(describeError(error, t('paidFailed')));
+    } finally {
+      setPaidBusyId(null);
+    }
+  }
+
   if (rows === null) {
     return (
       <div className="flex flex-col gap-2" aria-busy="true">
@@ -131,6 +152,11 @@ export function StaffConsultationsClient() {
 
   return (
     <>
+      {paidError ? (
+        <Alert variant="destructive" data-testid="paid-error">
+          <AlertDescription className="whitespace-pre-line">{paidError}</AlertDescription>
+        </Alert>
+      ) : null}
       <Card className="py-0">
         <CardContent className="px-0">
           <Table>
@@ -140,6 +166,7 @@ export function StaffConsultationsClient() {
                 <TableHead>{t('context')}</TableHead>
                 <TableHead>{t('preferred')}</TableHead>
                 <TableHead>{t('status')}</TableHead>
+                <TableHead>{t('payment')}</TableHead>
                 <TableHead>{t('scheduled')}</TableHead>
                 <TableHead>{t('meet')}</TableHead>
                 <TableHead className="pr-4 text-right">{t('actions')}</TableHead>
@@ -149,6 +176,7 @@ export function StaffConsultationsClient() {
               {rows.map((row) => {
                 const moves = CONSULTATION_STATUS_MOVES[row.status];
                 const canConfirm = row.status === 'REQUESTED';
+                const statusActions = canConfirm || moves.length > 0;
                 return (
                   <TableRow key={row.id} data-consultation-id={row.id}>
                     <TableCell className="pl-4">
@@ -167,6 +195,24 @@ export function StaffConsultationsClient() {
                     <TableCell>
                       <ConsultationStatusBadge status={row.status} />
                     </TableCell>
+                    <TableCell data-testid="payment">
+                      {row.paidAt ? (
+                        <div className="flex flex-col items-start gap-0.5">
+                          <Badge>{t('paid')}</Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {formatWarsawDateTime(row.paidAt, locale)}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-start gap-0.5">
+                          <Badge variant="outline">{t('unpaid')}</Badge>
+                          <span className="font-mono text-xs text-muted-foreground">
+                            <span className="sr-only">{t('reference')}: </span>
+                            {row.paymentReference}
+                          </span>
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell data-testid="scheduled-at">
                       {row.scheduledAt ? formatWarsawDateTime(row.scheduledAt, locale) : '—'}
                     </TableCell>
@@ -182,10 +228,16 @@ export function StaffConsultationsClient() {
                       )}
                     </TableCell>
                     <TableCell className="pr-4 text-right">
-                      {canConfirm || moves.length > 0 ? (
+                      {statusActions || canMarkPaid ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" aria-label={t('openActions')}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              aria-label={t('openActions')}
+                              disabled={paidBusyId === row.id}
+                              data-testid="consultation-actions"
+                            >
                               {t('actions')}
                               <MoreHorizontalIcon />
                             </Button>
@@ -216,6 +268,17 @@ export function StaffConsultationsClient() {
                               >
                                 {t('cancel')}
                               </DropdownMenuItem>
+                            ) : null}
+                            {canMarkPaid ? (
+                              <>
+                                {statusActions ? <DropdownMenuSeparator /> : null}
+                                <DropdownMenuItem
+                                  data-testid={row.paidAt ? 'unmark-paid' : 'mark-paid'}
+                                  onSelect={() => void setPaid(row, row.paidAt === null)}
+                                >
+                                  {row.paidAt ? t('unmarkPaid') : t('markPaid')}
+                                </DropdownMenuItem>
+                              </>
                             ) : null}
                           </DropdownMenuContent>
                         </DropdownMenu>

@@ -32,6 +32,10 @@ export interface Consultation {
   meetUrl: string | null;
   confirmedAt: string | null;
   createdAt: string;
+  /** When an ADMIN marked the BLIK transfer received; null while unpaid. */
+  paidAt: string | null;
+  /** "BOBR-" + first 8 hex of the id, upper case — the transfer title. */
+  paymentReference: string;
 }
 
 export interface AdminConsultation extends Consultation {
@@ -64,6 +68,14 @@ export function apiAdminSetConsultationStatus(
   return apiFetch<Consultation>(`/consultations/admin/${id}/status`, {
     method: 'PATCH',
     body: { status },
+  });
+}
+
+/** ADMIN only — DOCTOR and CUSTOMER get a 403. Sets or clears `paidAt`. */
+export function apiAdminSetConsultationPaid(id: string, paid: boolean) {
+  return apiFetch<Consultation>(`/consultations/admin/${id}/paid`, {
+    method: 'PATCH',
+    body: { paid },
   });
 }
 

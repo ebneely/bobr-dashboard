@@ -148,6 +148,7 @@ export function OrdersClient() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className={headClass}>{t('customer')}</TableHead>
+                <TableHead className={headClass}>{t('address')}</TableHead>
                 <TableHead className={headClass}>{t('meal')}</TableHead>
                 <TableHead className={headClass}>{t('mode')}</TableHead>
                 <TableHead className={`${headClass} text-right`}>{t('days')}</TableHead>
@@ -170,7 +171,31 @@ export function OrdersClient() {
                       <div className="font-semibold">{order.user?.fullName ?? '—'}</div>
                       <div className="text-muted-foreground">{order.user?.email ?? ''}</div>
                     </TableCell>
-                    <TableCell className="min-w-36 px-3 py-2.5 align-top whitespace-normal">
+                    <TableCell
+                      className="min-w-40 max-w-56 px-3 py-2.5 align-top whitespace-normal"
+                      data-testid="order-address"
+                    >
+                      {order.delivery ? (
+                        <>
+                          <div className="break-words">{order.delivery.addressLine}</div>
+                          <div>
+                            {order.delivery.postalCode} {order.delivery.city}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {t('zone', {
+                              zone:
+                                locale === 'pl'
+                                  ? order.delivery.zoneNamePl
+                                  : order.delivery.zoneNameEn,
+                            })}
+                          </div>
+                        </>
+                      ) : (
+                        // Orders from the old storefront carry no address.
+                        <span className="text-muted-foreground">{t('noAddress')}</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="min-w-32 px-3 py-2.5 align-top whitespace-normal">
                       {order.meal
                         ? locale === 'pl'
                           ? order.meal.namePl
