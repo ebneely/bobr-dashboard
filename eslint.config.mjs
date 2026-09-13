@@ -26,25 +26,12 @@ const SHADCN_INSTEAD = {
   form: 'a component wrapper (see components/ui)',
 };
 
-/**
- * Files not yet migrated (ebneely/bobr-dashboard#16). This list only ever
- * shrinks; #16 is done when it is empty and this block is deleted.
- */
-const NOT_YET_SHADCN = [
-  'app/[[]locale]/dashboard/calendar/TrackingClient.tsx',
-  'app/[[]locale]/dashboard/customers/CustomersClient.tsx',
-  'app/[[]locale]/dashboard/meals/MealsClient.tsx',
-  'app/[[]locale]/dashboard/notes/NotesClient.tsx',
-  'app/[[]locale]/dashboard/orders/OrdersClient.tsx',
-];
-
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
   {
     files: ['app/**/*.tsx'],
-    ignores: NOT_YET_SHADCN,
     rules: {
       'react/forbid-elements': [
         'error',

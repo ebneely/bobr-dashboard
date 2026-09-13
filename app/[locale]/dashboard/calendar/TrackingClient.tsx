@@ -3,6 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   apiListMyOrders,
   apiTrackDay,
@@ -10,6 +15,7 @@ import {
   type Order,
   type OrderDay,
 } from '@/lib/api/orders';
+import { cn } from '@/lib/cn';
 
 export function TrackingClient() {
   const t = useTranslations('tracking');
@@ -56,115 +62,87 @@ export function TrackingClient() {
     }
   }
 
-  if (error && !orders) return <p className="dash-error">{error}</p>;
-  if (!orders) return <p>…</p>;
-  if (orders.length === 0) return <p>{t('noOrders')}</p>;
+  if (error && !orders) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
+  if (!orders) {
+    return (
+      <div className="flex flex-col gap-6">
+        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+      </div>
+    );
+  }
+  if (orders.length === 0) {
+    return <p className="text-muted-foreground">{t('noOrders')}</p>;
+  }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="flex flex-col gap-6">
       {orders.map((order) => (
-        <article
-          key={order.id}
-          style={{
-            background: 'var(--bobr-surface)',
-            border: '1px solid var(--bobr-border)',
-            borderRadius: 'var(--bobr-radius)',
-            padding: '1.25rem',
-          }}
-        >
-          <header
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.75rem',
-              alignItems: 'baseline',
-              justifyContent: 'space-between',
-              marginBottom: '1rem',
-            }}
-          >
-            <div>
-              <h2 style={{ fontSize: 'var(--bobr-text-h4)', fontWeight: 600 }}>
+        <Card key={order.id} className="gap-4" data-testid="tracking-order">
+          <CardHeader className="flex flex-wrap items-baseline justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-xl font-semibold">
                 {order.meal
                   ? locale === 'pl'
                     ? order.meal.namePl
                     : order.meal.nameEn
                   : '—'}
               </h2>
-              <p
-                style={{
-                  fontSize: 'var(--bobr-text-sm)',
-                  color: 'var(--bobr-fg-muted)',
-                }}
-              >
+              <p className="text-sm text-muted-foreground">
                 {order.days.length} {t('days')} · {t('status')}: {order.status}
                 {order.discountPercent > 0 &&
                   ` · ${t('discount')} ${order.discountPercent}%`}
                 {order.shippingGrosze === 0 && ` · ${t('freeShipping')}`}
               </p>
             </div>
-            <strong
-              style={{
-                fontSize: 'var(--bobr-text-lead)',
-                color: 'var(--bobr-accent)',
-              }}
-            >
+            <strong className="text-lg text-primary">
               {formatGrosze(order.totalGrosze, locale)}
             </strong>
-          </header>
+          </CardHeader>
 
-          <ul
-            style={{
-              listStyle: 'none',
-              margin: 0,
-              padding: 0,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(7.5rem, 1fr))',
-              gap: '0.5rem',
-            }}
-          >
-            {order.days.map((day) => {
-              // The column is a DATE, so it arrives as midnight UTC. Rendering
-              // it with the local timezone would shift it a day for anyone west
-              // of Greenwich, which is how a delivery lands on the wrong date.
-              const label = new Date(day.deliverOn).toLocaleDateString(
-                locale === 'pl' ? 'pl-PL' : 'en-GB',
-                { day: 'numeric', month: 'short', timeZone: 'UTC' },
-              );
+          <CardContent>
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-2">
+              {order.days.map((day) => {
+                // The column is a DATE, so it arrives as midnight UTC. Rendering
+                // it with the local timezone would shift it a day for anyone west
+                // of Greenwich, which is how a delivery lands on the wrong date.
+                const label = new Date(day.deliverOn).toLocaleDateString(
+                  locale === 'pl' ? 'pl-PL' : 'en-GB',
+                  { day: 'numeric', month: 'short', timeZone: 'UTC' },
+                );
 
-              return (
-                <li key={day.id}>
-                  <label
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.45rem',
-                      padding: '0.55rem 0.6rem',
-                      cursor: 'pointer',
-                      borderRadius: 'var(--bobr-radius-control)',
-                      border: `1px solid ${day.eaten ? 'transparent' : 'var(--bobr-border)'}`,
-                      background: day.eaten
-                        ? 'var(--bobr-fg)'
-                        : 'var(--bobr-surface)',
-                      color: day.eaten
-                        ? 'var(--bobr-on-dark)'
-                        : 'var(--bobr-fg)',
-                      opacity: pending === day.id ? 0.6 : 1,
-                      fontSize: 'var(--bobr-text-sm)',
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={day.eaten}
-                      onChange={() => toggle(day)}
-                      aria-label={`${label} — ${day.eaten ? t('eaten') : t('notEaten')}`}
-                    />
-                    {label}
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </article>
+                return (
+                  <li key={day.id}>
+                    <Label
+                      data-testid="tracking-day"
+                      className={cn(
+                        'cursor-pointer rounded-lg border px-2.5 py-2.5 font-normal transition-colors',
+                        day.eaten
+                          ? 'border-transparent bg-foreground text-background'
+                          : 'border-border bg-card text-foreground hover:bg-muted',
+                        pending === day.id && 'opacity-60',
+                      )}
+                    >
+                      <Checkbox
+                        checked={day.eaten}
+                        onCheckedChange={() => toggle(day)}
+                        aria-label={`${label} — ${day.eaten ? t('eaten') : t('notEaten')}`}
+                        className="bg-card data-checked:border-background"
+                      />
+                      {label}
+                    </Label>
+                  </li>
+                );
+              })}
+            </ul>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

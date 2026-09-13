@@ -1,8 +1,23 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
+import { Form } from 'radix-ui';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import {
   apiAdminListNotes,
   apiAdminReplyToNote,
@@ -14,6 +29,8 @@ import {
 } from '@/lib/api/orders';
 
 const KINDS: NoteKind[] = ['NUDGE', 'COMPLAINT', 'NOTE'];
+
+const MUTED_LABEL = 'text-xs tracking-wider text-muted-foreground uppercase';
 
 /**
  * One screen, two jobs, chosen by role.
@@ -28,9 +45,32 @@ export function NotesClient({ isAdmin }: { isAdmin: boolean }) {
   return isAdmin ? <AdminQueue /> : <MyNotes />;
 }
 
+function ListSkeleton() {
+  return (
+    <div className="flex flex-col gap-3">
+      <Skeleton className="h-24 w-full rounded-xl" />
+      <Skeleton className="h-24 w-full rounded-xl" />
+    </div>
+  );
+}
+
+/**
+ * The reply is visually attached to the note rather than listed separately: an
+ * answer that looks like a new message reads as unrelated.
+ */
+function Reply({ label, text }: { label: string; text: string }) {
+  return (
+    <blockquote className="mt-2 border-l-3 border-primary pl-3">
+      <span className={MUTED_LABEL}>{label}</span>
+      <p>{text}</p>
+    </blockquote>
+  );
+}
+
 function MyNotes() {
   const t = useTranslations('notesPage');
   const tk = useTranslations('notes');
+  const fieldId = useId();
 
   const [notes, setNotes] = useState<CustomerNote[] | null>(null);
   const [kind, setKind] = useState<NoteKind>('NOTE');
@@ -60,75 +100,82 @@ function MyNotes() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <label style={{ fontSize: 'var(--bobr-text-sm)', fontWeight: 500 }}>
-          {t('kind')}
-          <select
+    <div className="flex flex-col gap-8">
+      {/* Radix's Form primitive renders a real HTML form element: Enter and the submit
+          button behave as they always did. */}
+      <Form.Root onSubmit={submit} className="flex flex-col gap-3">
+        <div className="grid gap-1.5">
+          <Label htmlFor={`${fieldId}-kind`}>{t('kind')}</Label>
+          <Select
             value={kind}
-            onChange={(e) => setKind(e.target.value as NoteKind)}
-            style={selectStyle}
+            onValueChange={(value) => setKind(value as NoteKind)}
+            name="kind"
           >
-            {KINDS.map((k) => (
-              <option key={k} value={k}>
-                {tk(k.toLowerCase() as 'nudge' | 'complaint' | 'note')}
-              </option>
-            ))}
-          </select>
-        </label>
+            <SelectTrigger
+              id={`${fieldId}-kind`}
+              className="w-full bg-card"
+              data-testid="note-kind"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {KINDS.map((k) => (
+                <SelectItem key={k} value={k}>
+                  {tk(k.toLowerCase() as 'nudge' | 'complaint' | 'note')}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        <label style={{ fontSize: 'var(--bobr-text-sm)', fontWeight: 500 }}>
-          {t('body')}
-          <textarea
+        <div className="grid gap-1.5">
+          <Label htmlFor={`${fieldId}-body`}>{t('body')}</Label>
+          <Textarea
+            id={`${fieldId}-body`}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={3}
             maxLength={2000}
-            style={{ ...selectStyle, resize: 'vertical' }}
+            className="min-h-20 bg-card"
+            name="body"
           />
-        </label>
+        </div>
 
         <div>
-          <button type="submit" disabled={busy || !body.trim()} style={buttonStyle}>
+          <Button type="submit" size="lg" disabled={busy || !body.trim()}>
             {busy ? t('sending') : t('submit')}
-          </button>
+          </Button>
         </div>
-        {error && <p style={{ color: 'var(--bobr-danger)' }}>{error}</p>}
-      </form>
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+      </Form.Root>
 
       <section>
-        <h2 style={{ fontSize: 'var(--bobr-text-h4)', marginBottom: '0.75rem' }}>
-          {t('mine')}
-        </h2>
+        <h2 className="mb-3 text-xl font-semibold">{t('mine')}</h2>
         {!notes ? (
-          <p>…</p>
+          <ListSkeleton />
         ) : notes.length === 0 ? (
-          <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('none')}</p>
+          <p className="text-muted-foreground">{t('none')}</p>
         ) : (
-          <ul style={listStyle}>
+          <ul className="flex flex-col gap-3">
             {notes.map((n) => (
-              <li key={n.id} style={cardStyle}>
-                <strong style={{ fontSize: 'var(--bobr-text-sm)' }}>
-                  {tk(n.kind.toLowerCase() as 'nudge' | 'complaint' | 'note')}
-                </strong>
-                <p>{n.body}</p>
-                {n.adminReply ? (
-                  // The reply is visually attached to the note rather than
-                  // listed separately: an answer that looks like a new message
-                  // reads as unrelated.
-                  <blockquote
-                    style={{
-                      margin: '0.5rem 0 0',
-                      paddingLeft: '0.75rem',
-                      borderLeft: '3px solid var(--bobr-accent)',
-                    }}
-                  >
-                    <span style={mutedLabel}>{t('reply')}</span>
-                    <p>{n.adminReply}</p>
-                  </blockquote>
-                ) : (
-                  <span style={mutedLabel}>{t('awaiting')}</span>
-                )}
+              <li key={n.id}>
+                <Card size="sm">
+                  <CardContent className="flex flex-col gap-1">
+                    <strong className="text-sm">
+                      {tk(n.kind.toLowerCase() as 'nudge' | 'complaint' | 'note')}
+                    </strong>
+                    <p className="wrap-anywhere">{n.body}</p>
+                    {n.adminReply ? (
+                      <Reply label={t('reply')} text={n.adminReply} />
+                    ) : (
+                      <span className={MUTED_LABEL}>{t('awaiting')}</span>
+                    )}
+                  </CardContent>
+                </Card>
               </li>
             ))}
           </ul>
@@ -141,6 +188,7 @@ function MyNotes() {
 function AdminQueue() {
   const t = useTranslations('notesPage');
   const tk = useTranslations('notes');
+  const fieldId = useId();
 
   const [notes, setNotes] = useState<AdminNote[] | null>(null);
   const [unansweredOnly, setUnansweredOnly] = useState(true);
@@ -168,65 +216,62 @@ function AdminQueue() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-        <input
-          type="checkbox"
+    <div className="flex flex-col gap-4">
+      <Label htmlFor={`${fieldId}-unanswered`} className="font-normal">
+        <Checkbox
+          id={`${fieldId}-unanswered`}
           checked={unansweredOnly}
-          onChange={(e) => setUnansweredOnly(e.target.checked)}
+          onCheckedChange={(checked) => setUnansweredOnly(checked === true)}
+          data-testid="unanswered-only"
         />
         {t('unansweredOnly')}
-      </label>
+      </Label>
 
       {!notes ? (
-        <p>…</p>
+        <ListSkeleton />
       ) : notes.length === 0 ? (
-        <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('none')}</p>
+        <p className="text-muted-foreground">{t('none')}</p>
       ) : (
-        <ul style={listStyle}>
+        <ul className="flex flex-col gap-3">
           {notes.map((n) => (
-            <li key={n.id} style={cardStyle}>
-              <strong style={{ fontSize: 'var(--bobr-text-sm)' }}>
-                {tk(n.kind.toLowerCase() as 'nudge' | 'complaint' | 'note')}{' '}
-                <span style={{ fontWeight: 400, color: 'var(--bobr-fg-muted)' }}>
-                  {t('from')} {n.user?.email ?? '—'}
-                </span>
-              </strong>
-              <p>{n.body}</p>
+            <li key={n.id}>
+              <Card size="sm">
+                <CardContent className="flex flex-col gap-1">
+                  <strong className="text-sm wrap-anywhere">
+                    {tk(n.kind.toLowerCase() as 'nudge' | 'complaint' | 'note')}{' '}
+                    <span className="font-normal text-muted-foreground">
+                      {t('from')} {n.user?.email ?? '—'}
+                    </span>
+                  </strong>
+                  <p className="wrap-anywhere">{n.body}</p>
 
-              {n.adminReply ? (
-                <blockquote
-                  style={{
-                    margin: '0.5rem 0 0',
-                    paddingLeft: '0.75rem',
-                    borderLeft: '3px solid var(--bobr-accent)',
-                  }}
-                >
-                  <span style={mutedLabel}>{t('answered')}</span>
-                  <p>{n.adminReply}</p>
-                </blockquote>
-              ) : (
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  <textarea
-                    value={drafts[n.id] ?? ''}
-                    onChange={(e) =>
-                      setDrafts((d) => ({ ...d, [n.id]: e.target.value }))
-                    }
-                    placeholder={t('replyPlaceholder')}
-                    rows={2}
-                    maxLength={2000}
-                    style={{ ...selectStyle, flex: 1, resize: 'vertical' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => send(n.id)}
-                    disabled={busy === n.id || !(drafts[n.id] ?? '').trim()}
-                    style={buttonStyle}
-                  >
-                    {t('sendReply')}
-                  </button>
-                </div>
-              )}
+                  {n.adminReply ? (
+                    <Reply label={t('answered')} text={n.adminReply} />
+                  ) : (
+                    <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-start">
+                      <Textarea
+                        value={drafts[n.id] ?? ''}
+                        onChange={(e) =>
+                          setDrafts((d) => ({ ...d, [n.id]: e.target.value }))
+                        }
+                        placeholder={t('replyPlaceholder')}
+                        aria-label={t('replyPlaceholder')}
+                        rows={2}
+                        maxLength={2000}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        size="lg"
+                        onClick={() => send(n.id)}
+                        disabled={busy === n.id || !(drafts[n.id] ?? '').trim()}
+                      >
+                        {t('sendReply')}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </li>
           ))}
         </ul>
@@ -234,49 +279,3 @@ function AdminQueue() {
     </div>
   );
 }
-
-const listStyle: React.CSSProperties = {
-  listStyle: 'none',
-  margin: 0,
-  padding: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.75rem',
-};
-
-const cardStyle: React.CSSProperties = {
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius)',
-  padding: '1rem',
-};
-
-const selectStyle: React.CSSProperties = {
-  display: 'block',
-  width: '100%',
-  marginTop: '0.3rem',
-  padding: '0.6rem 0.7rem',
-  font: 'inherit',
-  color: 'var(--bobr-fg)',
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-control)',
-};
-
-const buttonStyle: React.CSSProperties = {
-  padding: '0.6rem 1.1rem',
-  font: 'inherit',
-  fontWeight: 600,
-  color: 'var(--bobr-on-dark)',
-  background: 'var(--bobr-fg)',
-  border: 0,
-  borderRadius: 'var(--bobr-radius-control)',
-  cursor: 'pointer',
-};
-
-const mutedLabel: React.CSSProperties = {
-  fontSize: 'var(--bobr-text-xs)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  color: 'var(--bobr-fg-muted)',
-};

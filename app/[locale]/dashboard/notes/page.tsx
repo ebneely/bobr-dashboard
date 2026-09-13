@@ -23,13 +23,13 @@ export default async function NotesPage({
   const isAdmin = session?.user.role === 'ADMIN';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="flex min-w-0 flex-col gap-6">
       <header>
-        <h1 style={{ fontSize: 'var(--bobr-text-h3)', fontWeight: 600 }}>
+        <h1 className="text-3xl font-semibold tracking-tight">
           {isAdmin ? t('queue') : t('title')}
         </h1>
         {!isAdmin && (
-          <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('subtitle')}</p>
+          <p className="mt-1 text-muted-foreground">{t('subtitle')}</p>
         )}
       </header>
       <NotesClient isAdmin={isAdmin} />
