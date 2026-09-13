@@ -1,8 +1,47 @@
 'use client';
 
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import {
+  useEffect,
+  useId,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { Form } from 'radix-ui';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { ApiError, formatApiError } from '@/lib/api/client';
 import {
   apiAdminCreateMeal,
@@ -17,6 +56,7 @@ import {
   type AdminMeal,
   type MealType,
 } from '@/lib/api/orders';
+import { cn } from '@/lib/cn';
 
 /**
  * Turns whatever was thrown into one line a person can act on.
@@ -30,6 +70,9 @@ function describeError(error: unknown, fallback: string): string {
   return fallback;
 }
 
+const GRID = 'grid grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))] gap-4';
+const MUTED_LABEL = 'text-xs tracking-wider text-muted-foreground uppercase';
+
 export function MealsClient() {
   const t = useTranslations('adminMeals');
   const locale = useLocale();
@@ -40,6 +83,8 @@ export function MealsClient() {
   const [editing, setEditing] = useState<AdminMeal | 'new' | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+  /** The meal waiting on the deactivation confirmation, if any. */
+  const [confirmDeactivate, setConfirmDeactivate] = useState<AdminMeal | null>(null);
 
   async function load() {
     try {
@@ -78,8 +123,8 @@ export function MealsClient() {
 
   async function deactivate(meal: AdminMeal) {
     // It is a DELETE on the wire and a deactivation in effect: orders point at
-    // meals, and an order must keep naming what was bought. Say so first.
-    if (!window.confirm(t('deactivateConfirm'))) return;
+    // meals, and an order must keep naming what was bought. The AlertDialog in
+    // front of this call says so first.
     setBusyId(meal.id);
     setRowError(null);
     try {
@@ -93,16 +138,16 @@ export function MealsClient() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div className="flex flex-col gap-5">
       <div>
-        <button
+        <Button
           type="button"
+          size="lg"
           onClick={() => setEditing(editing === 'new' ? null : 'new')}
-          style={primaryButton}
           data-testid="new-meal"
         >
           {t('new')}
-        </button>
+        </Button>
       </div>
 
       {editing !== null && (
@@ -119,88 +164,111 @@ export function MealsClient() {
         />
       )}
 
-      {loadError && (
-        <p role="alert" style={errorText}>
-          {loadError}
-        </p>
-      )}
-      {rowError && (
-        <p role="alert" style={errorText}>
-          {rowError}
-        </p>
-      )}
+      {loadError && <ErrorAlert message={loadError} />}
+      {rowError && <ErrorAlert message={rowError} />}
 
       {meals === null ? (
-        <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('loading')}</p>
+        <div className={GRID} aria-label={t('loading')}>
+          <Skeleton className="h-80 rounded-xl" />
+          <Skeleton className="h-80 rounded-xl" />
+          <Skeleton className="h-80 rounded-xl" />
+        </div>
       ) : meals.length === 0 && !loadError ? (
-        <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('none')}</p>
+        <p className="text-muted-foreground">{t('none')}</p>
       ) : (
-        <ul style={gridStyle} data-testid="meal-list">
+        // min(260px, 100%) so a narrow phone gets one column instead of a track
+        // wider than the screen — the usual source of a sideways scroll.
+        <ul className={GRID} data-testid="meal-list">
           {meals.map((meal) => (
-            <li key={meal.id} style={cardStyle}>
-              <MealThumbnail meal={meal} label={t('noPhoto')} />
+            <li key={meal.id} className="min-w-0">
+              <Card className="h-full">
+                <CardContent className="flex flex-col gap-3">
+                  <MealThumbnail meal={meal} label={t('noPhoto')} />
 
-              <div
-                style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}
-              >
-                <span style={mutedLabel}>{t(`types.${meal.type}`)}</span>
-                <strong
-                  style={{
-                    fontSize: 'var(--bobr-text-lg)',
-                    overflowWrap: 'anywhere',
-                  }}
-                >
-                  {locale === 'pl' ? meal.namePl : meal.nameEn}
-                </strong>
-                <span
-                  style={{
-                    overflowWrap: 'anywhere',
-                    color: 'var(--bobr-fg-muted)',
-                  }}
-                >
-                  {(locale === 'pl' ? meal.descriptionPl : meal.descriptionEn) ?? ''}
-                </span>
-                {/* Grosze become a decimal here and nowhere earlier. */}
-                <span style={{ fontSize: 'var(--bobr-text-xl)', fontWeight: 600 }}>
-                  {formatGrosze(meal.priceGrosze, locale)}
-                </span>
-                <span
-                  style={{
-                    ...badgeStyle,
-                    color: meal.isActive
-                      ? 'var(--bobr-accent-hover)'
-                      : 'var(--bobr-fg-muted)',
-                    borderColor: meal.isActive
-                      ? 'var(--bobr-accent)'
-                      : 'var(--bobr-border)',
-                  }}
-                >
-                  {meal.isActive ? t('active') : t('inactive')}
-                </span>
-              </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className={MUTED_LABEL}>{t(`types.${meal.type}`)}</span>
+                    <strong className="text-lg wrap-anywhere">
+                      {locale === 'pl' ? meal.namePl : meal.nameEn}
+                    </strong>
+                    <span className="text-muted-foreground wrap-anywhere">
+                      {(locale === 'pl' ? meal.descriptionPl : meal.descriptionEn) ?? ''}
+                    </span>
+                    {/* Grosze become a decimal here and nowhere earlier. */}
+                    <span className="text-xl font-semibold">
+                      {formatGrosze(meal.priceGrosze, locale)}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'tracking-wider uppercase',
+                        meal.isActive
+                          ? 'border-primary text-primary'
+                          : 'text-muted-foreground',
+                      )}
+                    >
+                      {meal.isActive ? t('active') : t('inactive')}
+                    </Badge>
+                  </div>
+                </CardContent>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setEditing(meal)}
-                  style={secondaryButton}
-                >
-                  {t('edit')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void deactivate(meal)}
-                  disabled={!meal.isActive || busyId === meal.id}
-                  style={{ ...secondaryButton, color: 'var(--bobr-danger)' }}
-                >
-                  {busyId === meal.id ? t('deactivating') : t('deactivate')}
-                </button>
-              </div>
+                <CardFooter className="mt-auto flex-wrap gap-2 border-t-0 bg-transparent pt-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setEditing(meal)}
+                  >
+                    {t('edit')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setConfirmDeactivate(meal)}
+                    disabled={!meal.isActive || busyId === meal.id}
+                    data-testid="deactivate-meal"
+                  >
+                    {busyId === meal.id ? t('deactivating') : t('deactivate')}
+                  </Button>
+                </CardFooter>
+              </Card>
             </li>
           ))}
         </ul>
       )}
+
+      <AlertDialog
+        open={confirmDeactivate !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDeactivate(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('deactivate')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('deactivateConfirm')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              data-testid="confirm-deactivate"
+              onClick={() => {
+                if (confirmDeactivate) void deactivate(confirmDeactivate);
+              }}
+            >
+              {t('deactivate')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+  );
+}
+
+function ErrorAlert({ message }: { message: string }) {
+  return (
+    <Alert variant="destructive">
+      <AlertDescription className="whitespace-pre-line">{message}</AlertDescription>
+    </Alert>
   );
 }
 
@@ -219,25 +287,19 @@ function MealThumbnail({ meal, label }: { meal: AdminMeal; label: string }) {
       <img
         src={meal.imageUrl}
         alt={meal.namePl}
-        style={{
-          width: '100%',
-          maxWidth: '100%',
-          aspectRatio: '4 / 3',
-          objectFit: 'cover',
-          borderRadius: 'var(--bobr-radius-sm)',
-        }}
+        className="aspect-4/3 w-full max-w-full rounded-md object-cover"
       />
     );
   }
 
   return (
     <div
-      style={placeholderStyle}
+      className="flex aspect-4/3 w-full items-center justify-center rounded-md border border-dashed bg-secondary"
       data-testid="meal-image-placeholder"
       role="img"
       aria-label={label}
     >
-      <span style={mutedLabel}>{label}</span>
+      <span className={MUTED_LABEL}>{label}</span>
     </div>
   );
 }
@@ -258,6 +320,7 @@ function MealForm({
   onSaved: () => Promise<void> | void;
 }) {
   const t = useTranslations('adminMeals');
+  const fieldId = useId();
 
   const [type, setType] = useState<MealType>(meal?.type ?? 'KETOGENIC');
   const [namePl, setNamePl] = useState(meal?.namePl ?? '');
@@ -332,278 +395,170 @@ function MealForm({
     }
   }
 
+  const id = (field: string) => `${fieldId}-${field}`;
+  const twoColumns =
+    'grid grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))] gap-4';
+
   return (
-    <form onSubmit={submit} style={formStyle} data-testid="meal-form">
-      <h2
-        style={{ fontSize: 'var(--bobr-text-lg)', fontWeight: 600, margin: 0 }}
+    <Card>
+      {/* Radix's Form primitive renders a real HTML form element, so Enter still
+          submits and the submit button is still a submit button. */}
+      <Form.Root
+        onSubmit={submit}
+        data-testid="meal-form"
+        className="flex min-w-0 flex-col gap-4"
       >
-        {meal ? t('editTitle') : t('createTitle')}
-      </h2>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            {meal ? t('editTitle') : t('createTitle')}
+          </CardTitle>
+        </CardHeader>
 
-      <label style={labelStyle}>
-        {t('type')}
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as MealType)}
-          style={fieldStyle}
-          name="type"
-        >
-          {MEAL_TYPES.map((value) => (
-            <option key={value} value={value}>
-              {t(`types.${value}`)}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <div style={twoColumns}>
-        <label style={labelStyle}>
-          {t('namePl')}
-          <input
-            value={namePl}
-            onChange={(e) => setNamePl(e.target.value)}
-            maxLength={120}
-            style={fieldStyle}
-            name="namePl"
-          />
-        </label>
-        <label style={labelStyle}>
-          {t('nameEn')}
-          <input
-            value={nameEn}
-            onChange={(e) => setNameEn(e.target.value)}
-            maxLength={120}
-            style={fieldStyle}
-            name="nameEn"
-          />
-        </label>
-      </div>
-
-      <div style={twoColumns}>
-        <label style={labelStyle}>
-          {t('descriptionPl')}
-          <textarea
-            value={descriptionPl}
-            onChange={(e) => setDescriptionPl(e.target.value)}
-            rows={2}
-            maxLength={1000}
-            style={{ ...fieldStyle, resize: 'vertical' }}
-            name="descriptionPl"
-          />
-        </label>
-        <label style={labelStyle}>
-          {t('descriptionEn')}
-          <textarea
-            value={descriptionEn}
-            onChange={(e) => setDescriptionEn(e.target.value)}
-            rows={2}
-            maxLength={1000}
-            style={{ ...fieldStyle, resize: 'vertical' }}
-            name="descriptionEn"
-          />
-        </label>
-      </div>
-
-      <label style={labelStyle}>
-        {t('price')}
-        <input
-          // text + inputMode rather than type=number: the Polish decimal
-          // separator is a comma, which a number input silently discards.
-          type="text"
-          inputMode="decimal"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          placeholder="45,00"
-          style={fieldStyle}
-          name="price"
-        />
-        <span style={{ ...mutedLabel, textTransform: 'none', letterSpacing: 0 }}>
-          {t('priceHint')}
-        </span>
-      </label>
-
-      <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-        <input
-          type="checkbox"
-          checked={isActive}
-          onChange={(e) => setIsActive(e.target.checked)}
-          name="isActive"
-        />
-        {t('isActive')}
-      </label>
-
-      {meal && (
-        <fieldset style={fieldsetStyle}>
-          <legend style={mutedLabel}>{t('photo')}</legend>
-          {/* Capped: a 4:3 frame across the full width of a desktop form is a
-              lot of empty grey for a picture that may not exist yet. */}
-          <div style={{ maxWidth: '320px' }}>
-            <MealThumbnail meal={uploaded ?? meal} label={t('noPhoto')} />
+        <CardContent className="flex min-w-0 flex-col gap-4">
+          <div className="grid gap-1.5">
+            <Label htmlFor={id('type')}>{t('type')}</Label>
+            <Select
+              value={type}
+              onValueChange={(value) => setType(value as MealType)}
+              name="type"
+            >
+              <SelectTrigger id={id('type')} className="w-full" data-testid="meal-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {MEAL_TYPES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {t(`types.${value}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-            onChange={(e) => void upload(e)}
-            disabled={uploading}
-            aria-label={t('choosePhoto')}
-            style={{ marginTop: '0.6rem', font: 'inherit', maxWidth: '100%' }}
-          />
-          {uploading && (
-            <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('uploading')}</p>
-          )}
-          {uploadError && (
-            <p role="alert" style={errorText}>
-              {uploadError}
+
+          <div className={twoColumns}>
+            <div className="grid min-w-0 gap-1.5">
+              <Label htmlFor={id('namePl')}>{t('namePl')}</Label>
+              <Input
+                id={id('namePl')}
+                value={namePl}
+                onChange={(e) => setNamePl(e.target.value)}
+                maxLength={120}
+                name="namePl"
+              />
+            </div>
+            <div className="grid min-w-0 gap-1.5">
+              <Label htmlFor={id('nameEn')}>{t('nameEn')}</Label>
+              <Input
+                id={id('nameEn')}
+                value={nameEn}
+                onChange={(e) => setNameEn(e.target.value)}
+                maxLength={120}
+                name="nameEn"
+              />
+            </div>
+          </div>
+
+          <div className={twoColumns}>
+            <div className="grid min-w-0 gap-1.5">
+              <Label htmlFor={id('descriptionPl')}>{t('descriptionPl')}</Label>
+              <Textarea
+                id={id('descriptionPl')}
+                value={descriptionPl}
+                onChange={(e) => setDescriptionPl(e.target.value)}
+                rows={2}
+                maxLength={1000}
+                name="descriptionPl"
+              />
+            </div>
+            <div className="grid min-w-0 gap-1.5">
+              <Label htmlFor={id('descriptionEn')}>{t('descriptionEn')}</Label>
+              <Textarea
+                id={id('descriptionEn')}
+                value={descriptionEn}
+                onChange={(e) => setDescriptionEn(e.target.value)}
+                rows={2}
+                maxLength={1000}
+                name="descriptionEn"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-1.5">
+            <Label htmlFor={id('price')}>{t('price')}</Label>
+            <Input
+              id={id('price')}
+              // text + inputMode rather than type=number: the Polish decimal
+              // separator is a comma, which a number input silently discards.
+              type="text"
+              inputMode="decimal"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="45,00"
+              name="price"
+              aria-describedby={id('priceHint')}
+            />
+            <p id={id('priceHint')} className="text-xs text-muted-foreground">
+              {t('priceHint')}
             </p>
+          </div>
+
+          <Label htmlFor={id('isActive')} className="font-normal">
+            <Checkbox
+              id={id('isActive')}
+              checked={isActive}
+              onCheckedChange={(checked) => setIsActive(checked === true)}
+              name="isActive"
+              data-testid="meal-isActive"
+            />
+            {t('isActive')}
+          </Label>
+
+          {meal && (
+            <fieldset className="min-w-0 rounded-lg border p-3">
+              <legend className={cn(MUTED_LABEL, 'px-1')}>{t('photo')}</legend>
+              {/* Capped: a 4:3 frame across the full width of a desktop form is a
+                  lot of empty grey for a picture that may not exist yet. */}
+              <div className="max-w-80">
+                <MealThumbnail meal={uploaded ?? meal} label={t('noPhoto')} />
+              </div>
+              <Input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                onChange={(e) => void upload(e)}
+                disabled={uploading}
+                aria-label={t('choosePhoto')}
+                className="mt-3 h-auto max-w-full cursor-pointer py-1.5"
+              />
+              {uploading && (
+                <p className="mt-2 text-sm text-muted-foreground">{t('uploading')}</p>
+              )}
+              {uploadError && (
+                <div className="mt-2">
+                  <ErrorAlert message={uploadError} />
+                </div>
+              )}
+              <p className="mt-2 text-xs text-muted-foreground">{t('uploadNote')}</p>
+            </fieldset>
           )}
-          <p style={{ ...mutedLabel, textTransform: 'none', letterSpacing: 0 }}>
-            {t('uploadNote')}
-          </p>
-        </fieldset>
-      )}
 
-      {error && (
-        <p role="alert" style={errorText}>
-          {error}
-        </p>
-      )}
+          {error && <ErrorAlert message={error} />}
 
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <button type="submit" disabled={busy} style={primaryButton}>
-          {busy
-            ? meal
-              ? t('saving')
-              : t('creating')
-            : meal
-              ? t('save')
-              : t('create')}
-        </button>
-        <button type="button" onClick={onCancel} style={secondaryButton}>
-          {t('cancel')}
-        </button>
-      </div>
-    </form>
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" size="lg" disabled={busy}>
+              {busy
+                ? meal
+                  ? t('saving')
+                  : t('creating')
+                : meal
+                  ? t('save')
+                  : t('create')}
+            </Button>
+            <Button type="button" size="lg" variant="outline" onClick={onCancel}>
+              {t('cancel')}
+            </Button>
+          </div>
+        </CardContent>
+      </Form.Root>
+    </Card>
   );
 }
-
-const gridStyle: React.CSSProperties = {
-  listStyle: 'none',
-  margin: 0,
-  padding: 0,
-  display: 'grid',
-  // min(260px, 100%) so a narrow phone gets one column instead of a track
-  // wider than the screen — the usual source of a sideways scroll.
-  gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
-  gap: '1rem',
-};
-
-const cardStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.75rem',
-  minWidth: 0,
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius)',
-  padding: '1rem',
-};
-
-const placeholderStyle: React.CSSProperties = {
-  width: '100%',
-  aspectRatio: '4 / 3',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'var(--bobr-surface-sunken)',
-  border: '1px dashed var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-};
-
-const formStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.9rem',
-  minWidth: 0,
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius)',
-  padding: '1rem',
-};
-
-const twoColumns: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))',
-  gap: '0.9rem',
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  minWidth: 0,
-  fontSize: 'var(--bobr-text-sm)',
-  fontWeight: 500,
-};
-
-const fieldStyle: React.CSSProperties = {
-  display: 'block',
-  width: '100%',
-  maxWidth: '100%',
-  boxSizing: 'border-box',
-  marginTop: '0.3rem',
-  padding: '0.6rem 0.7rem',
-  font: 'inherit',
-  color: 'var(--bobr-fg)',
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-};
-
-const fieldsetStyle: React.CSSProperties = {
-  minWidth: 0,
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-  padding: '0.75rem',
-};
-
-const primaryButton: React.CSSProperties = {
-  padding: '0.6rem 1.1rem',
-  font: 'inherit',
-  fontWeight: 600,
-  color: 'var(--bobr-on-accent)',
-  background: 'var(--bobr-accent)',
-  border: 0,
-  borderRadius: 'var(--bobr-radius-sm)',
-  cursor: 'pointer',
-};
-
-const secondaryButton: React.CSSProperties = {
-  padding: '0.6rem 1.1rem',
-  font: 'inherit',
-  fontWeight: 600,
-  color: 'var(--bobr-fg)',
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-  cursor: 'pointer',
-};
-
-const badgeStyle: React.CSSProperties = {
-  alignSelf: 'flex-start',
-  padding: '0.15rem 0.5rem',
-  fontSize: 'var(--bobr-text-xs)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-};
-
-const mutedLabel: React.CSSProperties = {
-  fontSize: 'var(--bobr-text-xs)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  color: 'var(--bobr-fg-muted)',
-};
-
-const errorText: React.CSSProperties = {
-  color: 'var(--bobr-danger)',
-  whiteSpace: 'pre-line',
-};
