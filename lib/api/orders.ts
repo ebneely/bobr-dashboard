@@ -43,6 +43,18 @@ export interface Order {
   createdAt: string;
   days: OrderDay[];
   meal?: { namePl: string; nameEn: string; type: string };
+  /** Null for orders placed by the old storefront, which sent no address. */
+  delivery: OrderDelivery | null;
+}
+
+export interface OrderDelivery {
+  addressLine: string;
+  city: string;
+  /** "NN-NNN". */
+  postalCode: string;
+  zoneId: string;
+  zoneNamePl: string;
+  zoneNameEn: string;
 }
 
 export interface CustomerNote {
