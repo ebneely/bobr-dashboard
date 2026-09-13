@@ -3,6 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ApiError, formatApiError } from '@/lib/api/client';
 import { apiAdminListCustomers, type AdminCustomer } from '@/lib/api/customers';
 import { formatWarsawDate } from '@/lib/api/orders';
@@ -11,6 +22,10 @@ function describeError(error: unknown, fallback: string): string {
   if (error instanceof ApiError) return formatApiError(error.body) || fallback;
   return fallback;
 }
+
+const headClass =
+  'px-3 text-xs font-medium tracking-wider text-muted-foreground uppercase';
+const cellClass = 'px-3 py-2.5 align-top';
 
 export function CustomersClient() {
   const t = useTranslations('adminCustomers');
@@ -39,112 +54,83 @@ export function CustomersClient() {
   }, []);
 
   if (customers === null) {
-    return <p style={muted}>{t('loading')}</p>;
+    return (
+      <div className="flex flex-col gap-2" aria-label={t('loading')}>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-14 w-full" />
+      </div>
+    );
   }
   if (error) {
     return (
-      <p role="alert" style={errorText}>
-        {error}
-      </p>
+      <Alert variant="destructive">
+        <AlertDescription className="whitespace-pre-line">{error}</AlertDescription>
+      </Alert>
     );
   }
   if (customers.length === 0) {
-    return <p style={muted}>{t('none')}</p>;
+    return <p className="text-muted-foreground">{t('none')}</p>;
   }
 
   return (
-    // The wrapper scrolls, never the page — a phone gets no sideways body scroll.
-    <div style={tableWrap}>
-      <table style={tableStyle} data-testid="customers-table">
-        <thead>
-          <tr>
-            <th style={th}>{t('customer')}</th>
-            <th style={th}>{t('joined')}</th>
-            <th style={th}>{t('intake')}</th>
-            <th style={{ ...th, textAlign: 'right' }}>{t('orders')}</th>
-            <th style={th}>{t('lastOrder')}</th>
-          </tr>
-        </thead>
-        <tbody>
+    // The table's container scrolls, never the page — a phone gets no
+    // sideways body scroll.
+    <div className="max-w-full overflow-hidden rounded-lg border bg-card">
+      <Table data-testid="customers-table">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className={headClass}>{t('customer')}</TableHead>
+            <TableHead className={headClass}>{t('joined')}</TableHead>
+            <TableHead className={headClass}>{t('intake')}</TableHead>
+            <TableHead className={`${headClass} text-right`}>{t('orders')}</TableHead>
+            <TableHead className={headClass}>{t('lastOrder')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {customers.map((c) => (
-            <tr key={c.id} data-testid="customer-row" data-email={c.email}>
-              <td style={td}>
+            <TableRow key={c.id} data-testid="customer-row" data-email={c.email}>
+              <TableCell className={cellClass}>
                 {/* `name` is "" when no full name was given; the email stands in. */}
-                <div style={{ fontWeight: 600 }}>{c.name || c.email}</div>
-                {c.name && <div style={muted}>{c.email}</div>}
-              </td>
-              <td style={td}>{formatWarsawDate(c.createdAt, locale)}</td>
-              <td style={td} data-testid="customer-intake">
+                <div className="font-semibold">{c.name || c.email}</div>
+                {c.name && <div className="text-muted-foreground">{c.email}</div>}
+              </TableCell>
+              <TableCell className={cellClass}>
+                {formatWarsawDate(c.createdAt, locale)}
+              </TableCell>
+              <TableCell className={cellClass} data-testid="customer-intake">
                 {c.intakeCompletedAt ? (
                   <>
-                    <span style={{ ...badge, color: 'var(--bobr-accent-hover)', borderColor: 'var(--bobr-accent)' }}>
+                    <Badge
+                      variant="outline"
+                      className="border-primary tracking-wider text-primary uppercase"
+                    >
                       {t('yes')}
-                    </span>{' '}
-                    <span style={muted}>{formatWarsawDate(c.intakeCompletedAt, locale)}</span>
+                    </Badge>{' '}
+                    <span className="text-muted-foreground">
+                      {formatWarsawDate(c.intakeCompletedAt, locale)}
+                    </span>
                   </>
                 ) : (
-                  <span style={badge}>{t('no')}</span>
+                  <Badge variant="outline" className="tracking-wider uppercase">
+                    {t('no')}
+                  </Badge>
                 )}
-              </td>
-              <td style={{ ...td, textAlign: 'right' }} data-testid="customer-orders">
+              </TableCell>
+              <TableCell className={`${cellClass} text-right`} data-testid="customer-orders">
                 {c.orderCount}
-              </td>
-              <td style={td}>
-                {c.lastOrderAt ? formatWarsawDate(c.lastOrderAt, locale) : <span style={muted}>—</span>}
-              </td>
-            </tr>
+              </TableCell>
+              <TableCell className={cellClass}>
+                {c.lastOrderAt ? (
+                  formatWarsawDate(c.lastOrderAt, locale)
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
-
-const tableWrap: React.CSSProperties = {
-  maxWidth: '100%',
-  overflowX: 'auto',
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius)',
-};
-
-const tableStyle: React.CSSProperties = {
-  width: '100%',
-  borderCollapse: 'collapse',
-  fontSize: 'var(--bobr-text-sm)',
-};
-
-const th: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '0.6rem 0.75rem',
-  fontSize: 'var(--bobr-text-xs)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  color: 'var(--bobr-fg-muted)',
-  borderBottom: '1px solid var(--bobr-border)',
-  whiteSpace: 'nowrap',
-};
-
-const td: React.CSSProperties = {
-  padding: '0.6rem 0.75rem',
-  borderBottom: '1px solid var(--bobr-border)',
-  verticalAlign: 'top',
-  whiteSpace: 'nowrap',
-};
-
-const muted: React.CSSProperties = { color: 'var(--bobr-fg-muted)' };
-
-const badge: React.CSSProperties = {
-  display: 'inline-block',
-  padding: '0.15rem 0.5rem',
-  fontSize: 'var(--bobr-text-xs)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-};
-
-const errorText: React.CSSProperties = {
-  color: 'var(--bobr-danger)',
-  whiteSpace: 'pre-line',
-};
