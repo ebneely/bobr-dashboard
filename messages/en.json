@@ -270,7 +270,9 @@
     "loadFailed": "Could not load payment settings.",
     "saveFailed": "Could not save the BLIK details.",
     "zonesNote": "One-time shipping is now set per delivery zone.",
-    "zonesLink": "Go to delivery zones"
+    "zonesLink": "Go to delivery zones",
+    "blikRequirementTitle": "Before you enter a number",
+    "blikRequirement": "The number must be registered to receive BLIK phone transfers in your bank's app, linked to the account the money should go to — otherwise customers are told the number does not accept BLIK transfers. Not every bank allows a business account. Payments are not confirmed automatically: check your bank and mark the consultation as paid."
   },
   "consultationsPage": {
     "title": "Consultations",
