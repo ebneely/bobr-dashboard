@@ -157,5 +157,56 @@
       "GLUTEN_FREE": "Gluten-free",
       "ALLERGIES": "Allergies"
     }
+  },
+  "myDiet": {
+    "title": "My diet",
+    "subtitle": "Your profile and your catering orders in one place.",
+    "loading": "Loading…",
+    "intakeTitle": "Intake profile",
+    "intakeLoadFailed": "Could not load your profile.",
+    "complete": "Complete",
+    "incomplete": "Incomplete",
+    "noProfile": "You have no profile yet. Fill it in before ordering catering.",
+    "incompleteHint": "The profile must be complete before you order: weight, height, activity and four photos.",
+    "startIntake": "Fill in your profile",
+    "finishIntake": "Finish your profile",
+    "weight": "Weight",
+    "height": "Height",
+    "kg": "{value} kg",
+    "cm": "{value} cm",
+    "bodyComposition": "Body composition",
+    "activities": "Physical activity",
+    "notGiven": "Not given",
+    "completedOn": "Completed",
+    "missingPhotos": "Missing photos",
+    "activity": {
+      "NONE": "No sport",
+      "GYM": "Gym",
+      "SWIMMER": "Swimming",
+      "BOXING_MMA": "Boxing or MMA",
+      "OTHER": "Other"
+    },
+    "photo": {
+      "FRONT": "front",
+      "BACK": "back",
+      "LEFT": "left side",
+      "RIGHT": "right side"
+    },
+    "ordersTitle": "My orders",
+    "ordersLoadFailed": "Could not load your orders.",
+    "noOrders": "You have no orders yet.",
+    "trackDays": "Track days in the calendar",
+    "orderLine": "{mode} · {days, plural, one {# day} other {# days}} · placed {date}",
+    "modes": {
+      "ONE_TIME": "One-time",
+      "CALENDAR": "Calendar"
+    },
+    "statuses": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "PROCESSING": "Processing",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
+    }
   }
 }
