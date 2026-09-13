@@ -23,7 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiAdminListZones,
   apiAdminUpdateZone,
@@ -33,13 +34,18 @@ import { formatGrosze } from '@/lib/api/orders';
 
 import { ZoneDialog, type ZoneDialogState } from './ZoneDialog';
 
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
 export function ZonesClient() {
   const t = useTranslations('zonesPage');
+  const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
 
   const [zones, setZones] = useState<DeliveryZone[] | null>(null);
@@ -57,7 +63,7 @@ export function ZonesClient() {
       .catch((error: unknown) => {
         if (!alive) return;
         setZones([]);
-        setLoadError(describeError(error, t('loadFailed')));
+        setLoadError(describeError(error, t('loadFailed'), translateApiError));
       });
     return () => {
       alive = false;
@@ -84,7 +90,7 @@ export function ZonesClient() {
     try {
       upsert(await apiAdminUpdateZone(zone.id, { isActive: !zone.isActive }));
     } catch (error) {
-      setRowError(describeError(error, t('toggleFailed')));
+      setRowError(describeError(error, t('toggleFailed'), translateApiError));
     } finally {
       setBusyId(null);
     }

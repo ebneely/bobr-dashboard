@@ -32,7 +32,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiAdminListOrders,
   apiAdminSetOrderStatus,
@@ -43,8 +44,12 @@ import {
   type OrderStatus,
 } from '@/lib/api/orders';
 
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
@@ -53,6 +58,7 @@ const headClass =
 
 export function OrdersClient() {
   const t = useTranslations('adminOrders');
+  const translateApiError = useApiErrorTranslate();
   // "Tak" / "Nie" for the cancel confirmation. Borrowed rather than added:
   // messages/*.json belong to another stream while this one lands.
   const locale = useLocale();
@@ -77,7 +83,7 @@ export function OrdersClient() {
       .catch((error: unknown) => {
         if (alive) {
           setOrders([]);
-          setLoadError(describeError(error, t('loadFailed')));
+          setLoadError(describeError(error, t('loadFailed'), translateApiError));
         }
       });
     return () => {
@@ -108,7 +114,7 @@ export function OrdersClient() {
           ) ?? current,
       );
     } catch (error) {
-      setRowError(describeError(error, t('updateFailed')));
+      setRowError(describeError(error, t('updateFailed'), translateApiError));
     } finally {
       setBusyId(null);
     }

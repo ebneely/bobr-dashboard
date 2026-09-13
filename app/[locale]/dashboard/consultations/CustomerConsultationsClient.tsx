@@ -16,7 +16,8 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiListMyConsultations,
   formatWarsawDateTime,
@@ -33,13 +34,18 @@ import type { Locale } from '@/lib/i18n/routing';
 
 import { ConsultationStatusBadge } from './StatusBadge';
 
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
 export function CustomerConsultationsClient() {
   const t = useTranslations('consultationsPage');
+  const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
 
   const [rows, setRows] = useState<Consultation[] | null>(null);
@@ -56,7 +62,7 @@ export function CustomerConsultationsClient() {
       .catch((error: unknown) => {
         if (!alive) return;
         setRows([]);
-        setLoadError(describeError(error, t('loadFailed')));
+        setLoadError(describeError(error, t('loadFailed'), translateApiError));
       });
     // The BLIK details are secondary: if they fail, unpaid rows fall back to
     // "we will send the details soon" instead of hiding the bookings.

@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { ApiError, formatApiError } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiAdminCreateZone,
   apiAdminUpdateZone,
@@ -74,6 +75,7 @@ function ZoneForm({
   onSaved: (zone: DeliveryZone) => void;
 }) {
   const t = useTranslations('zonesPage');
+  const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
 
   const [namePl, setNamePl] = useState(zone?.namePl ?? '');
@@ -124,7 +126,7 @@ function ZoneForm({
       // in the dialog, so the admin can fix the field without retyping.
       setError(
         caught instanceof ApiError
-          ? formatApiError(caught.body) || t('saveFailed')
+          ? formatApiError(caught.body, translateApiError) || t('saveFailed')
           : t('saveFailed'),
       );
     } finally {

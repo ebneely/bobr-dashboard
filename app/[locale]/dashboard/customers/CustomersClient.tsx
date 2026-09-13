@@ -14,12 +14,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import { apiAdminListCustomers, type AdminCustomer } from '@/lib/api/customers';
 import { formatWarsawDate } from '@/lib/api/orders';
 
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
@@ -29,6 +34,7 @@ const cellClass = 'px-3 py-2.5 align-top';
 
 export function CustomersClient() {
   const t = useTranslations('adminCustomers');
+  const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
 
   const [customers, setCustomers] = useState<AdminCustomer[] | null>(null);
@@ -44,7 +50,7 @@ export function CustomersClient() {
       .catch((err: unknown) => {
         if (alive) {
           setCustomers([]);
-          setError(describeError(err, t('loadFailed')));
+          setError(describeError(err, t('loadFailed'), translateApiError));
         }
       });
     return () => {

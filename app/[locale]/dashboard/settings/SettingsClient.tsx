@@ -16,7 +16,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiAdminSetPaymentSettings,
   apiGetPaymentSettings,
@@ -25,8 +26,12 @@ import {
 } from '@/lib/api/settings';
 import { Link } from '@/lib/i18n/navigation';
 
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
@@ -50,6 +55,7 @@ function orNull(value: string): string | null {
  */
 export function SettingsClient() {
   const t = useTranslations('settingsPage');
+  const translateApiError = useApiErrorTranslate();
 
   const [current, setCurrent] = useState<PaymentSettings | null>(null);
   const [phone, setPhone] = useState('');
@@ -73,7 +79,7 @@ export function SettingsClient() {
         setLoadError(null);
       })
       .catch((error: unknown) => {
-        if (alive) setLoadError(describeError(error, t('loadFailed')));
+        if (alive) setLoadError(describeError(error, t('loadFailed'), translateApiError));
       });
     return () => {
       alive = false;
@@ -95,7 +101,7 @@ export function SettingsClient() {
       );
       setFeedback({ kind: 'success', message: t('saved') });
     } catch (error) {
-      setFeedback({ kind: 'error', message: describeError(error, t('saveFailed')) });
+      setFeedback({ kind: 'error', message: describeError(error, t('saveFailed'), translateApiError) });
     } finally {
       setSaving(false);
     }
