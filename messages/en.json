@@ -18,7 +18,17 @@
     "notes": "Notes and complaints",
     "profile": "Profile",
     "customers": "Customers",
-    "meals": "Meals"
+    "meals": "Meals",
+    "hints": {
+      "myDiet": "Your nutrition profile and the catering you ordered.",
+      "mealTracking": "Tick off the meals you ate, day by day.",
+      "calendar": "The delivery days of your orders.",
+      "orders": "Every order and its status.",
+      "meals": "Diets on offer, prices and photos.",
+      "customers": "Customers, their profiles and orders.",
+      "consultations": "Bookings for consultations with the doctor.",
+      "notes": "Notes, nudges and complaints."
+    }
   },
   "notes": {
     "nudge": "Nudge",

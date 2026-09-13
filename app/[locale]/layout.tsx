@@ -1,10 +1,20 @@
 import type { Metadata } from 'next';
+import { Jost } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/lib/i18n/routing';
 import { QueryProvider } from '@/lib/hooks/query-provider';
+
+// The storefront's typeface, so the dashboard reads as the same brand.
+// latin-ext carries the Polish diacritics.
+const jost = Jost({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jost',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'BOBR — Panel',
@@ -32,7 +42,9 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
+    // The font variable goes on <html>, not <body>: globals.css reads it from
+    // body's font-family, and the variable must be defined on an ancestor.
+    <html lang={locale} className={jost.variable}>
       <body>
         <NextIntlClientProvider>
           <QueryProvider>{children}</QueryProvider>

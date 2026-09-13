@@ -1,24 +1,118 @@
 @import 'tailwindcss';
 @import '../styles/bobr-tokens.css';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--bobr-bg);
-  color: var(--bobr-fg);
-  /* `clip`, not `hidden`: overflow:hidden makes this a scroll container, which
-     silently kills position:sticky on every descendant. `clip` paints nothing
-     outside the box and creates no scroll container. */
-  overflow-x: clip;
+/* shadcn/ui theme — every variable resolves to a BOBR token, so the components
+ * render in the brand's cream / green / orange rather than shadcn's neutral
+ * grey. Light only: the dashboard has no dark design, and a `.dark` block would
+ * be a second theme nobody has looked at. */
+:root {
+  --background: var(--bobr-bg);
+  --foreground: var(--bobr-fg);
+  --card: var(--bobr-surface);
+  --card-foreground: var(--bobr-fg);
+  --popover: var(--bobr-surface);
+  --popover-foreground: var(--bobr-fg);
+  --primary: var(--bobr-accent);
+  --primary-foreground: var(--bobr-on-accent);
+  --secondary: var(--bobr-surface-sunken);
+  --secondary-foreground: var(--bobr-fg);
+  --muted: var(--bobr-bg-alt);
+  --muted-foreground: var(--bobr-fg-muted);
+  --accent: var(--bobr-cream-400);
+  --accent-foreground: var(--bobr-fg-strong);
+  --destructive: var(--bobr-danger);
+  --border: var(--bobr-border);
+  --input: var(--bobr-input);
+  --ring: var(--bobr-highlight);
+  --radius: var(--bobr-radius-sm);
+
+  --chart-1: var(--bobr-green-700);
+  --chart-2: var(--bobr-orange-500);
+  --chart-3: var(--bobr-green-300);
+  --chart-4: var(--bobr-orange-200);
+  --chart-5: var(--bobr-green-100);
+
+  --sidebar: var(--bobr-surface);
+  --sidebar-foreground: var(--bobr-fg);
+  --sidebar-primary: var(--bobr-accent);
+  --sidebar-primary-foreground: var(--bobr-on-accent);
+  --sidebar-accent: var(--bobr-cream-400);
+  --sidebar-accent-foreground: var(--bobr-fg-strong);
+  --sidebar-border: var(--bobr-border);
+  --sidebar-ring: var(--bobr-highlight);
 }
 
-html {
-  /* Light-only design. Without this a dark-mode OS paints a dark canvas before
-     our CSS lands, which reads as a flash between pages. */
-  color-scheme: light;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Brand colours shadcn has no slot for. */
+  --color-highlight: var(--bobr-highlight);
+  --color-highlight-soft: var(--bobr-highlight-soft);
+  --color-warning: var(--bobr-warning);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-* {
-  box-sizing: border-box;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    /* Light-only design. Without this a dark-mode OS paints a dark canvas
+       before our CSS lands, which reads as a flash between pages. */
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    /* `clip`, not `hidden`: overflow:hidden makes this a scroll container,
+       which silently kills position:sticky on every descendant. */
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Set here at runtime rather than in @theme inline, which resolves at
+       parse time and cannot see the variable next/font injects on <html>. */
+    font-family: var(--bobr-font);
+  }
 }
