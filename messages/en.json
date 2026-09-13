@@ -86,7 +86,33 @@
     "days": "Days",
     "total": "Amount",
     "status": "Status",
-    "advance": "Change status"
+    "advance": "Change status",
+    "subtitle": "Every order, newest first. Status can only move to a legal next step.",
+    "loading": "Loading orders…",
+    "loadFailed": "Could not load orders.",
+    "updateFailed": "Could not change the status.",
+    "cancelConfirm": "Cancel this order? This cannot be undone.",
+    "mode": "Mode",
+    "created": "Placed",
+    "final": "Final status",
+    "modes": {
+      "ONE_TIME": "One-time",
+      "CALENDAR": "Calendar"
+    },
+    "statuses": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "PROCESSING": "Processing",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
+    },
+    "moveTo": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirm",
+      "PROCESSING": "Start processing",
+      "DELIVERED": "Mark delivered",
+      "CANCELLED": "Cancel"
+    }
   },
   "adminMeals": {
     "title": "Meals",

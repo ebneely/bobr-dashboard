@@ -106,6 +106,23 @@ export function formatGrosze(grosze: number, locale: string): string {
   }).format(grosze / 100);
 }
 
+/**
+ * Formats an INSTANT (createdAt, completedAt…) as a calendar date in Warsaw.
+ *
+ * Not for delivery days: those are DATE columns that arrive as midnight UTC
+ * and must be formatted with `timeZone: 'UTC'`, or they shift back a day. An
+ * instant is the opposite case — the day it fell on is the day in Warsaw, not
+ * the day in whatever zone the browser or the server runs.
+ */
+export function formatWarsawDate(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale === 'pl' ? 'pl-PL' : 'en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'Europe/Warsaw',
+  }).format(new Date(iso));
+}
+
 // ---------------------------------------------------------------------------
 // Admin
 //
@@ -126,6 +143,28 @@ export interface AdminNote extends CustomerNote {
 export function apiAdminListOrders(status?: OrderStatus) {
   const query = status ? `?status=${status}` : '';
   return apiFetch<AdminOrder[]>(`/orders/admin${query}`);
+}
+
+/**
+ * The order lifecycle — a copy of `ALLOWED_TRANSITIONS` in
+ * bobr_backend/src/orders/orders.service.ts. Change both together.
+ *
+ * The backend refuses an illegal move regardless; this copy exists so the UI
+ * only ever OFFERS a legal one, instead of offering five buttons and answering
+ * four of them with a 400. Terminal states list nothing.
+ */
+export const ALLOWED_TRANSITIONS: Readonly<
+  Record<OrderStatus, readonly OrderStatus[]>
+> = {
+  PENDING: ['CONFIRMED', 'CANCELLED'],
+  CONFIRMED: ['PROCESSING', 'CANCELLED'],
+  PROCESSING: ['DELIVERED', 'CANCELLED'],
+  DELIVERED: [],
+  CANCELLED: [],
+};
+
+export function nextStatuses(status: OrderStatus): readonly OrderStatus[] {
+  return ALLOWED_TRANSITIONS[status] ?? [];
 }
 
 export function apiAdminSetOrderStatus(id: string, status: OrderStatus) {

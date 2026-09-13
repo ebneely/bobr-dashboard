@@ -86,7 +86,33 @@
     "days": "Dni",
     "total": "Kwota",
     "status": "Status",
-    "advance": "Zmień status"
+    "advance": "Zmień status",
+    "subtitle": "Wszystkie zamówienia, od najnowszych. Status zmienisz tylko na dozwolony kolejny.",
+    "loading": "Wczytywanie zamówień…",
+    "loadFailed": "Nie udało się wczytać zamówień.",
+    "updateFailed": "Nie udało się zmienić statusu.",
+    "cancelConfirm": "Anulować to zamówienie? Tego nie da się cofnąć.",
+    "mode": "Tryb",
+    "created": "Złożone",
+    "final": "Status końcowy",
+    "modes": {
+      "ONE_TIME": "Jednorazowe",
+      "CALENDAR": "Kalendarz"
+    },
+    "statuses": {
+      "PENDING": "Oczekujące",
+      "CONFIRMED": "Potwierdzone",
+      "PROCESSING": "W realizacji",
+      "DELIVERED": "Dostarczone",
+      "CANCELLED": "Anulowane"
+    },
+    "moveTo": {
+      "PENDING": "Oczekujące",
+      "CONFIRMED": "Potwierdź",
+      "PROCESSING": "Do realizacji",
+      "DELIVERED": "Dostarczone",
+      "CANCELLED": "Anuluj"
+    }
   },
   "adminMeals": {
     "title": "Posiłki",
