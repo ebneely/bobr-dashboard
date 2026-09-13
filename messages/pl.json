@@ -86,7 +86,33 @@
     "days": "Dni",
     "total": "Kwota",
     "status": "Status",
-    "advance": "Zmień status"
+    "advance": "Zmień status",
+    "subtitle": "Wszystkie zamówienia, od najnowszych. Status zmienisz tylko na dozwolony kolejny.",
+    "loading": "Wczytywanie zamówień…",
+    "loadFailed": "Nie udało się wczytać zamówień.",
+    "updateFailed": "Nie udało się zmienić statusu.",
+    "cancelConfirm": "Anulować to zamówienie? Tego nie da się cofnąć.",
+    "mode": "Tryb",
+    "created": "Złożone",
+    "final": "Status końcowy",
+    "modes": {
+      "ONE_TIME": "Jednorazowe",
+      "CALENDAR": "Kalendarz"
+    },
+    "statuses": {
+      "PENDING": "Oczekujące",
+      "CONFIRMED": "Potwierdzone",
+      "PROCESSING": "W realizacji",
+      "DELIVERED": "Dostarczone",
+      "CANCELLED": "Anulowane"
+    },
+    "moveTo": {
+      "PENDING": "Oczekujące",
+      "CONFIRMED": "Potwierdź",
+      "PROCESSING": "Do realizacji",
+      "DELIVERED": "Dostarczone",
+      "CANCELLED": "Anuluj"
+    }
   },
   "adminMeals": {
     "title": "Posiłki",
@@ -131,5 +157,70 @@
       "GLUTEN_FREE": "Bezglutenowa",
       "ALLERGIES": "Dla alergików"
     }
+  },
+  "myDiet": {
+    "title": "Moja dieta",
+    "subtitle": "Twój profil i zamówiony katering w jednym miejscu.",
+    "loading": "Wczytywanie…",
+    "intakeTitle": "Profil żywieniowy",
+    "intakeLoadFailed": "Nie udało się wczytać profilu.",
+    "complete": "Kompletny",
+    "incomplete": "Niekompletny",
+    "noProfile": "Nie masz jeszcze profilu. Uzupełnij go przed zamówieniem kateringu.",
+    "incompleteHint": "Profil trzeba uzupełnić przed zamówieniem: waga, wzrost, aktywność i cztery zdjęcia.",
+    "startIntake": "Uzupełnij profil",
+    "finishIntake": "Dokończ profil",
+    "weight": "Waga",
+    "height": "Wzrost",
+    "kg": "{value} kg",
+    "cm": "{value} cm",
+    "bodyComposition": "Skład ciała",
+    "activities": "Aktywność fizyczna",
+    "notGiven": "Nie podano",
+    "completedOn": "Uzupełniony",
+    "missingPhotos": "Brakujące zdjęcia",
+    "activity": {
+      "NONE": "Brak sportu",
+      "GYM": "Siłownia",
+      "SWIMMER": "Pływanie",
+      "BOXING_MMA": "Boks lub MMA",
+      "OTHER": "Inne"
+    },
+    "photo": {
+      "FRONT": "przód",
+      "BACK": "tył",
+      "LEFT": "lewy bok",
+      "RIGHT": "prawy bok"
+    },
+    "ordersTitle": "Moje zamówienia",
+    "ordersLoadFailed": "Nie udało się wczytać zamówień.",
+    "noOrders": "Nie masz jeszcze zamówień.",
+    "trackDays": "Śledź dni w kalendarzu",
+    "orderLine": "{mode} · {days, plural, one {# dzień} few {# dni} many {# dni} other {# dni}} · złożone {date}",
+    "modes": {
+      "ONE_TIME": "Jednorazowe",
+      "CALENDAR": "Kalendarz"
+    },
+    "statuses": {
+      "PENDING": "Oczekujące",
+      "CONFIRMED": "Potwierdzone",
+      "PROCESSING": "W realizacji",
+      "DELIVERED": "Dostarczone",
+      "CANCELLED": "Anulowane"
+    }
+  },
+  "adminCustomers": {
+    "title": "Klienci",
+    "subtitle": "Wszyscy klienci, od najnowszych, z profilem i zamówieniami kateringu.",
+    "loading": "Wczytywanie klientów…",
+    "loadFailed": "Nie udało się wczytać klientów.",
+    "none": "Brak klientów.",
+    "customer": "Klient",
+    "joined": "Dołączył",
+    "intake": "Profil kompletny",
+    "orders": "Zamówienia",
+    "lastOrder": "Ostatnie zamówienie",
+    "yes": "Tak",
+    "no": "Nie"
   }
 }
