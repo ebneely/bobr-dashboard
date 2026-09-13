@@ -20,12 +20,12 @@ export default async function OrdersPage({
   const t = await getTranslations('adminOrders');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: 0 }}>
+    <div className="flex min-w-0 flex-col gap-6">
       <header>
-        <h1 style={{ fontSize: 'var(--bobr-text-2xl)', fontWeight: 600 }}>
+        <h1 className="text-3xl font-semibold tracking-tight">
           {t('title')}
         </h1>
-        <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('subtitle')}</p>
+        <p className="mt-1 text-muted-foreground">{t('subtitle')}</p>
       </header>
       <OrdersClient />
     </div>

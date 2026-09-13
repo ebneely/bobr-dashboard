@@ -1,8 +1,37 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ChevronDownIcon } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ApiError, formatApiError } from '@/lib/api/client';
 import {
   apiAdminListOrders,
@@ -19,14 +48,22 @@ function describeError(error: unknown, fallback: string): string {
   return fallback;
 }
 
+const headClass =
+  'px-3 text-xs font-medium tracking-wider text-muted-foreground uppercase';
+
 export function OrdersClient() {
   const t = useTranslations('adminOrders');
+  // "Tak" / "Nie" for the cancel confirmation. Borrowed rather than added:
+  // messages/*.json belong to another stream while this one lands.
+  const tYesNo = useTranslations('adminCustomers');
   const locale = useLocale();
 
   const [orders, setOrders] = useState<AdminOrder[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+  /** The order waiting on the "cancel for good?" confirmation, if any. */
+  const [confirmCancel, setConfirmCancel] = useState<AdminOrder | null>(null);
 
   // State is only set from the promise callbacks — see MealsClient for why.
   useEffect(() => {
@@ -50,10 +87,16 @@ export function OrdersClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function move(order: AdminOrder, status: OrderStatus) {
+  function choose(order: AdminOrder, status: OrderStatus) {
     // Cancelling is terminal — there is no way back from it — so ask first.
-    if (status === 'CANCELLED' && !window.confirm(t('cancelConfirm'))) return;
+    if (status === 'CANCELLED') {
+      setConfirmCancel(order);
+      return;
+    }
+    void move(order, status);
+  }
 
+  async function move(order: AdminOrder, status: OrderStatus) {
     setBusyId(order.id);
     setRowError(null);
     try {
@@ -73,162 +116,156 @@ export function OrdersClient() {
   }
 
   if (orders === null) {
-    return <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('loading')}</p>;
+    return (
+      <div className="flex flex-col gap-2" aria-label={t('loading')}>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-14 w-full" />
+      </div>
+    );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 0 }}>
+    <div className="flex min-w-0 flex-col gap-4">
       {loadError && (
-        <p role="alert" style={errorText}>
-          {loadError}
-        </p>
+        <Alert variant="destructive">
+          <AlertDescription className="whitespace-pre-line">{loadError}</AlertDescription>
+        </Alert>
       )}
       {rowError && (
-        <p role="alert" style={errorText}>
-          {rowError}
-        </p>
+        <Alert variant="destructive">
+          <AlertDescription className="whitespace-pre-line">{rowError}</AlertDescription>
+        </Alert>
       )}
 
       {orders.length === 0 && !loadError ? (
-        <p style={{ color: 'var(--bobr-fg-muted)' }}>{t('none')}</p>
+        <p className="text-muted-foreground">{t('none')}</p>
       ) : orders.length > 0 ? (
-        // The table keeps its natural width; the wrapper scrolls instead of
+        // The table keeps its natural width; its container scrolls instead of
         // the page, so a phone never gets a sideways-scrolling body.
-        <div style={tableWrap}>
-          <table style={tableStyle} data-testid="orders-table">
-            <thead>
-              <tr>
-                <th style={th}>{t('customer')}</th>
-                <th style={th}>{t('meal')}</th>
-                <th style={th}>{t('mode')}</th>
-                <th style={{ ...th, textAlign: 'right' }}>{t('days')}</th>
-                <th style={{ ...th, textAlign: 'right' }}>{t('total')}</th>
-                <th style={th}>{t('status')}</th>
-                <th style={th}>{t('created')}</th>
-                <th style={th}>{t('advance')}</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="max-w-full overflow-hidden rounded-lg border bg-card">
+          <Table data-testid="orders-table">
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className={headClass}>{t('customer')}</TableHead>
+                <TableHead className={headClass}>{t('meal')}</TableHead>
+                <TableHead className={headClass}>{t('mode')}</TableHead>
+                <TableHead className={`${headClass} text-right`}>{t('days')}</TableHead>
+                <TableHead className={`${headClass} text-right`}>{t('total')}</TableHead>
+                <TableHead className={headClass}>{t('status')}</TableHead>
+                <TableHead className={headClass}>{t('created')}</TableHead>
+                <TableHead className={headClass}>{t('advance')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {orders.map((order) => {
                 const next = nextStatuses(order.status);
                 return (
-                  <tr key={order.id} data-testid="order-row" data-order-id={order.id}>
-                    <td style={td}>
-                      <div style={{ fontWeight: 600 }}>
-                        {order.user?.fullName ?? '—'}
-                      </div>
-                      <div style={muted}>{order.user?.email ?? ''}</div>
-                    </td>
-                    <td style={{ ...td, whiteSpace: 'normal', minWidth: '9rem' }}>
+                  <TableRow
+                    key={order.id}
+                    data-testid="order-row"
+                    data-order-id={order.id}
+                  >
+                    <TableCell className="px-3 py-2.5 align-top">
+                      <div className="font-semibold">{order.user?.fullName ?? '—'}</div>
+                      <div className="text-muted-foreground">{order.user?.email ?? ''}</div>
+                    </TableCell>
+                    <TableCell className="min-w-36 px-3 py-2.5 align-top whitespace-normal">
                       {order.meal
                         ? locale === 'pl'
                           ? order.meal.namePl
                           : order.meal.nameEn
                         : '—'}
-                    </td>
-                    <td style={td}>{t(`modes.${order.mode}`)}</td>
-                    <td style={{ ...td, textAlign: 'right' }}>{order.days.length}</td>
-                    <td style={{ ...td, textAlign: 'right', fontWeight: 600 }}>
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 align-top">
+                      {t(`modes.${order.mode}`)}
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right align-top">
+                      {order.days.length}
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right align-top font-semibold">
                       {formatGrosze(order.totalGrosze, locale)}
-                    </td>
-                    <td style={td}>
-                      <span style={badge} data-testid="order-status">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 align-top">
+                      <Badge
+                        variant="outline"
+                        className="tracking-wider uppercase"
+                        data-testid="order-status"
+                      >
                         {t(`statuses.${order.status}`)}
-                      </span>
-                    </td>
-                    <td style={td}>{formatWarsawDate(order.createdAt, locale)}</td>
-                    <td style={td}>
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 align-top">
+                      {formatWarsawDate(order.createdAt, locale)}
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 align-top">
                       {next.length === 0 ? (
-                        <span style={muted}>{t('final')}</span>
+                        <span className="text-muted-foreground">{t('final')}</span>
                       ) : (
-                        <div style={{ display: 'flex', gap: '0.4rem' }}>
-                          {next.map((status) => (
-                            <button
-                              key={status}
-                              type="button"
-                              onClick={() => void move(order, status)}
+                        // One compact trigger per row instead of a button per
+                        // legal status: two buttons side by side pushed the
+                        // last one ("Anuluj") out of view at 1280px.
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
                               disabled={busyId === order.id}
-                              data-testid={`move-${status}`}
-                              style={{
-                                ...button,
-                                color:
-                                  status === 'CANCELLED'
-                                    ? 'var(--bobr-danger)'
-                                    : 'var(--bobr-fg)',
-                              }}
+                              data-testid="order-actions"
                             >
-                              {t(`moveTo.${status}`)}
-                            </button>
-                          ))}
-                        </div>
+                              {t('advance')}
+                              <ChevronDownIcon />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-auto">
+                            {next.map((status) => (
+                              <DropdownMenuItem
+                                key={status}
+                                variant={status === 'CANCELLED' ? 'destructive' : 'default'}
+                                onSelect={() => choose(order, status)}
+                                data-testid={`move-${status}`}
+                              >
+                                {t(`moveTo.${status}`)}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       ) : null}
+
+      <AlertDialog
+        open={confirmCancel !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmCancel(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('moveTo.CANCELLED')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('cancelConfirm')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tYesNo('no')}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              data-testid="confirm-cancel"
+              onClick={() => {
+                if (confirmCancel) void move(confirmCancel, 'CANCELLED');
+              }}
+            >
+              {tYesNo('yes')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-
-const tableWrap: React.CSSProperties = {
-  maxWidth: '100%',
-  overflowX: 'auto',
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius)',
-};
-
-const tableStyle: React.CSSProperties = {
-  width: '100%',
-  borderCollapse: 'collapse',
-  fontSize: 'var(--bobr-text-sm)',
-};
-
-const th: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '0.6rem 0.75rem',
-  fontSize: 'var(--bobr-text-xs)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  color: 'var(--bobr-fg-muted)',
-  borderBottom: '1px solid var(--bobr-border)',
-  whiteSpace: 'nowrap',
-};
-
-const td: React.CSSProperties = {
-  padding: '0.6rem 0.75rem',
-  borderBottom: '1px solid var(--bobr-border)',
-  verticalAlign: 'top',
-  whiteSpace: 'nowrap',
-};
-
-const muted: React.CSSProperties = { color: 'var(--bobr-fg-muted)' };
-
-const badge: React.CSSProperties = {
-  display: 'inline-block',
-  padding: '0.15rem 0.5rem',
-  fontSize: 'var(--bobr-text-xs)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-};
-
-const button: React.CSSProperties = {
-  padding: '0.35rem 0.7rem',
-  font: 'inherit',
-  fontWeight: 600,
-  background: 'var(--bobr-surface)',
-  border: '1px solid var(--bobr-border)',
-  borderRadius: 'var(--bobr-radius-sm)',
-  cursor: 'pointer',
-};
-
-const errorText: React.CSSProperties = {
-  color: 'var(--bobr-danger)',
-  whiteSpace: 'pre-line',
-};
