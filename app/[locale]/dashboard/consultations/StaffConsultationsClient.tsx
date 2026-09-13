@@ -33,7 +33,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   CONSULTATION_STATUS_MOVES,
   apiAdminListConsultations,
@@ -47,8 +48,12 @@ import {
 import { ConfirmConsultationDialog } from './ConfirmConsultationDialog';
 import { ConsultationStatusBadge } from './StatusBadge';
 
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
@@ -60,6 +65,7 @@ type StatusMove = { row: AdminConsultation; status: 'COMPLETED' | 'CANCELLED' };
  */
 export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean }) {
   const t = useTranslations('consultationsPage');
+  const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
   const [paidBusyId, setPaidBusyId] = useState<string | null>(null);
   const [paidError, setPaidError] = useState<string | null>(null);
@@ -80,7 +86,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
       .catch((error: unknown) => {
         if (!alive) return;
         setRows([]);
-        setLoadError(describeError(error, t('loadFailed')));
+        setLoadError(describeError(error, t('loadFailed'), translateApiError));
       });
     return () => {
       alive = false;
@@ -105,7 +111,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
       applyUpdate(await apiAdminSetConsultationStatus(move.row.id, move.status));
       setMove(null);
     } catch (error) {
-      setMoveError(describeError(error, t('updateFailed')));
+      setMoveError(describeError(error, t('updateFailed'), translateApiError));
     } finally {
       setMoveBusy(false);
     }
@@ -117,7 +123,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
     try {
       applyUpdate(await apiAdminSetConsultationPaid(row.id, paid));
     } catch (error) {
-      setPaidError(describeError(error, t('paidFailed')));
+      setPaidError(describeError(error, t('paidFailed'), translateApiError));
     } finally {
       setPaidBusyId(null);
     }

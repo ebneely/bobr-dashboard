@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ApiError, formatApiError } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   CONFIRM_TIME_SLOTS,
   apiAdminConfirmConsultation,
@@ -80,6 +81,7 @@ function ConfirmForm({
   onConfirmed: (updated: Consultation) => void;
 }) {
   const t = useTranslations('consultationsPage');
+  const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
 
   const [date, setDate] = useState('');
@@ -115,7 +117,7 @@ function ConfirmForm({
     } catch (caught) {
       setError(
         caught instanceof ApiError
-          ? formatApiError(caught.body) || t('confirmFailed')
+          ? formatApiError(caught.body, translateApiError) || t('confirmFailed')
           : t('confirmFailed'),
       );
     } finally {

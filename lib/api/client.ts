@@ -8,15 +8,36 @@
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8003'}/v1`;
 
+/** One item of a 422 validation failure. `code`/`params` are what a client translates. */
+export interface FieldIssue {
+  field: string;
+  issue: string;
+  code?: string;
+  params?: Record<string, string | number>;
+}
+
 /** The error body every backend failure arrives in — see the backend's HttpExceptionFilter. */
 export interface ApiErrorBody {
   statusCode: number;
-  message: string | string[] | Array<{ field: string; issue: string }>;
+  /** English, for logs and older clients. Show a translated `code` in preference. */
+  message: string | string[] | FieldIssue[];
   error: string;
+  /** Stable, machine-readable reason — `apiErrors.codes.<code>` in messages. */
+  code?: string;
+  params?: Record<string, string | number>;
   traceId?: string;
   path?: string;
   timestamp?: string;
 }
+
+/**
+ * Turns an error code (or `field:<path>` for a field label) into a localised
+ * string, or null when this client has no wording for it.
+ */
+export type ApiErrorTranslate = (
+  code: string,
+  params?: Record<string, string | number>,
+) => string | null;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -37,16 +58,36 @@ export class ApiError extends Error {
  * The backend's `message` is a string, a string[], or a `{field, issue}[]` for
  * validation failures. Callers that just want something to show a user should
  * use this rather than each re-deriving the three cases.
+ *
+ * With `translate`, a known `code` wins over the English `message`; an unknown
+ * code falls back to that English text — never a blank and never a raw key.
  */
-export function formatApiError(body: ApiErrorBody | null | undefined): string {
+export function formatApiError(
+  body: ApiErrorBody | null | undefined,
+  translate?: ApiErrorTranslate,
+): string {
   if (!body) return '';
   const { message } = body;
+
+  const isFieldIssues =
+    Array.isArray(message) && message.some((m) => typeof m !== 'string');
+
+  if (!isFieldIssues && translate && body.code) {
+    const translated = translate(body.code, body.params);
+    if (translated) return translated;
+  }
 
   if (typeof message === 'string') return message;
   if (!Array.isArray(message)) return '';
 
   return message
-    .map((m) => (typeof m === 'string' ? m : `${m.field}: ${m.issue}`))
+    .map((m) => {
+      if (typeof m === 'string') return m;
+      const text = translate && m.code ? translate(m.code, m.params) : null;
+      if (!text) return `${m.field}: ${m.issue}`;
+      const label = translate ? translate(`field:${m.field}`) : null;
+      return label ? `${label}: ${text}` : text;
+    })
     .join('\n');
 }
 

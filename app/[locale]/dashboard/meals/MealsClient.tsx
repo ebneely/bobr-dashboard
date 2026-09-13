@@ -42,7 +42,8 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiAdminCreateMeal,
   apiAdminDeactivateMeal,
@@ -65,8 +66,12 @@ import { cn } from '@/lib/cn';
  * rendering that array into JSX throws React error #31 and blanks the page —
  * so it goes through formatApiError, which flattens all three message shapes.
  */
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
@@ -75,6 +80,7 @@ const MUTED_LABEL = 'text-xs tracking-wider text-muted-foreground uppercase';
 
 export function MealsClient() {
   const t = useTranslations('adminMeals');
+  const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
 
   const [meals, setMeals] = useState<AdminMeal[] | null>(null);
@@ -92,7 +98,7 @@ export function MealsClient() {
       setLoadError(null);
     } catch (error) {
       setMeals([]);
-      setLoadError(describeError(error, t('loadFailed')));
+      setLoadError(describeError(error, t('loadFailed'), translateApiError));
     }
   }
 
@@ -112,7 +118,7 @@ export function MealsClient() {
       .catch((error: unknown) => {
         if (alive) {
           setMeals([]);
-          setLoadError(describeError(error, t('loadFailed')));
+          setLoadError(describeError(error, t('loadFailed'), translateApiError));
         }
       });
     return () => {
@@ -131,7 +137,7 @@ export function MealsClient() {
       await apiAdminDeactivateMeal(meal.id);
       await load();
     } catch (error) {
-      setRowError(describeError(error, t('deactivateFailed')));
+      setRowError(describeError(error, t('deactivateFailed'), translateApiError));
     } finally {
       setBusyId(null);
     }
@@ -320,6 +326,7 @@ function MealForm({
   onSaved: () => Promise<void> | void;
 }) {
   const t = useTranslations('adminMeals');
+  const translateApiError = useApiErrorTranslate();
   const fieldId = useId();
 
   const [type, setType] = useState<MealType>(meal?.type ?? 'KETOGENIC');
@@ -370,7 +377,7 @@ function MealForm({
       else await apiAdminCreateMeal(input);
       await onSaved();
     } catch (err) {
-      setError(describeError(err, t('saveFailed')));
+      setError(describeError(err, t('saveFailed'), translateApiError));
     } finally {
       setBusy(false);
     }
@@ -387,7 +394,7 @@ function MealForm({
       // Garage and imgproxy live in Dokploy, not in the local compose file, so
       // a failure here is the expected local outcome. Say so rather than
       // pretending the upload worked.
-      setUploadError(describeError(err, t('uploadFailed')));
+      setUploadError(describeError(err, t('uploadFailed'), translateApiError));
     } finally {
       setUploading(false);
       // Let the same file be chosen again after a failure.

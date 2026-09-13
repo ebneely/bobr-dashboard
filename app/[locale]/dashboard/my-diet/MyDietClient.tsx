@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ApiError, formatApiError } from '@/lib/api/client';
+import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiGetMyIntake,
   storefrontIntakeUrl,
@@ -23,8 +24,12 @@ import {
 import { cn } from '@/lib/cn';
 import { Link } from '@/lib/i18n/navigation';
 
-function describeError(error: unknown, fallback: string): string {
-  if (error instanceof ApiError) return formatApiError(error.body) || fallback;
+function describeError(
+  error: unknown,
+  fallback: string,
+  translate: ApiErrorTranslate,
+): string {
+  if (error instanceof ApiError) return formatApiError(error.body, translate) || fallback;
   return fallback;
 }
 
@@ -33,6 +38,7 @@ type IntakeState = IntakeProfile | null | undefined;
 
 export function MyDietClient() {
   const t = useTranslations('myDiet');
+  const translateApiError = useApiErrorTranslate();
 
   const [intake, setIntake] = useState<IntakeState>(undefined);
   const [intakeError, setIntakeError] = useState<string | null>(null);
@@ -50,7 +56,7 @@ export function MyDietClient() {
       .catch((error: unknown) => {
         if (alive) {
           setIntake(null);
-          setIntakeError(describeError(error, t('intakeLoadFailed')));
+          setIntakeError(describeError(error, t('intakeLoadFailed'), translateApiError));
         }
       });
     apiListMyOrders()
@@ -60,7 +66,7 @@ export function MyDietClient() {
       .catch((error: unknown) => {
         if (alive) {
           setOrders([]);
-          setOrdersError(describeError(error, t('ordersLoadFailed')));
+          setOrdersError(describeError(error, t('ordersLoadFailed'), translateApiError));
         }
       });
     return () => {
