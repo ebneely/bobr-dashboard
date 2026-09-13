@@ -208,5 +208,19 @@
       "DELIVERED": "Delivered",
       "CANCELLED": "Cancelled"
     }
+  },
+  "adminCustomers": {
+    "title": "Customers",
+    "subtitle": "Every customer, newest first, with their profile and catering orders.",
+    "loading": "Loading customers…",
+    "loadFailed": "Could not load customers.",
+    "none": "No customers.",
+    "customer": "Customer",
+    "joined": "Joined",
+    "intake": "Intake complete",
+    "orders": "Orders",
+    "lastOrder": "Last order",
+    "yes": "Yes",
+    "no": "No"
   }
 }

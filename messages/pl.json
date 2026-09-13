@@ -208,5 +208,19 @@
       "DELIVERED": "Dostarczone",
       "CANCELLED": "Anulowane"
     }
+  },
+  "adminCustomers": {
+    "title": "Klienci",
+    "subtitle": "Wszyscy klienci, od najnowszych, z profilem i zamówieniami kateringu.",
+    "loading": "Wczytywanie klientów…",
+    "loadFailed": "Nie udało się wczytać klientów.",
+    "none": "Brak klientów.",
+    "customer": "Klient",
+    "joined": "Dołączył",
+    "intake": "Profil kompletny",
+    "orders": "Zamówienia",
+    "lastOrder": "Ostatnie zamówienie",
+    "yes": "Tak",
+    "no": "Nie"
   }
 }
