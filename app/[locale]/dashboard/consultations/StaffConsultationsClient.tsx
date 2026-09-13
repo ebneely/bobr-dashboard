@@ -191,7 +191,11 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
                       </div>
                     </TableCell>
                     <TableCell>{t(`contexts.${row.context}`)}</TableCell>
-                    <TableCell>{formatWarsawDateTime(row.preferredAt, locale)}</TableCell>
+                    {/* Dates may wrap: with the payment column the table has to
+                        give width back to keep the actions visible at 1280. */}
+                    <TableCell className="min-w-28 whitespace-normal">
+                      {formatWarsawDateTime(row.preferredAt, locale)}
+                    </TableCell>
                     <TableCell>
                       <ConsultationStatusBadge status={row.status} />
                     </TableCell>
@@ -213,7 +217,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
                         </div>
                       )}
                     </TableCell>
-                    <TableCell data-testid="scheduled-at">
+                    <TableCell className="min-w-28 whitespace-normal" data-testid="scheduled-at">
                       {row.scheduledAt ? formatWarsawDateTime(row.scheduledAt, locale) : '—'}
                     </TableCell>
                     <TableCell>

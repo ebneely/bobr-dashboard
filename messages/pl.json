@@ -138,7 +138,8 @@
     "cancelBack": "Wróć",
     "address": "Adres dostawy",
     "noAddress": "Brak adresu",
-    "zone": "Strefa: {zone}"
+    "zone": "Strefa: {zone}",
+    "customerAddress": "Klient i adres"
   },
   "adminMeals": {
     "title": "Posiłki",

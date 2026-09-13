@@ -138,7 +138,8 @@
     "cancelBack": "Back",
     "address": "Delivery address",
     "noAddress": "No address",
-    "zone": "Zone: {zone}"
+    "zone": "Zone: {zone}",
+    "customerAddress": "Customer and address"
   },
   "adminMeals": {
     "title": "Meals",

@@ -147,8 +147,7 @@ export function OrdersClient() {
           <Table data-testid="orders-table">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className={headClass}>{t('customer')}</TableHead>
-                <TableHead className={headClass}>{t('address')}</TableHead>
+                <TableHead className={headClass}>{t('customerAddress')}</TableHead>
                 <TableHead className={headClass}>{t('meal')}</TableHead>
                 <TableHead className={headClass}>{t('mode')}</TableHead>
                 <TableHead className={`${headClass} text-right`}>{t('days')}</TableHead>
@@ -167,33 +166,35 @@ export function OrdersClient() {
                     data-testid="order-row"
                     data-order-id={order.id}
                   >
-                    <TableCell className="px-3 py-2.5 align-top">
+                    {/* Who and where in one cell: a separate address column
+                        pushed the status actions out of view at 1280px. */}
+                    <TableCell className="max-w-64 min-w-48 px-3 py-2.5 align-top whitespace-normal">
                       <div className="font-semibold">{order.user?.fullName ?? '—'}</div>
-                      <div className="text-muted-foreground">{order.user?.email ?? ''}</div>
-                    </TableCell>
-                    <TableCell
-                      className="min-w-40 max-w-56 px-3 py-2.5 align-top whitespace-normal"
-                      data-testid="order-address"
-                    >
-                      {order.delivery ? (
-                        <>
-                          <div className="break-words">{order.delivery.addressLine}</div>
-                          <div>
-                            {order.delivery.postalCode} {order.delivery.city}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {t('zone', {
-                              zone:
-                                locale === 'pl'
-                                  ? order.delivery.zoneNamePl
-                                  : order.delivery.zoneNameEn,
-                            })}
-                          </div>
-                        </>
-                      ) : (
-                        // Orders from the old storefront carry no address.
-                        <span className="text-muted-foreground">{t('noAddress')}</span>
-                      )}
+                      <div className="break-all text-muted-foreground">
+                        {order.user?.email ?? ''}
+                      </div>
+                      <div className="mt-1.5 text-xs" data-testid="order-address">
+                        <span className="sr-only">{t('address')}: </span>
+                        {order.delivery ? (
+                          <>
+                            <div className="break-words">{order.delivery.addressLine}</div>
+                            <div>
+                              {order.delivery.postalCode} {order.delivery.city}
+                            </div>
+                            <div className="text-muted-foreground">
+                              {t('zone', {
+                                zone:
+                                  locale === 'pl'
+                                    ? order.delivery.zoneNamePl
+                                    : order.delivery.zoneNameEn,
+                              })}
+                            </div>
+                          </>
+                        ) : (
+                          // Orders from the old storefront carry no address.
+                          <span className="text-muted-foreground">{t('noAddress')}</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="min-w-32 px-3 py-2.5 align-top whitespace-normal">
                       {order.meal
