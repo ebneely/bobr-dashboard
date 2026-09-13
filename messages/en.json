@@ -70,7 +70,14 @@
     "total": "Total",
     "discount": "Discount",
     "freeShipping": "Free delivery",
-    "status": "Status"
+    "status": "Status",
+    "statuses": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "PROCESSING": "Processing",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
+    }
   },
   "notesPage": {
     "title": "Notes and complaints",
@@ -124,7 +131,9 @@
       "PROCESSING": "Start processing",
       "DELIVERED": "Mark delivered",
       "CANCELLED": "Cancel"
-    }
+    },
+    "cancelYes": "Yes, cancel it",
+    "cancelBack": "Back"
   },
   "adminMeals": {
     "title": "Meals",

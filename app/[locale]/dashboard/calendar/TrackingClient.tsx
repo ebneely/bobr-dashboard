@@ -95,7 +95,7 @@ export function TrackingClient() {
                   : '—'}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {order.days.length} {t('days')} · {t('status')}: {order.status}
+                {order.days.length} {t('days')} · {t('status')}: {t(`statuses.${order.status}`)}
                 {order.discountPercent > 0 &&
                   ` · ${t('discount')} ${order.discountPercent}%`}
                 {order.shippingGrosze === 0 && ` · ${t('freeShipping')}`}

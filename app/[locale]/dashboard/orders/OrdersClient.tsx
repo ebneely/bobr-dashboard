@@ -55,7 +55,6 @@ export function OrdersClient() {
   const t = useTranslations('adminOrders');
   // "Tak" / "Nie" for the cancel confirmation. Borrowed rather than added:
   // messages/*.json belong to another stream while this one lands.
-  const tYesNo = useTranslations('adminCustomers');
   const locale = useLocale();
 
   const [orders, setOrders] = useState<AdminOrder[] | null>(null);
@@ -253,7 +252,7 @@ export function OrdersClient() {
             <AlertDialogDescription>{t('cancelConfirm')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{tYesNo('no')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancelBack')}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               data-testid="confirm-cancel"
@@ -261,7 +260,7 @@ export function OrdersClient() {
                 if (confirmCancel) void move(confirmCancel, 'CANCELLED');
               }}
             >
-              {tYesNo('yes')}
+              {t('cancelYes')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

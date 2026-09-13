@@ -70,7 +70,14 @@
     "total": "Razem",
     "discount": "Rabat",
     "freeShipping": "Dostawa gratis",
-    "status": "Status"
+    "status": "Status",
+    "statuses": {
+      "PENDING": "Oczekujące",
+      "CONFIRMED": "Potwierdzone",
+      "PROCESSING": "W realizacji",
+      "DELIVERED": "Dostarczone",
+      "CANCELLED": "Anulowane"
+    }
   },
   "notesPage": {
     "title": "Uwagi i zgłoszenia",
@@ -124,7 +131,9 @@
       "PROCESSING": "Do realizacji",
       "DELIVERED": "Dostarczone",
       "CANCELLED": "Anuluj"
-    }
+    },
+    "cancelYes": "Tak, anuluj",
+    "cancelBack": "Wróć"
   },
   "adminMeals": {
     "title": "Posiłki",
