@@ -27,8 +27,10 @@
       "meals": "Diets on offer, prices and photos.",
       "customers": "Customers, their profiles and orders.",
       "consultations": "Bookings for consultations with the doctor.",
-      "notes": "Notes, nudges and complaints."
-    }
+      "notes": "Notes, nudges and complaints.",
+      "settings": "Shipping cost for one-time orders."
+    },
+    "settings": "Settings"
   },
   "notes": {
     "nudge": "Nudge",
@@ -232,5 +234,77 @@
     "lastOrder": "Last order",
     "yes": "Yes",
     "no": "No"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Shop settings that apply to every customer.",
+    "shippingTitle": "Delivery",
+    "shippingDescription": "The delivery cost added to a one-time order.",
+    "current": "Currently: {amount}",
+    "amountLabel": "One-time shipping (PLN)",
+    "amountHint": "In złoty, at most two decimal places — e.g. 15.00",
+    "calendarFree": "Calendar orders always ship free.",
+    "placedKeep": "Orders already placed keep the shipping they were placed with — a change applies to new orders only.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "New shipping cost: {amount}.",
+    "savedTitle": "Saved",
+    "errorTitle": "Not saved",
+    "invalid": "Enter an amount in złoty, e.g. 15.00 — at most two decimal places.",
+    "loadFailed": "Could not load the shipping settings.",
+    "saveFailed": "Could not save the shipping cost."
+  },
+  "consultationsPage": {
+    "title": "Consultations",
+    "subtitleCustomer": "Your consultation bookings with the doctor.",
+    "subtitleStaff": "Every booking, newest first. Confirm a time and a Google Meet link.",
+    "loadFailed": "Could not load consultations.",
+    "contexts": {
+      "BEFORE_MEAL": "Before a meal",
+      "BEFORE_PLAN": "Before a diet plan"
+    },
+    "statuses": {
+      "REQUESTED": "Requested",
+      "CONFIRMED": "Confirmed",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "preferred": "Preferred time",
+    "scheduled": "Scheduled",
+    "price": "Price",
+    "note": "Note",
+    "joinMeet": "Join on Google Meet",
+    "awaiting": "Waiting for the doctor to confirm.",
+    "emptyTitle": "No consultations yet",
+    "emptyBody": "Book a consultation with the doctor before a meal or before a diet plan.",
+    "book": "Book a consultation",
+    "none": "No bookings.",
+    "customer": "Customer",
+    "email": "Email",
+    "context": "Type",
+    "status": "Status",
+    "meet": "Google Meet",
+    "actions": "Actions",
+    "openActions": "Actions for this booking",
+    "confirm": "Confirm",
+    "complete": "Complete",
+    "cancel": "Cancel",
+    "back": "Back",
+    "confirmTitle": "Confirm consultation",
+    "confirmDescription": "Pick a time (Warsaw time) and paste the Google Meet link.",
+    "date": "Date",
+    "time": "Time (Warsaw)",
+    "pickTime": "Pick a time",
+    "meetUrl": "Google Meet link",
+    "meetUrlHint": "Format: https://meet.google.com/abc-defg-hij",
+    "meetUrlInvalid": "That is not a Google Meet link. Required format: https://meet.google.com/abc-defg-hij",
+    "dateTimeRequired": "Pick a date and a time.",
+    "confirming": "Confirming…",
+    "completeTitle": "Complete this consultation?",
+    "completeBody": "Marks the consultation as held. This cannot be undone.",
+    "cancelTitle": "Cancel this consultation?",
+    "cancelBody": "The booking will be cancelled. This cannot be undone.",
+    "updateFailed": "Could not change the status.",
+    "confirmFailed": "Could not confirm the consultation."
   }
 }
