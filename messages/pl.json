@@ -27,8 +27,10 @@
       "meals": "Oferta diet, ceny i zdjęcia.",
       "customers": "Klienci, ich profile i zamówienia.",
       "consultations": "Rezerwacje konsultacji z lekarzem.",
-      "notes": "Uwagi, przypomnienia i reklamacje."
-    }
+      "notes": "Uwagi, przypomnienia i reklamacje.",
+      "settings": "Koszt dostawy zamówień jednorazowych."
+    },
+    "settings": "Ustawienia"
   },
   "notes": {
     "nudge": "Przypomnienie",
@@ -232,5 +234,77 @@
     "lastOrder": "Ostatnie zamówienie",
     "yes": "Tak",
     "no": "Nie"
+  },
+  "settingsPage": {
+    "title": "Ustawienia",
+    "subtitle": "Ustawienia sklepu obowiązujące wszystkich klientów.",
+    "shippingTitle": "Dostawa",
+    "shippingDescription": "Koszt dostawy doliczany do zamówienia jednorazowego.",
+    "current": "Obecnie: {amount}",
+    "amountLabel": "Dostawa jednorazowa (zł)",
+    "amountHint": "W złotych, najwyżej dwa miejsca po przecinku — np. 15,00",
+    "calendarFree": "Zamówienia kalendarzowe zawsze mają darmową dostawę.",
+    "placedKeep": "Już złożone zamówienia zachowują koszt dostawy z chwili złożenia — zmiana dotyczy tylko nowych zamówień.",
+    "save": "Zapisz",
+    "saving": "Zapisuję…",
+    "saved": "Nowy koszt dostawy: {amount}.",
+    "savedTitle": "Zapisano",
+    "errorTitle": "Nie zapisano",
+    "invalid": "Podaj kwotę w złotych, np. 15,00 — najwyżej dwa miejsca po przecinku.",
+    "loadFailed": "Nie udało się wczytać ustawień dostawy.",
+    "saveFailed": "Nie udało się zapisać kosztu dostawy."
+  },
+  "consultationsPage": {
+    "title": "Konsultacje",
+    "subtitleCustomer": "Twoje rezerwacje konsultacji z lekarzem.",
+    "subtitleStaff": "Wszystkie rezerwacje, od najnowszych. Potwierdź termin i link do Google Meet.",
+    "loadFailed": "Nie udało się wczytać konsultacji.",
+    "contexts": {
+      "BEFORE_MEAL": "Przed posiłkiem",
+      "BEFORE_PLAN": "Przed planem diety"
+    },
+    "statuses": {
+      "REQUESTED": "Oczekuje",
+      "CONFIRMED": "Potwierdzona",
+      "COMPLETED": "Zakończona",
+      "CANCELLED": "Anulowana"
+    },
+    "preferred": "Preferowany termin",
+    "scheduled": "Termin",
+    "price": "Cena",
+    "note": "Uwagi",
+    "joinMeet": "Dołącz przez Google Meet",
+    "awaiting": "Czekamy na potwierdzenie lekarza.",
+    "emptyTitle": "Nie masz jeszcze konsultacji",
+    "emptyBody": "Umów konsultację z lekarzem przed posiłkiem lub przed planem diety.",
+    "book": "Umów konsultację",
+    "none": "Brak rezerwacji.",
+    "customer": "Klient",
+    "email": "E-mail",
+    "context": "Rodzaj",
+    "status": "Status",
+    "meet": "Google Meet",
+    "actions": "Akcje",
+    "openActions": "Akcje dla rezerwacji",
+    "confirm": "Potwierdź",
+    "complete": "Zakończ",
+    "cancel": "Anuluj",
+    "back": "Wróć",
+    "confirmTitle": "Potwierdź konsultację",
+    "confirmDescription": "Wybierz termin (czas polski) i wklej link do spotkania Google Meet.",
+    "date": "Data",
+    "time": "Godzina (czas polski)",
+    "pickTime": "Wybierz godzinę",
+    "meetUrl": "Link Google Meet",
+    "meetUrlHint": "Format: https://meet.google.com/abc-defg-hij",
+    "meetUrlInvalid": "To nie jest link Google Meet. Wymagany format: https://meet.google.com/abc-defg-hij",
+    "dateTimeRequired": "Wybierz datę i godzinę.",
+    "confirming": "Potwierdzam…",
+    "completeTitle": "Zakończyć konsultację?",
+    "completeBody": "Konsultacja zostanie oznaczona jako odbyta. Tego nie da się cofnąć.",
+    "cancelTitle": "Anulować konsultację?",
+    "cancelBody": "Rezerwacja zostanie anulowana. Tego nie da się cofnąć.",
+    "updateFailed": "Nie udało się zmienić statusu.",
+    "confirmFailed": "Nie udało się potwierdzić konsultacji."
   }
 }

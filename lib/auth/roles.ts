@@ -35,11 +35,10 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { path: '/dashboard/orders', messageKey: 'orders', roles: ['ADMIN'], nav: true },
   { path: '/dashboard/meals', messageKey: 'meals', roles: ['ADMIN'], nav: true },
   { path: '/dashboard/customers', messageKey: 'customers', roles: ['ADMIN'], nav: true },
-  // Out of the sidebar until booking is specified: docs/SPEC.md gives the doctor,
-  // the price and "optional", but not how a session is scheduled. A link to a
-  // page that does not exist is worse than no link.
-  { path: '/dashboard/consultations', messageKey: 'consultations', roles: ['ADMIN', 'DOCTOR'], nav: false },
+  // CUSTOMER sees their own bookings; ADMIN/DOCTOR see all and confirm them.
+  { path: '/dashboard/consultations', messageKey: 'consultations', roles: ALL, nav: true },
   { path: '/dashboard/notes', messageKey: 'notes', roles: ALL, nav: true },
+  { path: '/dashboard/settings', messageKey: 'settings', roles: ['ADMIN'], nav: true },
   { path: '/dashboard/profile', messageKey: 'profile', roles: ALL, nav: false },
 ];
 
@@ -54,7 +53,9 @@ export const DASHBOARD_CARDS: readonly {
   { messageKey: 'orders', roles: ['ADMIN'] },
   { messageKey: 'meals', roles: ['ADMIN'] },
   { messageKey: 'customers', roles: ['ADMIN'] },
+  { messageKey: 'consultations', roles: ALL },
   { messageKey: 'notes', roles: ['CUSTOMER', 'DOCTOR'] },
+  { messageKey: 'settings', roles: ['ADMIN'] },
 ];
 
 /**
