@@ -18,7 +18,17 @@
     "notes": "Uwagi i zgłoszenia",
     "profile": "Profil",
     "customers": "Klienci",
-    "meals": "Posiłki"
+    "meals": "Posiłki",
+    "hints": {
+      "myDiet": "Twój profil żywieniowy i zamówiony katering.",
+      "mealTracking": "Zaznaczaj zjedzone posiłki dzień po dniu.",
+      "calendar": "Dni dostaw Twoich zamówień.",
+      "orders": "Wszystkie zamówienia i ich statusy.",
+      "meals": "Oferta diet, ceny i zdjęcia.",
+      "customers": "Klienci, ich profile i zamówienia.",
+      "consultations": "Rezerwacje konsultacji z lekarzem.",
+      "notes": "Uwagi, przypomnienia i reklamacje."
+    }
   },
   "notes": {
     "nudge": "Przypomnienie",

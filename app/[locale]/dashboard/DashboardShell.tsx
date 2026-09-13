@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { signOut } from '@/lib/auth/client';
 import { canAccess, navItemsFor, ruleFor, type Role } from '@/lib/auth/roles';
 import { Link, usePathname } from '@/lib/i18n/navigation';
-import { cn } from '@/lib/cn';
 
 import { AccessDenied } from './AccessDenied';
 
@@ -50,32 +52,12 @@ export function DashboardShell({
 
   return (
     <div className="md:grid md:min-h-screen md:grid-cols-[15rem_minmax(0,1fr)]">
-      <aside
-        className="flex flex-col gap-4 px-4 py-4 md:sticky md:top-0 md:h-screen md:py-6"
-        style={{
-          background: 'var(--bobr-surface)',
-          borderBottom: '1px solid var(--bobr-border)',
-          borderRight: '1px solid var(--bobr-border)',
-        }}
-      >
+      <aside className="flex flex-col gap-4 border-b bg-sidebar px-4 py-4 text-sidebar-foreground md:sticky md:top-0 md:h-screen md:border-r md:border-b-0 md:py-6">
         <div className="flex items-center justify-between gap-3">
-          <span
-            className="font-semibold"
-            style={{ fontSize: 'var(--bobr-text-xl)' }}
-          >
+          <span className="text-xl font-semibold tracking-tight">
             {tCommon('appName')}
           </span>
-          <span
-            className="px-2 py-1"
-            style={{
-              fontSize: 'var(--bobr-text-xs)',
-              borderRadius: 'var(--bobr-radius-sm)',
-              background: 'var(--bobr-surface-sunken)',
-              color: 'var(--bobr-fg-muted)',
-            }}
-          >
-            {t(`role.${role}`)}
-          </span>
+          <Badge variant="secondary">{t(`role.${role}`)}</Badge>
         </div>
 
         <nav aria-label={t('navLabel')}>
@@ -87,77 +69,49 @@ export function DashboardShell({
               const active = ruleFor(pathname)?.path === item.path;
               return (
                 <li key={item.path}>
-                  <Link
-                    href={item.path}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn('block px-3 py-2 no-underline')}
-                    style={{
-                      fontSize: 'var(--bobr-text-sm)',
-                      borderRadius: 'var(--bobr-radius-sm)',
-                      background: active ? 'var(--bobr-accent)' : 'transparent',
-                      color: active
-                        ? 'var(--bobr-on-accent)'
-                        : 'var(--bobr-fg)',
-                      transition: `background var(--bobr-duration) var(--bobr-ease)`,
-                    }}
+                  <Button
+                    asChild
+                    variant={active ? 'default' : 'ghost'}
+                    className="w-full justify-start"
                   >
-                    {tNav(item.messageKey)}
-                  </Link>
+                    <Link
+                      href={item.path}
+                      aria-current={active ? 'page' : undefined}
+                    >
+                      {tNav(item.messageKey)}
+                    </Link>
+                  </Button>
                 </li>
               );
             })}
           </ul>
         </nav>
 
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2">
+        <Separator className="mt-auto" />
+
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
-            <p
-              style={{
-                fontSize: 'var(--bobr-text-xs)',
-                color: 'var(--bobr-fg-muted)',
-              }}
-            >
-              {t('signedInAs')}
-            </p>
-            <p className="truncate" style={{ fontSize: 'var(--bobr-text-sm)' }}>
-              {userName}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('signedInAs')}</p>
+            <p className="truncate text-sm">{userName}</p>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleSignOut}
             disabled={signingOut}
-            className="px-3 py-2"
-            style={{
-              fontSize: 'var(--bobr-text-sm)',
-              borderRadius: 'var(--bobr-radius-sm)',
-              border: '1px solid var(--bobr-border)',
-              background: 'var(--bobr-surface-sunken)',
-              color: 'var(--bobr-fg)',
-              cursor: signingOut ? 'progress' : 'pointer',
-            }}
           >
             {signingOut ? t('signingOut') : tCommon('logout')}
-          </button>
+          </Button>
         </div>
 
         {stubbed ? (
-          <p
-            style={{
-              fontSize: 'var(--bobr-text-xs)',
-              color: 'var(--bobr-warning)',
-            }}
-          >
-            {t('stubbedSession')}
-          </p>
+          <p className="text-xs text-warning">{t('stubbedSession')}</p>
         ) : null}
       </aside>
 
       {/* `min-w-0` so a wide child (a table) scrolls inside itself instead of
           stretching the grid column and giving the whole page a sideways
-          scrollbar on a phone. */}
-      {/* The gutter lives here, once, for every page: without it headings sat
-          at x=0 on a phone and flush against the sidebar on desktop. */}
+          scrollbar on a phone. The gutter lives here, once, for every page. */}
       <div className="min-w-0 px-4 py-6 md:px-8 md:py-8">
         {allowed ? children : <AccessDenied role={role} />}
       </div>

@@ -2,6 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { firstAccessibleRoute, type Role } from '@/lib/auth/roles';
 import { Link } from '@/lib/i18n/navigation';
 
@@ -17,28 +25,18 @@ export function AccessDenied({ role }: { role: Role }) {
   const t = useTranslations('accessDenied');
 
   return (
-    <main className="mx-auto max-w-xl px-6 py-16">
-      <h1
-        className="mb-3 font-semibold"
-        style={{ fontSize: 'var(--bobr-text-2xl)' }}
-      >
-        {t('title')}
-      </h1>
-      <p className="mb-6" style={{ color: 'var(--bobr-fg-muted)' }}>
-        {t('body')}
-      </p>
-      <Link
-        href={firstAccessibleRoute(role)}
-        className="inline-block px-4 py-2 no-underline"
-        style={{
-          borderRadius: 'var(--bobr-radius-sm)',
-          background: 'var(--bobr-accent)',
-          color: 'var(--bobr-on-accent)',
-          fontSize: 'var(--bobr-text-sm)',
-        }}
-      >
-        {t('back')}
-      </Link>
-    </main>
+    <Card className="mx-auto mt-8 max-w-xl">
+      <CardHeader>
+        <CardTitle className="text-2xl">{t('title')}</CardTitle>
+        <CardDescription>{t('body')}</CardDescription>
+      </CardHeader>
+      <CardFooter>
+        {/* asChild: the Button's styling on a real link, so it navigates and
+            can be opened in a new tab rather than being a button that routes. */}
+        <Button asChild>
+          <Link href={firstAccessibleRoute(role)}>{t('back')}</Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

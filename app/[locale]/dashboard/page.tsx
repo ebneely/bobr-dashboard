@@ -1,16 +1,31 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { cardsFor } from '@/lib/auth/roles';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { ROUTE_ACCESS, cardsFor } from '@/lib/auth/roles';
 import { getServerSession } from '@/lib/auth/session';
+import { Link } from '@/lib/i18n/navigation';
 
 /**
- * Placeholder cards, split by role from lib/auth/roles.ts rather than from a
- * fixed list: a customer has no business seeing an "Orders" tile that 404s
- * for them, and an admin has no "My diet".
+ * Where each overview card leads. Most cards share their message key with a
+ * route in ROUTE_ACCESS; meal tracking lives on the calendar page.
+ */
+function hrefFor(key: string): string {
+  if (key === 'mealTracking') return '/dashboard/calendar';
+  return ROUTE_ACCESS.find((rule) => rule.messageKey === key)?.path ?? '/dashboard';
+}
+
+/**
+ * The overview: one card per area this role can use, split by role from
+ * lib/auth/roles.ts rather than from a fixed list — a customer has no business
+ * seeing an "Orders" tile, and an admin has no "My diet".
  *
- * The session is read again here — `getServerSession` is request-cached, so
- * this costs nothing — rather than threaded down from the layout, because a
- * page that depends on the role should say so where it is read.
+ * Each card is a link to its page. They used to be placeholders showing "—",
+ * from before those pages existed.
  */
 export default async function DashboardPage({
   params,
@@ -28,39 +43,26 @@ export default async function DashboardPage({
   const cards = session ? cardsFor(session.user.role) : [];
 
   return (
-    <main className="mx-auto max-w-5xl">
-      <h1
-        className="mb-8 font-semibold"
-        style={{ fontSize: 'var(--bobr-text-3xl)' }}
-      >
-        {t('title')}
-      </h1>
+    <main className="mx-auto flex max-w-5xl flex-col gap-6">
+      <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((key) => (
-          <section
-            key={key}
-            className="p-5"
-            style={{
-              background: 'var(--bobr-surface)',
-              border: '1px solid var(--bobr-border)',
-              borderRadius: 'var(--bobr-radius)',
-              boxShadow: 'var(--bobr-shadow-sm)',
-            }}
-          >
-            <h2 style={{ fontSize: 'var(--bobr-text-lg)' }}>{t(key)}</h2>
-            <p
-              className="mt-2"
-              style={{
-                fontSize: 'var(--bobr-text-sm)',
-                color: 'var(--bobr-fg-muted)',
-              }}
+          <li key={key}>
+            <Link
+              href={hrefFor(key)}
+              className="group block h-full rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
             >
-              —
-            </p>
-          </section>
+              <Card className="h-full transition-colors group-hover:border-highlight">
+                <CardHeader>
+                  <CardTitle className="text-lg">{t(key)}</CardTitle>
+                  <CardDescription>{t(`hints.${key}`)}</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </main>
   );
 }
