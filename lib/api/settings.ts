@@ -9,16 +9,6 @@ import { apiFetch } from './client';
  * edits it.
  */
 
-export interface ShippingSettings {
-  /** Integer grosze, 0..100000. */
-  oneTimeShippingGrosze: number;
-}
-
-/** Public: the legacy flat price the old storefront shows at checkout. */
-export function apiGetShipping() {
-  return apiFetch<ShippingSettings>('/settings/shipping', { auth: false });
-}
-
 /**
  * Where a customer sends a BLIK phone transfer for a consultation.
  * `blikPhone` is stored normalised as "+48XXXXXXXXX".
