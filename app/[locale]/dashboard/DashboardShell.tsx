@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { signOut } from '@/lib/auth/client';
-import { canAccess, navItemsFor, type Role } from '@/lib/auth/roles';
+import { canAccess, navItemsFor, ruleFor, type Role } from '@/lib/auth/roles';
 import { Link, usePathname } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/cn';
 
@@ -81,8 +81,10 @@ export function DashboardShell({
         <nav aria-label={t('navLabel')}>
           <ul className="flex flex-wrap gap-1 md:flex-col md:flex-nowrap">
             {items.map((item) => {
-              const active =
-                pathname === item.path || pathname.startsWith(`${item.path}/`);
+              // Only the MOST SPECIFIC matching route is active. A prefix match
+              // made /dashboard active on every page beneath it, so two items
+              // lit up at once.
+              const active = ruleFor(pathname)?.path === item.path;
               return (
                 <li key={item.path}>
                   <Link
