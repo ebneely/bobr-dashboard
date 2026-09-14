@@ -47,6 +47,8 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { path: '/dashboard/calendar', messageKey: 'calendar', roles: ['CUSTOMER'], nav: true },
   { path: '/dashboard/orders', messageKey: 'orders', roles: STAFF, nav: true },
   { path: '/dashboard/meals', messageKey: 'meals', roles: STAFF, nav: true },
+  // The printed menu and the dishes behind the storefront's public /menu page.
+  { path: '/dashboard/menu', messageKey: 'menu', roles: STAFF, nav: true },
   { path: '/dashboard/customers', messageKey: 'customers', roles: STAFF, nav: true },
   // CUSTOMER sees their own bookings; staff see all, confirm and mark them paid.
   { path: '/dashboard/consultations', messageKey: 'consultations', roles: ALL, nav: true },
@@ -67,6 +69,7 @@ export const DASHBOARD_CARDS: readonly {
   { messageKey: 'calendar', roles: ['CUSTOMER'] },
   { messageKey: 'orders', roles: STAFF },
   { messageKey: 'meals', roles: STAFF },
+  { messageKey: 'menu', roles: STAFF },
   { messageKey: 'customers', roles: STAFF },
   { messageKey: 'consultations', roles: ALL },
   { messageKey: 'notes', roles: ALL },

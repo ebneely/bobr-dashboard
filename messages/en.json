@@ -19,12 +19,14 @@
     "profile": "Profile",
     "customers": "Customers",
     "meals": "Meals",
+    "menu": "Menu",
     "hints": {
       "myDiet": "Your nutrition profile and the catering you ordered.",
       "mealTracking": "Tick off the meals you ate, day by day.",
       "calendar": "The delivery days of your orders.",
       "orders": "Every order and its status.",
       "meals": "Diets on offer, prices and photos.",
+      "menu": "The printable menu and the dishes shown on the website.",
       "customers": "Customers, their profiles and orders.",
       "consultations": "Bookings for consultations with the doctor.",
       "notes": "Notes, nudges and complaints.",
@@ -196,6 +198,167 @@
       "KETOGENIC": "Ketogenic",
       "GLUTEN_FREE": "Gluten-free",
       "ALLERGIES": "Allergies"
+    }
+  },
+  "menuPage": {
+    "title": "Menu",
+    "subtitle": "What customers see on the website's Menu page: the printable file and the dishes, arranged through the day.",
+    "loading": "Loading the menu…",
+    "courses": {
+      "BREAKFAST": "Breakfast",
+      "SECOND_BREAKFAST": "Second breakfast",
+      "LUNCH": "Lunch",
+      "SNACK": "Afternoon snack",
+      "DINNER": "Dinner"
+    },
+    "diets": {
+      "KETOGENIC": "Ketogenic",
+      "GLUTEN_FREE": "Gluten-free",
+      "ALLERGIES": "For allergy sufferers"
+    },
+    "allergens": {
+      "GLUTEN": "Gluten",
+      "CRUSTACEANS": "Crustaceans",
+      "EGGS": "Eggs",
+      "FISH": "Fish",
+      "PEANUTS": "Peanuts",
+      "SOY": "Soy",
+      "MILK": "Milk",
+      "NUTS": "Tree nuts",
+      "CELERY": "Celery",
+      "MUSTARD": "Mustard",
+      "SESAME": "Sesame",
+      "SULPHITES": "Sulphites",
+      "LUPIN": "Lupin",
+      "MOLLUSCS": "Molluscs"
+    },
+    "allergensLabel": "Allergens: {names}",
+    "figures": {
+      "kcal": "{value} kcal",
+      "protein": "P {value} g",
+      "fat": "F {value} g",
+      "carbs": "C {value} g"
+    },
+    "document": {
+      "title": "Printable menu",
+      "description": "One current file — a PDF or an image. Customers can open it whole. A new file replaces the old one.",
+      "kind": {
+        "PDF": "PDF",
+        "IMAGE": "Image"
+      },
+      "currentPdf": "Current menu as a PDF",
+      "currentImage": "Current menu as an image",
+      "updated": "Uploaded {date}",
+      "dropToReplace": "Drop a new file here to replace it.",
+      "open": "Open",
+      "replace": "Replace file",
+      "remove": "Remove",
+      "uploading": "Uploading…",
+      "emptyTitle": "No printable menu yet",
+      "emptyHint": "Drag a PDF or a photo of the menu here (JPG, PNG, WebP, HEIC), up to 15 MB.",
+      "dropNow": "Drop to upload",
+      "choose": "Choose a file",
+      "uploaded": "Printable menu uploaded",
+      "replaced": "Printable menu replaced",
+      "removed": "Printable menu removed",
+      "removeTitle": "Remove the printable menu?",
+      "removeBody": "The file disappears from the website. The dishes below stay. You can upload a new file at any time.",
+      "cancel": "Cancel"
+    },
+    "dishes": {
+      "title": "Dishes",
+      "subtitle": "Laid out as a day of eating — breakfast through dinner.",
+      "summary": "{count, plural, one {# dish} other {# dishes}}, {active, plural, =0 {none visible} other {# visible}} on the website",
+      "count": "{count, plural, =0 {no dishes} one {# dish} other {# dishes}}",
+      "courseEmpty": "No dishes for this course yet — the website leaves this section out.",
+      "hidden": "Hidden",
+      "emptyTitle": "The menu is empty",
+      "emptyHint": "Add the first dish. Customers will see it on the website under its course, with calories and allergens."
+    },
+    "dialog": {
+      "createTitle": "New dish",
+      "editTitle": "Edit dish",
+      "description": "The preview shows the dish as customers will see it.",
+      "sections": {
+        "basics": "Course and diet",
+        "naming": "Name and description",
+        "nutrition": "Nutrition",
+        "allergens": "Allergens",
+        "more": "Tags, photo, visibility"
+      }
+    },
+    "fields": {
+      "course": "Course",
+      "diet": "Diet",
+      "noDiet": "No diet linked",
+      "dietHint": "Optional — the dish is shown with this diet.",
+      "dietUnavailable": "The diets could not be loaded.",
+      "namePl": "Name (Polish)",
+      "nameEn": "Name (English)",
+      "descriptionPl": "Description (Polish)",
+      "descriptionEn": "Description (English)",
+      "kcal": "Calories",
+      "proteinG": "Protein",
+      "fatG": "Fat",
+      "carbsG": "Carbs",
+      "nutritionHint": "Whole numbers. An empty field is left off the website.",
+      "allergensSelected": "— {count} selected",
+      "allergensHint": "Numbered as in the EU list. Customers can hide dishes with chosen allergens.",
+      "tags": "Tags",
+      "tagsPlaceholder": "vegan, no sugar",
+      "tagsHint": "Comma-separated. They help search.",
+      "photo": "Photo",
+      "photoChoose": "Choose a photo",
+      "photoReplace": "Change photo",
+      "photoHint": "JPG, PNG, WebP or HEIC, up to 15 MB",
+      "isActive": "Visible on the website",
+      "isActiveHint": "Turn off to hide the dish without deleting it."
+    },
+    "preview": {
+      "title": "How customers see it",
+      "language": "Preview language",
+      "namePlaceholder": "Dish name",
+      "hidden": "Hidden — will not appear on the website.",
+      "note": "An approximation: the website draws its own card."
+    },
+    "actions": {
+      "add": "Add dish",
+      "addFirst": "Add the first dish",
+      "addTo": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteNamed": "Delete “{name}”",
+      "moveUp": "Move “{name}” up",
+      "moveDown": "Move “{name}” down",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "create": "Add dish",
+      "saving": "Saving…",
+      "retry": "Try again"
+    },
+    "delete": {
+      "title": "Delete “{name}”?",
+      "body": "The dish disappears from the website menu, and this cannot be undone. To only hide it, turn off “Visible on the website”."
+    },
+    "toast": {
+      "created": "Added “{name}”",
+      "saved": "Saved “{name}”",
+      "deleted": "Deleted “{name}”"
+    },
+    "errors": {
+      "loadFailedTitle": "The dishes could not be loaded",
+      "loadFailed": "The server did not answer. Check the connection and try again.",
+      "documentLoadFailed": "Could not check whether a printable menu is uploaded.",
+      "nameRequired": "Give the dish a name in both Polish and English.",
+      "wholeNumbers": "Calories and macros must be whole numbers.",
+      "saveFailed": "The dish could not be saved.",
+      "photoFailed": "The dish is saved, but the photo could not be uploaded.",
+      "deleteFailed": "The dish could not be deleted.",
+      "reorderFailed": "The order could not be changed.",
+      "uploadFailed": "The file could not be uploaded.",
+      "removeFailed": "The file could not be removed.",
+      "documentType": "It has to be a PDF or an image (JPG, PNG, WebP, HEIC).",
+      "fileTooLarge": "The file is larger than 15 MB."
     }
   },
   "myDiet": {
@@ -459,7 +622,10 @@
       "DAYS_REQUIRED": "Choose at least one day.",
       "DAYS_TOO_MANY": "You can choose at most {maximum, plural, one {# day} other {# days}}.",
       "DAYS_DUPLICATE": "Each day can be chosen only once.",
-      "BLIK_PHONE_FORMAT": "Enter a Polish BLIK phone number: 9 digits, optionally with +48."
+      "BLIK_PHONE_FORMAT": "Enter a Polish BLIK phone number: 9 digits, optionally with +48.",
+      "MENU_ITEM_NOT_FOUND": "Dish not found — it may already have been deleted.",
+      "DOCUMENT_FORMAT_UNSUPPORTED": "Unsupported file format: {format}. Upload a PDF or an image.",
+      "DOCUMENT_TOO_LARGE": "The file is too large — {maxMb} MB at most."
     },
     "fields": {
       "oneTimeShippingGrosze": "Shipping price",
@@ -477,7 +643,18 @@
       "body": "Text",
       "kind": "Kind",
       "paid": "Paid",
-      "isActive": "Active"
+      "isActive": "Active",
+      "mealId": "Diet",
+      "course": "Course",
+      "kcal": "Calories",
+      "proteinG": "Protein",
+      "fatG": "Fat",
+      "carbsG": "Carbs",
+      "allergens": "Allergens",
+      "tags": "Tags",
+      "sortOrder": "Order",
+      "descriptionPl": "Description (PL)",
+      "descriptionEn": "Description (EN)"
     }
   }
 }
