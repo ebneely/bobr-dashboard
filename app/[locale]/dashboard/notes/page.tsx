@@ -1,12 +1,13 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { isStaff } from '@/lib/auth/roles';
 import { getServerSession } from '@/lib/auth/session';
 import { NotesClient } from './NotesClient';
 
 /**
- * Notes: the customer raises them, the admin answers them.
+ * Notes: the customer raises them, staff (ADMIN, SUPER_ADMIN) answer them.
  *
- * The role is read SERVER-side and passed down, so the admin queue is never
+ * The role is read SERVER-side and passed down, so the staff queue is never
  * shipped to a customer's browser at all. The backend RolesGuard refuses the
  * admin endpoints regardless — this only decides which UI is rendered.
  */
@@ -20,7 +21,7 @@ export default async function NotesPage({
 
   const t = await getTranslations('notesPage');
   const session = await getServerSession();
-  const isAdmin = session?.user.role === 'ADMIN';
+  const isAdmin = isStaff(session?.user.role);
 
   return (
     <div className="flex min-w-0 flex-col gap-6">
