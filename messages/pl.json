@@ -54,6 +54,19 @@
       "SUPER_ADMIN": "Superadministrator"
     }
   },
+  "login": {
+    "metaTitle": "Logowanie — BOBR Panel",
+    "title": "Zaloguj się",
+    "subtitle": "Zaloguj się do panelu BOBR.",
+    "email": "E-mail",
+    "password": "Hasło",
+    "submit": "Zaloguj się",
+    "submitting": "Logowanie…",
+    "required": "Podaj e-mail i hasło.",
+    "invalidCredentials": "Nieprawidłowy e-mail lub hasło.",
+    "noAccount": "Nie masz konta?",
+    "register": "Zarejestruj się w sklepie"
+  },
   "accessDenied": {
     "title": "Brak dostępu",
     "body": "Twoja rola nie ma dostępu do tej części panelu.",

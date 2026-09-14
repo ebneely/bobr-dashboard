@@ -1,27 +1,36 @@
 import type { Locale } from '@/lib/i18n/routing';
 
 /**
- * The storefront owns sign-in and registration; this app never renders a login
- * form. Both URLs are built here so a deployment that moves the storefront
- * changes one file instead of every redirect site.
+ * Sign-in lives in this app (/{locale}/login); registration stays on the
+ * storefront. Both are built here so a deployment that moves either changes
+ * one file instead of every redirect site.
+ *
+ * Sign-in cannot live on the storefront: the session cookie is host-only on
+ * whichever origin answered the sign-in, and vercel.app is on the Public Suffix
+ * List, so a cookie the storefront receives never reaches this origin
+ * (ebneely/bobr-dashboard#32).
  */
 const STOREFRONT_URL =
   process.env.NEXT_PUBLIC_STOREFRONT_URL ?? 'http://localhost:3100';
 
 /**
- * The storefront login page for `locale`, carrying where the visitor was
- * headed so the storefront can bounce them back after sign-in.
+ * This app's login page for `locale`, carrying where the visitor was headed.
  *
- * The locale segment is spelled out by hand because this is a cross-origin
- * URL: `redirect` from @/lib/i18n/navigation only rewrites paths inside this
- * app, and a bare `/login` here would land on the dashboard's own 404.
+ * A plain path with the locale spelled out, so it works both with the
+ * next/navigation `redirect` in a server layout and `window.location` in a
+ * client component. `returnTo` is re-validated by the login page anyway.
  */
-export function storefrontLoginUrl(locale: Locale, returnTo?: string): string {
-  const url = new URL(`/${locale}/login`, STOREFRONT_URL);
-  if (returnTo) url.searchParams.set('redirect', returnTo);
-  return url.toString();
+export function dashboardLoginPath(locale: Locale, returnTo?: string): string {
+  const path = `/${locale}/login`;
+  return returnTo ? `${path}?redirect=${encodeURIComponent(returnTo)}` : path;
 }
 
-export function storefrontHomeUrl(locale: Locale): string {
-  return new URL(`/${locale}`, STOREFRONT_URL).toString();
+/** Where a signed-in visitor goes when nothing better was asked for. */
+export function dashboardHomePath(locale: Locale): string {
+  return `/${locale}/dashboard`;
+}
+
+/** The storefront registration page — this app has no sign-up form. */
+export function storefrontRegisterUrl(locale: Locale): string {
+  return new URL(`/${locale}/register`, STOREFRONT_URL).toString();
 }
