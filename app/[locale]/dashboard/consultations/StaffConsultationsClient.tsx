@@ -60,8 +60,8 @@ function describeError(
 type StatusMove = { row: AdminConsultation; status: 'COMPLETED' | 'CANCELLED' };
 
 /**
- * Every booking, for ADMIN and DOCTOR. `canMarkPaid` is true for ADMIN only —
- * a UI courtesy; the backend refuses the paid PATCH from a DOCTOR regardless.
+ * Every booking, for ADMIN and SUPER_ADMIN. `canMarkPaid` is a UI courtesy —
+ * true for every staff role today; the backend's guard is the enforcement.
  */
 export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean }) {
   const t = useTranslations('consultationsPage');

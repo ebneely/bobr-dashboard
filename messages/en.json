@@ -51,7 +51,7 @@
     "role": {
       "CUSTOMER": "Customer",
       "ADMIN": "Administrator",
-      "DOCTOR": "Doctor"
+      "SUPER_ADMIN": "Super administrator"
     }
   },
   "accessDenied": {

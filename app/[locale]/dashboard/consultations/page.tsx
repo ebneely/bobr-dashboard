@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { isStaff } from '@/lib/auth/roles';
 import { getServerSession } from '@/lib/auth/session';
 
 import { CustomerConsultationsClient } from './CustomerConsultationsClient';
@@ -8,9 +9,10 @@ import { StaffConsultationsClient } from './StaffConsultationsClient';
 /**
  * Consultations, split by role.
  *
- * A CUSTOMER sees their own bookings; ADMIN and DOCTOR see every booking and
- * confirm them. The split is decided here, on the server, from the session —
- * the backend's RolesGuard on /consultations/admin is still the enforcement.
+ * A CUSTOMER sees their own bookings; staff (ADMIN, SUPER_ADMIN) see every
+ * booking, confirm them and mark them paid. The split is decided here, on the
+ * server, from the session — the backend's RolesGuard on /consultations/admin
+ * is still the enforcement.
  */
 export default async function ConsultationsPage({
   params,
@@ -25,7 +27,7 @@ export default async function ConsultationsPage({
 
   // The layout has already redirected anyone without a session.
   const role = session?.user.role ?? 'CUSTOMER';
-  const staff = role === 'ADMIN' || role === 'DOCTOR';
+  const staff = isStaff(role);
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6">
@@ -36,8 +38,8 @@ export default async function ConsultationsPage({
         </p>
       </header>
       {staff ? (
-        // Only ADMIN marks payments; the backend answers a DOCTOR with 403.
-        <StaffConsultationsClient canMarkPaid={role === 'ADMIN'} />
+        // Every staff role marks payments; the backend's STAFF_ROLES guard agrees.
+        <StaffConsultationsClient canMarkPaid={isStaff(role)} />
       ) : (
         <CustomerConsultationsClient />
       )}

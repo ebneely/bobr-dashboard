@@ -8,7 +8,7 @@ import { apiFetch } from './client';
  * Doctor consultations. Mirrors bobr_backend/src/consultations/.
  *
  * Booking itself happens on the storefront; the dashboard lists bookings and,
- * for ADMIN/DOCTOR, confirms them with a time and a Google Meet link.
+ * for staff (ADMIN/SUPER_ADMIN), confirms them with a time and a Google Meet link.
  */
 
 export type ConsultationContext = 'BEFORE_MEAL' | 'BEFORE_PLAN';
@@ -71,7 +71,7 @@ export function apiAdminSetConsultationStatus(
   });
 }
 
-/** ADMIN only — DOCTOR and CUSTOMER get a 403. Sets or clears `paidAt`. */
+/** Staff only (ADMIN, SUPER_ADMIN) — CUSTOMER gets a 403. Sets or clears `paidAt`. */
 export function apiAdminSetConsultationPaid(id: string, paid: boolean) {
   return apiFetch<Consultation>(`/consultations/admin/${id}/paid`, {
     method: 'PATCH',

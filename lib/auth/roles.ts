@@ -13,10 +13,23 @@
  * diffed against the controllers.
  */
 
-export const ROLES = ['CUSTOMER', 'ADMIN', 'DOCTOR'] as const;
+/**
+ * CUSTOMER orders and eats. ADMIN is the business owner — the doctor who runs
+ * the diets. SUPER_ADMIN is the developers. Both staff roles see every staff
+ * page; there is no page today that one reaches and the other does not.
+ */
+export const ROLES = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'] as const;
 export type Role = (typeof ROLES)[number];
 
 const ALL: readonly Role[] = ROLES;
+
+/** Mirrors the backend's `STAFF_ROLES`. */
+export const STAFF: readonly Role[] = ['ADMIN', 'SUPER_ADMIN'];
+
+/** True for ADMIN and SUPER_ADMIN. The one place a staff check is spelled. */
+export function isStaff(role: Role | null | undefined): boolean {
+  return role != null && STAFF.includes(role);
+}
 
 export interface RouteRule {
   /** Locale-less path, as returned by `usePathname` from @/lib/i18n/navigation. */
@@ -32,14 +45,15 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { path: '/dashboard', messageKey: 'overview', roles: ALL, nav: true },
   { path: '/dashboard/my-diet', messageKey: 'myDiet', roles: ['CUSTOMER'], nav: true },
   { path: '/dashboard/calendar', messageKey: 'calendar', roles: ['CUSTOMER'], nav: true },
-  { path: '/dashboard/orders', messageKey: 'orders', roles: ['ADMIN'], nav: true },
-  { path: '/dashboard/meals', messageKey: 'meals', roles: ['ADMIN'], nav: true },
-  { path: '/dashboard/customers', messageKey: 'customers', roles: ['ADMIN'], nav: true },
-  // CUSTOMER sees their own bookings; ADMIN/DOCTOR see all and confirm them.
+  { path: '/dashboard/orders', messageKey: 'orders', roles: STAFF, nav: true },
+  { path: '/dashboard/meals', messageKey: 'meals', roles: STAFF, nav: true },
+  { path: '/dashboard/customers', messageKey: 'customers', roles: STAFF, nav: true },
+  // CUSTOMER sees their own bookings; staff see all, confirm and mark them paid.
   { path: '/dashboard/consultations', messageKey: 'consultations', roles: ALL, nav: true },
+  // CUSTOMER raises notes; staff answer them from the queue.
   { path: '/dashboard/notes', messageKey: 'notes', roles: ALL, nav: true },
-  { path: '/dashboard/zones', messageKey: 'zones', roles: ['ADMIN'], nav: true },
-  { path: '/dashboard/settings', messageKey: 'settings', roles: ['ADMIN'], nav: true },
+  { path: '/dashboard/zones', messageKey: 'zones', roles: STAFF, nav: true },
+  { path: '/dashboard/settings', messageKey: 'settings', roles: STAFF, nav: true },
   { path: '/dashboard/profile', messageKey: 'profile', roles: ALL, nav: false },
 ];
 
@@ -51,13 +65,13 @@ export const DASHBOARD_CARDS: readonly {
   { messageKey: 'myDiet', roles: ['CUSTOMER'] },
   { messageKey: 'mealTracking', roles: ['CUSTOMER'] },
   { messageKey: 'calendar', roles: ['CUSTOMER'] },
-  { messageKey: 'orders', roles: ['ADMIN'] },
-  { messageKey: 'meals', roles: ['ADMIN'] },
-  { messageKey: 'customers', roles: ['ADMIN'] },
+  { messageKey: 'orders', roles: STAFF },
+  { messageKey: 'meals', roles: STAFF },
+  { messageKey: 'customers', roles: STAFF },
   { messageKey: 'consultations', roles: ALL },
-  { messageKey: 'notes', roles: ['CUSTOMER', 'DOCTOR'] },
-  { messageKey: 'zones', roles: ['ADMIN'] },
-  { messageKey: 'settings', roles: ['ADMIN'] },
+  { messageKey: 'notes', roles: ALL },
+  { messageKey: 'zones', roles: STAFF },
+  { messageKey: 'settings', roles: STAFF },
 ];
 
 /**
