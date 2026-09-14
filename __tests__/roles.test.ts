@@ -11,6 +11,7 @@ import {
 const STAFF_ONLY = [
   '/dashboard/orders',
   '/dashboard/meals',
+  '/dashboard/menu',
   '/dashboard/customers',
   '/dashboard/zones',
   '/dashboard/settings',
@@ -47,6 +48,18 @@ describe('roles', () => {
     for (const path of [...CUSTOMER_ONLY, ...EVERYONE]) {
       expect(canAccess(path, 'CUSTOMER')).toBe(true);
     }
+  });
+
+  it('lists Menu in the staff sidebar and on the staff overview, never for CUSTOMER', () => {
+    for (const role of ['ADMIN', 'SUPER_ADMIN'] as const) {
+      expect(navItemsFor(role).map((rule) => rule.messageKey)).toContain('menu');
+      expect(cardsFor(role)).toContain('menu');
+    }
+    expect(navItemsFor('CUSTOMER').map((rule) => rule.path)).not.toContain('/dashboard/menu');
+    expect(cardsFor('CUSTOMER')).not.toContain('menu');
+    // Segment-aware: a sibling path does not inherit the rule.
+    expect(canAccess('/dashboard/menuX', 'CUSTOMER')).toBe(true);
+    expect(canAccess('/dashboard/menu/anything', 'CUSTOMER')).toBe(false);
   });
 
   it('gives ADMIN and SUPER_ADMIN the same nav and cards, without customer pages', () => {

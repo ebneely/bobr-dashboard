@@ -19,12 +19,14 @@
     "profile": "Profil",
     "customers": "Klienci",
     "meals": "Posiłki",
+    "menu": "Menu",
     "hints": {
       "myDiet": "Twój profil żywieniowy i zamówiony katering.",
       "mealTracking": "Zaznaczaj zjedzone posiłki dzień po dniu.",
       "calendar": "Dni dostaw Twoich zamówień.",
       "orders": "Wszystkie zamówienia i ich statusy.",
       "meals": "Oferta diet, ceny i zdjęcia.",
+      "menu": "Menu do druku i dania widoczne na stronie.",
       "customers": "Klienci, ich profile i zamówienia.",
       "consultations": "Rezerwacje konsultacji z lekarzem.",
       "notes": "Uwagi, przypomnienia i reklamacje.",
@@ -196,6 +198,167 @@
       "KETOGENIC": "Ketogeniczna",
       "GLUTEN_FREE": "Bezglutenowa",
       "ALLERGIES": "Dla alergików"
+    }
+  },
+  "menuPage": {
+    "title": "Menu",
+    "subtitle": "To, co klienci widzą na stronie w zakładce Menu: plik do druku i dania ułożone według pór dnia.",
+    "loading": "Wczytywanie menu…",
+    "courses": {
+      "BREAKFAST": "Śniadanie",
+      "SECOND_BREAKFAST": "II śniadanie",
+      "LUNCH": "Obiad",
+      "SNACK": "Podwieczorek",
+      "DINNER": "Kolacja"
+    },
+    "diets": {
+      "KETOGENIC": "Ketogeniczna",
+      "GLUTEN_FREE": "Bezglutenowa",
+      "ALLERGIES": "Dla alergików"
+    },
+    "allergens": {
+      "GLUTEN": "Gluten",
+      "CRUSTACEANS": "Skorupiaki",
+      "EGGS": "Jaja",
+      "FISH": "Ryby",
+      "PEANUTS": "Orzeszki ziemne",
+      "SOY": "Soja",
+      "MILK": "Mleko",
+      "NUTS": "Orzechy",
+      "CELERY": "Seler",
+      "MUSTARD": "Gorczyca",
+      "SESAME": "Sezam",
+      "SULPHITES": "Siarczyny",
+      "LUPIN": "Łubin",
+      "MOLLUSCS": "Mięczaki"
+    },
+    "allergensLabel": "Alergeny: {names}",
+    "figures": {
+      "kcal": "{value} kcal",
+      "protein": "B {value} g",
+      "fat": "T {value} g",
+      "carbs": "W {value} g"
+    },
+    "document": {
+      "title": "Menu do druku",
+      "description": "Jeden aktualny plik — PDF albo zdjęcie. Klienci mogą go otworzyć w całości. Nowy plik zastępuje poprzedni.",
+      "kind": {
+        "PDF": "PDF",
+        "IMAGE": "Zdjęcie"
+      },
+      "currentPdf": "Aktualne menu w PDF",
+      "currentImage": "Aktualne menu jako zdjęcie",
+      "updated": "Wgrano {date}",
+      "dropToReplace": "Upuść tutaj nowy plik, żeby go podmienić.",
+      "open": "Otwórz",
+      "replace": "Podmień plik",
+      "remove": "Usuń",
+      "uploading": "Wysyłanie…",
+      "emptyTitle": "Nie ma jeszcze menu do druku",
+      "emptyHint": "Przeciągnij tutaj PDF albo zdjęcie menu (JPG, PNG, WebP, HEIC), do 15 MB.",
+      "dropNow": "Upuść, żeby wysłać",
+      "choose": "Wybierz plik",
+      "uploaded": "Menu do druku zostało wgrane",
+      "replaced": "Menu do druku zostało podmienione",
+      "removed": "Menu do druku zostało usunięte",
+      "removeTitle": "Usunąć menu do druku?",
+      "removeBody": "Plik zniknie ze strony. Dania wpisane poniżej zostaną. Zawsze możesz wgrać nowy plik.",
+      "cancel": "Anuluj"
+    },
+    "dishes": {
+      "title": "Dania",
+      "subtitle": "Ułożone jak dzień jedzenia — od śniadania do kolacji.",
+      "summary": "{count, plural, one {# danie} few {# dania} many {# dań} other {# dania}}, w tym {active, plural, =0 {żadne nie jest widoczne} one {# widoczne} few {# widoczne} many {# widocznych} other {# widocznego}} na stronie",
+      "count": "{count, plural, =0 {brak dań} one {# danie} few {# dania} many {# dań} other {# dania}}",
+      "courseEmpty": "Na tę porę nie ma jeszcze dań — na stronie ta sekcja się nie pojawi.",
+      "hidden": "Ukryte",
+      "emptyTitle": "Menu jest jeszcze puste",
+      "emptyHint": "Dodaj pierwsze danie. Klienci zobaczą je na stronie w swojej porze dnia, razem z kaloriami i alergenami."
+    },
+    "dialog": {
+      "createTitle": "Nowe danie",
+      "editTitle": "Edycja dania",
+      "description": "Podgląd pokazuje, jak danie zobaczą klienci.",
+      "sections": {
+        "basics": "Pora i dieta",
+        "naming": "Nazwa i opis",
+        "nutrition": "Wartości odżywcze",
+        "allergens": "Alergeny",
+        "more": "Tagi, zdjęcie, widoczność"
+      }
+    },
+    "fields": {
+      "course": "Pora dnia",
+      "diet": "Dieta",
+      "noDiet": "Bez przypisanej diety",
+      "dietHint": "Opcjonalnie — danie pokaże się przy tej diecie.",
+      "dietUnavailable": "Nie udało się wczytać diet.",
+      "namePl": "Nazwa (polski)",
+      "nameEn": "Nazwa (angielski)",
+      "descriptionPl": "Opis (polski)",
+      "descriptionEn": "Opis (angielski)",
+      "kcal": "Kalorie",
+      "proteinG": "Białko",
+      "fatG": "Tłuszcz",
+      "carbsG": "Węglowodany",
+      "nutritionHint": "Pełne liczby. Puste pole nie pojawi się na stronie.",
+      "allergensSelected": "— zaznaczono {count}",
+      "allergensHint": "Numery jak w wykazie UE. Klienci mogą ukryć dania z wybranymi alergenami.",
+      "tags": "Tagi",
+      "tagsPlaceholder": "wegańskie, bez cukru",
+      "tagsHint": "Po przecinku. Pomagają w wyszukiwaniu.",
+      "photo": "Zdjęcie",
+      "photoChoose": "Wybierz zdjęcie",
+      "photoReplace": "Zmień zdjęcie",
+      "photoHint": "JPG, PNG, WebP lub HEIC, do 15 MB",
+      "isActive": "Widoczne na stronie",
+      "isActiveHint": "Wyłącz, żeby ukryć danie bez usuwania."
+    },
+    "preview": {
+      "title": "Tak zobaczą to klienci",
+      "language": "Język podglądu",
+      "namePlaceholder": "Nazwa dania",
+      "hidden": "Ukryte — nie pojawi się na stronie.",
+      "note": "Podgląd przybliżony: strona ma własny krój karty."
+    },
+    "actions": {
+      "add": "Dodaj danie",
+      "addFirst": "Dodaj pierwsze danie",
+      "addTo": "Dodaj",
+      "edit": "Edytuj",
+      "delete": "Usuń",
+      "deleteNamed": "Usuń „{name}”",
+      "moveUp": "Przesuń „{name}” wyżej",
+      "moveDown": "Przesuń „{name}” niżej",
+      "cancel": "Anuluj",
+      "save": "Zapisz zmiany",
+      "create": "Dodaj danie",
+      "saving": "Zapisywanie…",
+      "retry": "Spróbuj ponownie"
+    },
+    "delete": {
+      "title": "Usunąć „{name}”?",
+      "body": "Danie zniknie z menu na stronie i nie da się tego cofnąć. Jeśli chcesz je tylko schować, wyłącz „Widoczne na stronie”."
+    },
+    "toast": {
+      "created": "Dodano „{name}”",
+      "saved": "Zapisano „{name}”",
+      "deleted": "Usunięto „{name}”"
+    },
+    "errors": {
+      "loadFailedTitle": "Nie udało się wczytać dań",
+      "loadFailed": "Serwer nie odpowiedział. Sprawdź połączenie i spróbuj ponownie.",
+      "documentLoadFailed": "Nie udało się sprawdzić, czy menu do druku jest wgrane.",
+      "nameRequired": "Podaj nazwę dania po polsku i po angielsku.",
+      "wholeNumbers": "Kalorie i makroskładniki muszą być pełnymi liczbami.",
+      "saveFailed": "Nie udało się zapisać dania.",
+      "photoFailed": "Danie zapisane, ale nie udało się wysłać zdjęcia.",
+      "deleteFailed": "Nie udało się usunąć dania.",
+      "reorderFailed": "Nie udało się zmienić kolejności.",
+      "uploadFailed": "Nie udało się wysłać pliku.",
+      "removeFailed": "Nie udało się usunąć pliku.",
+      "documentType": "To musi być PDF albo zdjęcie (JPG, PNG, WebP, HEIC).",
+      "fileTooLarge": "Plik jest większy niż 15 MB."
     }
   },
   "myDiet": {
@@ -459,7 +622,10 @@
       "DAYS_REQUIRED": "Wybierz co najmniej jeden dzień.",
       "DAYS_TOO_MANY": "Możesz wybrać najwyżej {maximum, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}.",
       "DAYS_DUPLICATE": "Każdy dzień można wybrać tylko raz.",
-      "BLIK_PHONE_FORMAT": "Podaj polski numer telefonu do BLIK: 9 cyfr, opcjonalnie z +48."
+      "BLIK_PHONE_FORMAT": "Podaj polski numer telefonu do BLIK: 9 cyfr, opcjonalnie z +48.",
+      "MENU_ITEM_NOT_FOUND": "Nie znaleziono dania — mogło zostać już usunięte.",
+      "DOCUMENT_FORMAT_UNSUPPORTED": "Nieobsługiwany format pliku: {format}. Wgraj PDF albo zdjęcie.",
+      "DOCUMENT_TOO_LARGE": "Plik jest za duży — maksymalnie {maxMb} MB."
     },
     "fields": {
       "oneTimeShippingGrosze": "Cena dostawy",
@@ -477,7 +643,18 @@
       "body": "Treść",
       "kind": "Rodzaj",
       "paid": "Opłacona",
-      "isActive": "Aktywna"
+      "isActive": "Aktywna",
+      "mealId": "Dieta",
+      "course": "Pora dnia",
+      "kcal": "Kalorie",
+      "proteinG": "Białko",
+      "fatG": "Tłuszcz",
+      "carbsG": "Węglowodany",
+      "allergens": "Alergeny",
+      "tags": "Tagi",
+      "sortOrder": "Kolejność",
+      "descriptionPl": "Opis (PL)",
+      "descriptionEn": "Opis (EN)"
     }
   }
 }
