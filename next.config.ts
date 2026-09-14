@@ -6,6 +6,40 @@ const withNextIntl = createNextIntlPlugin('./lib/i18n/request.ts');
 const isProd = process.env.NODE_ENV === 'production';
 
 /**
+ * Refuse to build on Vercel with a missing or local address.
+ *
+ * NEXT_PUBLIC_* values are inlined into the bundle at BUILD time, and every
+ * client module falls back to http://localhost:… when one is unset. So a Vercel
+ * build without them does not fail — it ships a site whose browser code calls
+ * the visitor's own machine. That happened on 2026-09-13: the dashboard
+ * redirected everyone to http://localhost:3100/pl/login and the storefront
+ * called http://localhost:8003. Failing the build keeps the previous working
+ * deployment live and names the variable to set.
+ *
+ * Only on Vercel (VERCEL=1): local builds read .env.local, where localhost is
+ * exactly right.
+ */
+const REQUIRED_PUBLIC_URLS: ReadonlyArray<[string, string]> = [
+  ['NEXT_PUBLIC_API_URL', 'the BOBR API, e.g. https://api.bobr.pl'],
+  ['NEXT_PUBLIC_STOREFRONT_URL', 'the storefront origin, where sign-in lives'],
+];
+if (process.env.VERCEL === '1') {
+  const problems = REQUIRED_PUBLIC_URLS.flatMap(([name, what]) => {
+    const value = process.env[name];
+    if (!value) return [`${name} is not set (${what})`];
+    if (/\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(value)) {
+      return [`${name} points at ${value} (${what})`];
+    }
+    return [];
+  });
+  if (problems.length > 0) {
+    throw new Error(
+      `Refusing to build: ${problems.join('; ')}. Set it in Vercel → Settings → Environment Variables, then redeploy without the build cache.`,
+    );
+  }
+}
+
+/**
  * Whether this deployment is genuinely reachable over HTTPS.
  *
  * A plain env var, NOT NEXT_PUBLIC_: those are inlined at build time and could
