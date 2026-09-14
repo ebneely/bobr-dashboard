@@ -4,7 +4,17 @@ import { createAuthClient } from 'better-auth/client';
 
 import { asRole, type Role } from './roles';
 
-const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8003';
+/**
+ * Server renders call the API directly, never through this app's own /v1
+ * proxy. In production NEXT_PUBLIC_API_URL is this app's origin (the browser's
+ * same-origin route to the API); a server render calling itself through a
+ * rewrite would be a pointless extra hop — and on the build machine, a call to
+ * a site that may not be up yet. API_UPSTREAM_URL is the real API origin.
+ */
+const API_ORIGIN =
+  process.env.API_UPSTREAM_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:8003';
 
 /**
  * A second, framework-agnostic client for server use. The one in ./client.ts

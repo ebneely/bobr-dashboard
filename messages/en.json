@@ -54,6 +54,19 @@
       "SUPER_ADMIN": "Super administrator"
     }
   },
+  "login": {
+    "metaTitle": "Sign in — BOBR Panel",
+    "title": "Sign in",
+    "subtitle": "Sign in to the BOBR dashboard.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "required": "Enter your email and password.",
+    "invalidCredentials": "Incorrect email or password.",
+    "noAccount": "No account?",
+    "register": "Register on the storefront"
+  },
   "accessDenied": {
     "title": "No access",
     "body": "Your role does not have access to this part of the dashboard.",

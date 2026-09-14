@@ -43,10 +43,12 @@ export function DashboardShell({
       await signOut();
     } catch {
       // A failed revoke must not strand someone on a page they think is
-      // signed out. Leave for the storefront either way; the cookie is
+      // signed out. Leave for the login page either way; the cookie is
       // httpOnly and the next server render re-checks it.
     }
-    // Full navigation, not the router: the destination is another origin.
+    // Full navigation, not the router: the server layouts must re-read the
+    // (now cleared) cookie on a real request, and no cached RSC payload of a
+    // signed-in page may survive.
     window.location.href = signOutUrl;
   }
 

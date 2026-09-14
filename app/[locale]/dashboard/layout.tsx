@@ -3,7 +3,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
 import { getServerSession } from '@/lib/auth/session';
-import { storefrontHomeUrl, storefrontLoginUrl } from '@/lib/auth/urls';
+import { dashboardHomePath, dashboardLoginPath } from '@/lib/auth/urls';
 import { routing, type Locale } from '@/lib/i18n/routing';
 
 import { DashboardShell } from './DashboardShell';
@@ -20,10 +20,12 @@ import { DashboardShell } from './DashboardShell';
  * - proxy.ts runs before the session is known and would need its own round
  *   trip on every asset request. It stays locale-only.
  *
- * `redirect` comes from next/navigation rather than @/lib/i18n/navigation on
- * purpose: the target is the storefront on another origin, and the locale is
- * spelled into that URL by hand. The i18n `redirect` only rewrites paths
- * inside this app.
+ * Signed-out visitors go to this app's own /{locale}/login, not the
+ * storefront's: the session cookie is host-only, so only a sign-in answered on
+ * this origin (through the /v1 proxy) produces a cookie this layout can see.
+ *
+ * `redirect` comes from next/navigation with the locale spelled into the path
+ * by hand (lib/auth/urls.ts), so the same helper serves the client sign-out.
  */
 export default async function DashboardLayout({
   children,
@@ -40,7 +42,7 @@ export default async function DashboardLayout({
   const session = await getServerSession();
 
   if (!session) {
-    redirect(storefrontLoginUrl(typedLocale, `/${typedLocale}/dashboard`));
+    redirect(dashboardLoginPath(typedLocale, dashboardHomePath(typedLocale)));
   }
 
   return (
@@ -48,7 +50,7 @@ export default async function DashboardLayout({
       userName={session.user.name}
       role={session.user.role}
       stubbed={session.stubbed}
-      signOutUrl={storefrontHomeUrl(typedLocale)}
+      signOutUrl={dashboardLoginPath(typedLocale)}
     >
       {children}
     </DashboardShell>
