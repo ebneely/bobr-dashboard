@@ -1,14 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { signOut } from '@/lib/auth/client';
-import { canAccess, navItemsFor, ruleFor, type Role } from '@/lib/auth/roles';
-import { Link, usePathname } from '@/lib/i18n/navigation';
+import {
+  PASSWORD_CHANGE_PATH,
+  canAccess,
+  mustLeaveForPasswordChange,
+  navItemsFor,
+  ruleFor,
+  type Role,
+} from '@/lib/auth/roles';
+import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
 
 import { AccessDenied } from './AccessDenied';
 
@@ -16,12 +23,15 @@ export function DashboardShell({
   userName,
   role,
   stubbed,
+  mustChangePassword,
   signOutUrl,
   children,
 }: {
   userName: string;
   role: Role;
   stubbed: boolean;
+  /** Held on the change-password page until it is changed (dashboard#36). */
+  mustChangePassword: boolean;
   signOutUrl: string;
   children: React.ReactNode;
 }) {
@@ -34,8 +44,19 @@ export function DashboardShell({
   const pathname = usePathname();
   const [signingOut, setSigningOut] = useState(false);
 
-  const items = navItemsFor(role);
+  const router = useRouter();
+
+  // While a password must be changed there is nowhere else to go, so the nav
+  // is not offered at all.
+  const items = mustChangePassword ? [] : navItemsFor(role);
   const allowed = canAccess(pathname, role);
+
+  // The server layout redirects on a full load, but a layout does not
+  // re-render on in-app navigation — this catches the rest.
+  const held = mustLeaveForPasswordChange(pathname, mustChangePassword);
+  useEffect(() => {
+    if (held) router.replace(PASSWORD_CHANGE_PATH);
+  }, [held, router]);
 
   async function handleSignOut() {
     setSigningOut(true);
@@ -61,6 +82,12 @@ export function DashboardShell({
           </span>
           <Badge variant="secondary">{t(`role.${role}`)}</Badge>
         </div>
+
+        {mustChangePassword ? (
+          <p className="text-sm text-muted-foreground" data-testid="password-change-note">
+            {t('passwordChangeRequired')}
+          </p>
+        ) : null}
 
         <nav aria-label={t('navLabel')}>
           <ul className="flex flex-wrap gap-1 md:flex-col md:flex-nowrap">
@@ -94,7 +121,11 @@ export function DashboardShell({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground">{t('signedInAs')}</p>
-            <p className="truncate text-sm">{userName}</p>
+            <Button asChild variant="link" className="h-auto max-w-full justify-start p-0">
+              <Link href={PASSWORD_CHANGE_PATH} data-testid="profile-link">
+                <span className="truncate text-sm">{userName}</span>
+              </Link>
+            </Button>
           </div>
           <Button
             variant="outline"
@@ -115,7 +146,7 @@ export function DashboardShell({
           stretching the grid column and giving the whole page a sideways
           scrollbar on a phone. The gutter lives here, once, for every page. */}
       <div className="min-w-0 px-4 py-6 md:px-8 md:py-8">
-        {allowed ? children : <AccessDenied role={role} />}
+        {held ? null : allowed ? children : <AccessDenied role={role} />}
       </div>
     </div>
   );

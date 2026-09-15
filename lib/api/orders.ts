@@ -67,43 +67,6 @@ export interface CustomerNote {
   orderId: string | null;
 }
 
-export function apiPlaceOrder(input: {
-  mealId: string;
-  mode: OrderMode;
-  /** YYYY-MM-DD, one per delivery day. */
-  days: string[];
-}) {
-  return apiFetch<Order>('/orders', { method: 'POST', body: input });
-}
-
-export function apiListMyOrders() {
-  return apiFetch<Order[]>('/orders');
-}
-
-export function apiGetMyOrder(id: string) {
-  return apiFetch<Order>(`/orders/${id}`);
-}
-
-/** Meal tracking: mark one delivery day eaten, or undo it. */
-export function apiTrackDay(dayId: string, eaten: boolean) {
-  return apiFetch<OrderDay>(`/orders/days/${dayId}`, {
-    method: 'PATCH',
-    body: { eaten },
-  });
-}
-
-export function apiRaiseNote(input: {
-  kind: NoteKind;
-  body: string;
-  orderId?: string | null;
-}) {
-  return apiFetch<CustomerNote>('/notes', { method: 'POST', body: input });
-}
-
-export function apiListMyNotes() {
-  return apiFetch<CustomerNote[]>('/notes');
-}
-
 /**
  * Formats grosze as PLN.
  *

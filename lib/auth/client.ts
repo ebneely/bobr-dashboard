@@ -40,4 +40,4 @@ export const authClient = createAuthClient({
  * returns (see lib/auth/session.ts), never widened into these client types.
  */
 
-export const { signIn, signOut, useSession } = authClient;
+export const { signIn, signOut, useSession, changePassword } = authClient;

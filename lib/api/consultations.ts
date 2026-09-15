@@ -1,7 +1,5 @@
 import { TZDate } from '@date-fns/tz';
 
-import type { Locale } from '@/lib/i18n/routing';
-
 import { apiFetch } from './client';
 
 /**
@@ -41,10 +39,6 @@ export interface Consultation {
 export interface AdminConsultation extends Consultation {
   /** `name` is "" when the customer never gave one. */
   customer: { name: string; email: string };
-}
-
-export function apiListMyConsultations() {
-  return apiFetch<Consultation[]>('/consultations');
 }
 
 export function apiAdminListConsultations() {
@@ -141,12 +135,4 @@ export function formatWarsawDateTime(iso: string, locale: string): string {
     timeStyle: 'short',
     timeZone: 'Europe/Warsaw',
   }).format(new Date(iso));
-}
-
-const STOREFRONT_URL =
-  process.env.NEXT_PUBLIC_STOREFRONT_URL ?? 'http://localhost:3100';
-
-/** The storefront page where a customer books a consultation. */
-export function storefrontConsultationUrl(locale: Locale): string {
-  return new URL(`/${locale}/consultation`, STOREFRONT_URL).toString();
 }

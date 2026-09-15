@@ -21,7 +21,7 @@ const isProd = process.env.NODE_ENV === 'production';
  */
 const REQUIRED_PUBLIC_URLS: ReadonlyArray<[string, string]> = [
   ['NEXT_PUBLIC_API_URL', "this app's own origin, which proxies /v1 to the API"],
-  ['NEXT_PUBLIC_STOREFRONT_URL', 'the storefront origin, where registration lives'],
+  ['NEXT_PUBLIC_STOREFRONT_URL', 'the storefront origin, where customer accounts live'],
 ];
 // Not public, but just as fatal when missing: without it there is no /v1 proxy,
 // NEXT_PUBLIC_API_URL (this app's own origin) answers /v1/* with a 404, and
@@ -38,6 +38,20 @@ if (process.env.VERCEL === '1') {
     }
     return [];
   });
+  // Same origin for both silently disables the /v1 proxy (see apiUpstream
+  // below) and brings ebneely/bobr-dashboard#32 back: sign-in "works" and the
+  // next page is anonymous. Refused here rather than discovered in production.
+  try {
+    const publicApi = process.env.NEXT_PUBLIC_API_URL;
+    const upstream = process.env.API_UPSTREAM_URL;
+    if (publicApi && upstream && new URL(publicApi).origin === new URL(upstream).origin) {
+      problems.push(
+        `API_UPSTREAM_URL has the same origin as NEXT_PUBLIC_API_URL (${upstream}); NEXT_PUBLIC_API_URL must be this app's own origin and API_UPSTREAM_URL the real API`,
+      );
+    }
+  } catch {
+    problems.push('NEXT_PUBLIC_API_URL or API_UPSTREAM_URL is not a valid URL');
+  }
   if (problems.length > 0) {
     throw new Error(
       `Refusing to build: ${problems.join('; ')}. Set it in Vercel → Settings → Environment Variables, then redeploy without the build cache.`,

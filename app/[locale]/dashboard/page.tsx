@@ -10,19 +10,17 @@ import { ROUTE_ACCESS, cardsFor } from '@/lib/auth/roles';
 import { getServerSession } from '@/lib/auth/session';
 import { Link } from '@/lib/i18n/navigation';
 
-/**
- * Where each overview card leads. Most cards share their message key with a
- * route in ROUTE_ACCESS; meal tracking lives on the calendar page.
- */
+import { ReadinessAlert } from './ReadinessAlert';
+
+/** Where each overview card leads: the route sharing its message key. */
 function hrefFor(key: string): string {
-  if (key === 'mealTracking') return '/dashboard/calendar';
   return ROUTE_ACCESS.find((rule) => rule.messageKey === key)?.path ?? '/dashboard';
 }
 
 /**
- * The overview: one card per area this role can use, split by role from
- * lib/auth/roles.ts rather than from a fixed list — a customer has no business
- * seeing an "Orders" tile, and an admin has no "My diet".
+ * The overview: a readiness checklist when the shop cannot sell (gap G12),
+ * then one card per area this role can use, split by role from
+ * lib/auth/roles.ts — only a SUPER_ADMIN gets the Staff card.
  *
  * Each card is a link to its page. They used to be placeholders showing "—",
  * from before those pages existed.
@@ -45,6 +43,8 @@ export default async function DashboardPage({
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6">
       <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
+
+      <ReadinessAlert />
 
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((key) => (

@@ -4,8 +4,9 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { safeNextPath } from '@/lib/auth/next-path';
+import { isStaff } from '@/lib/auth/roles';
 import { getServerSession } from '@/lib/auth/session';
-import { dashboardHomePath, storefrontRegisterUrl } from '@/lib/auth/urls';
+import { dashboardHomePath } from '@/lib/auth/urls';
 import { routing } from '@/lib/i18n/routing';
 
 import { LoginClient } from './LoginClient';
@@ -44,8 +45,11 @@ export default async function LoginPage({
   const raw = (await searchParams).redirect;
   const target = safeNextPath(Array.isArray(raw) ? raw[0] : raw) ?? dashboardHomePath(locale);
 
-  // Already signed in: nothing to do here.
-  if (await getServerSession()) redirect(target);
+  // Already signed in as staff: nothing to do here. A non-staff session gets
+  // the form — signing in as staff replaces it — rather than a bounce through
+  // the dashboard to the staff-only card.
+  const session = await getServerSession();
+  if (session && isStaff(session.user.role)) redirect(target);
 
   const tCommon = await getTranslations('common');
 
@@ -53,7 +57,7 @@ export default async function LoginPage({
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <p className="text-center text-2xl font-semibold tracking-tight">{tCommon('appName')}</p>
-        <LoginClient target={target} registerUrl={storefrontRegisterUrl(locale)} />
+        <LoginClient target={target} />
       </div>
     </main>
   );
