@@ -29,6 +29,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Allergen } from '@/lib/api/menu';
+import type { MealType } from '@/lib/api/orders';
 import {
   Table,
   TableBody,
@@ -68,6 +70,8 @@ const cellClass = 'px-3 py-2.5 align-top';
 
 export function DeliveriesClient() {
   const t = useTranslations('deliveriesPage');
+  const tMealTypes = useTranslations('adminMeals.types');
+  const tAllergens = useTranslations('menuPage.allergens');
   const translateApiError = useApiErrorTranslate();
   const locale = useLocale();
   const fieldId = useId();
@@ -199,17 +203,20 @@ export function DeliveriesClient() {
                     <Card size="sm">
                       <CardContent className="flex flex-col gap-1.5">
                         <span className="text-xs tracking-wider text-muted-foreground uppercase">
-                          {row.type}
+                          {tMealTypes(row.type as MealType)}
                         </span>
                         <strong className="text-lg wrap-anywhere">{row.namePl}</strong>
                         <span className="text-2xl font-semibold" data-testid="production-count">
                           {t('portions', { count: row.count })}
                         </span>
                         {row.allergens.length > 0 && (
-                          <div className="mt-1 flex flex-wrap gap-1">
+                          <div
+                            className="mt-1 flex flex-wrap gap-1"
+                            data-testid="production-allergens"
+                          >
                             {row.allergens.map((a) => (
                               <Badge key={a} variant="outline" className="text-xs">
-                                {a}
+                                {tAllergens(a as Allergen)}
                               </Badge>
                             ))}
                           </div>
