@@ -271,7 +271,7 @@ export function DeliveriesClient() {
                               <div className="mt-1 flex flex-wrap gap-1">
                                 {stop.allergens.map((a) => (
                                   <Badge key={a} variant="outline" className="text-xs">
-                                    {a}
+                                    {tAllergens(a as Allergen)}
                                   </Badge>
                                 ))}
                               </div>
