@@ -226,7 +226,7 @@ export function DeliveriesClient() {
             {view.stops.length === 0 ? (
               <p className="text-muted-foreground">{t('noStops')}</p>
             ) : (
-              <div className="max-w-full overflow-hidden rounded-lg border bg-card print:overflow-visible print:border-none">
+              <div className="max-w-full overflow-x-auto rounded-lg border bg-card print:overflow-visible print:border-none">
                 <Table data-testid="stops-table">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
