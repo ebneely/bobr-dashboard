@@ -31,6 +31,12 @@ export interface DashboardSession {
     readonly name: string;
     readonly email: string;
     readonly role: Role;
+    /**
+     * Set by the backend when a SUPER_ADMIN created the account or reset its
+     * password: every dashboard route leads to the change-password form until
+     * it is cleared (ebneely/bobr-dashboard#36).
+     */
+    readonly mustChangePassword: boolean;
   };
   /** True when the session came from BOBR_DEV_STUB_ROLE, not from the API. */
   readonly stubbed: boolean;
@@ -55,6 +61,7 @@ function devStubSession(): DashboardSession | null {
       name: process.env.BOBR_DEV_STUB_NAME ?? 'Anna Kowalska',
       email: 'stub@bobr.local',
       role,
+      mustChangePassword: false,
     },
     stubbed: true,
   };
@@ -82,19 +89,30 @@ export const getServerSession = cache(
         fetchOptions: { headers: { cookie } },
       });
       const user = data?.user as
-        | { id: string; name?: string | null; email: string; role?: unknown }
+        | {
+            id: string;
+            name?: string | null;
+            email: string;
+            role?: unknown;
+            isActive?: unknown;
+            mustChangePassword?: unknown;
+          }
         | undefined;
       if (!user) return null;
+      // The backend's session guard refuses a deactivated account too; a
+      // session that still names one is treated as no session at all.
+      if (user.isActive === false) return null;
 
       return {
         user: {
           id: user.id,
           name: user.name?.trim() || user.email,
           email: user.email,
-          // An unrecognised role degrades to the least-privileged view rather
-          // than throwing a 500 at someone who is legitimately signed in. The
-          // backend guard decides what they can actually read either way.
+          // An unrecognised role degrades to CUSTOMER, which the dashboard
+          // layout refuses — fail closed rather than 500. The backend guard
+          // decides what anyone can actually read either way.
           role: asRole(user.role) ?? 'CUSTOMER',
+          mustChangePassword: user.mustChangePassword === true,
         },
         stubbed: false,
       };

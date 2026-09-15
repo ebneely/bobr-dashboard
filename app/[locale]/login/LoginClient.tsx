@@ -9,7 +9,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -19,13 +18,16 @@ import { formatApiError } from '@/lib/api/client';
 import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import { signIn } from '@/lib/auth/client';
 
+/**
+ * Staff sign-in. There is deliberately no sign-up link: staff accounts are
+ * created by a SUPER_ADMIN, and a storefront sign-up is always a customer
+ * account (ebneely/bobr-dashboard#36).
+ */
 export function LoginClient({
   target,
-  registerUrl,
 }: {
   /** Already validated by the server page — a local path, never a URL. */
   target: string;
-  registerUrl: string;
 }) {
   const t = useTranslations('login');
   const tErrors = useTranslations('errors');
@@ -60,8 +62,9 @@ export function LoginClient({
       setError(
         // Deliberately the same message whether the address is unknown or the
         // password is wrong: telling them apart tells an attacker which
-        // addresses have accounts.
-        status === 401
+        // addresses have accounts. ACCOUNT_DISABLED is the exception, and safe:
+        // the backend only answers it after the password matched.
+        status === 401 && code !== 'ACCOUNT_DISABLED'
           ? t('invalidCredentials')
           : formatApiError(
               { statusCode: status, error: statusText, message: message ?? '', code },
@@ -133,12 +136,6 @@ export function LoginClient({
         </Button>
       </CardContent>
 
-      <CardFooter className="flex flex-wrap justify-center gap-1 text-sm text-muted-foreground">
-        <span>{t('noAccount')}</span>
-        <Button asChild variant="link" className="h-auto p-0">
-          <a href={registerUrl}>{t('register')}</a>
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

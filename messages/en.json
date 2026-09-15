@@ -10,9 +10,6 @@
   "dashboard": {
     "title": "Dashboard",
     "overview": "Overview",
-    "myDiet": "My diet",
-    "mealTracking": "Meal tracking",
-    "calendar": "Calendar",
     "orders": "Orders",
     "consultations": "Consultations",
     "notes": "Notes and complaints",
@@ -21,9 +18,6 @@
     "meals": "Meals",
     "menu": "Menu",
     "hints": {
-      "myDiet": "Your nutrition profile and the catering you ordered.",
-      "mealTracking": "Tick off the meals you ate, day by day.",
-      "calendar": "The delivery days of your orders.",
       "orders": "Every order and its status.",
       "meals": "Diets on offer, prices and photos.",
       "menu": "The printable menu and the dishes shown on the website.",
@@ -31,10 +25,12 @@
       "consultations": "Bookings for consultations with the doctor.",
       "notes": "Notes, nudges and complaints.",
       "zones": "Postal codes we deliver to, and what shipping costs.",
-      "settings": "The BLIK number for consultation payments."
+      "settings": "The BLIK number for consultation payments.",
+      "staff": "Admin accounts: add, reset passwords, deactivate."
     },
     "zones": "Delivery zones",
-    "settings": "Settings"
+    "settings": "Settings",
+    "staff": "Team"
   },
   "notes": {
     "nudge": "Nudge",
@@ -54,60 +50,28 @@
       "CUSTOMER": "Customer",
       "ADMIN": "Administrator",
       "SUPER_ADMIN": "Super administrator"
-    }
+    },
+    "passwordChangeRequired": "Set your own password before using the panel."
   },
   "login": {
     "metaTitle": "Sign in — BOBR Panel",
     "title": "Sign in",
-    "subtitle": "Sign in to the BOBR dashboard.",
+    "subtitle": "The BOBR team panel.",
     "email": "Email",
     "password": "Password",
     "submit": "Sign in",
     "submitting": "Signing in…",
     "required": "Enter your email and password.",
-    "invalidCredentials": "Incorrect email or password.",
-    "noAccount": "No account?",
-    "register": "Register on the storefront"
+    "invalidCredentials": "Incorrect email or password."
   },
   "accessDenied": {
     "title": "No access",
     "body": "Your role does not have access to this part of the dashboard.",
     "back": "Back to the dashboard"
   },
-  "tracking": {
-    "title": "Meal tracking",
-    "subtitle": "Tick off what you have eaten. This is your log.",
-    "noOrders": "You have no orders yet.",
-    "orderOf": "Order from {date}",
-    "days": "days",
-    "eaten": "Eaten",
-    "notEaten": "To eat",
-    "upcoming": "Upcoming",
-    "past": "Past",
-    "total": "Total",
-    "discount": "Discount",
-    "freeShipping": "Free delivery",
-    "status": "Status",
-    "statuses": {
-      "PENDING": "Pending",
-      "CONFIRMED": "Confirmed",
-      "PROCESSING": "Processing",
-      "DELIVERED": "Delivered",
-      "CANCELLED": "Cancelled"
-    }
-  },
   "notesPage": {
-    "title": "Notes and complaints",
-    "subtitle": "Write to us — we answer here.",
-    "kind": "Kind",
-    "body": "Message",
-    "submit": "Send",
-    "sending": "Sending…",
-    "mine": "Your messages",
     "none": "Nothing here yet.",
-    "awaiting": "Awaiting a reply",
     "answered": "Answered",
-    "reply": "Reply",
     "queue": "Message queue",
     "unansweredOnly": "Unanswered only",
     "replyPlaceholder": "Write a reply…",
@@ -361,57 +325,6 @@
       "fileTooLarge": "The file is larger than 15 MB."
     }
   },
-  "myDiet": {
-    "title": "My diet",
-    "subtitle": "Your profile and your catering orders in one place.",
-    "loading": "Loading…",
-    "intakeTitle": "Intake profile",
-    "intakeLoadFailed": "Could not load your profile.",
-    "complete": "Complete",
-    "incomplete": "Incomplete",
-    "noProfile": "You have no profile yet. Fill it in before ordering catering.",
-    "incompleteHint": "The profile must be complete before you order: weight, height, activity and four photos.",
-    "startIntake": "Fill in your profile",
-    "finishIntake": "Finish your profile",
-    "weight": "Weight",
-    "height": "Height",
-    "kg": "{value} kg",
-    "cm": "{value} cm",
-    "bodyComposition": "Body composition",
-    "activities": "Physical activity",
-    "notGiven": "Not given",
-    "completedOn": "Completed",
-    "missingPhotos": "Missing photos",
-    "activity": {
-      "NONE": "No sport",
-      "GYM": "Gym",
-      "SWIMMER": "Swimming",
-      "BOXING_MMA": "Boxing or MMA",
-      "OTHER": "Other"
-    },
-    "photo": {
-      "FRONT": "front",
-      "BACK": "back",
-      "LEFT": "left side",
-      "RIGHT": "right side"
-    },
-    "ordersTitle": "My orders",
-    "ordersLoadFailed": "Could not load your orders.",
-    "noOrders": "You have no orders yet.",
-    "trackDays": "Track days in the calendar",
-    "orderLine": "{mode} · {days, plural, one {# day} other {# days}} · placed {date}",
-    "modes": {
-      "ONE_TIME": "One-time",
-      "CALENDAR": "Calendar"
-    },
-    "statuses": {
-      "PENDING": "Pending",
-      "CONFIRMED": "Confirmed",
-      "PROCESSING": "Processing",
-      "DELIVERED": "Delivered",
-      "CANCELLED": "Cancelled"
-    }
-  },
   "adminCustomers": {
     "title": "Customers",
     "subtitle": "Every customer, newest first, with their profile and catering orders.",
@@ -452,7 +365,6 @@
   },
   "consultationsPage": {
     "title": "Consultations",
-    "subtitleCustomer": "Your consultation bookings with the doctor.",
     "subtitleStaff": "Every booking, newest first. Confirm a time and a Google Meet link.",
     "loadFailed": "Could not load consultations.",
     "contexts": {
@@ -467,13 +379,6 @@
     },
     "preferred": "Preferred time",
     "scheduled": "Scheduled",
-    "price": "Price",
-    "note": "Note",
-    "joinMeet": "Join on Google Meet",
-    "awaiting": "Waiting for the doctor to confirm.",
-    "emptyTitle": "No consultations yet",
-    "emptyBody": "Book a consultation with the doctor before a meal or before a diet plan.",
-    "book": "Book a consultation",
     "none": "No bookings.",
     "customer": "Customer",
     "email": "Email",
@@ -509,14 +414,7 @@
     "reference": "Transfer reference",
     "markPaid": "Mark as paid",
     "unmarkPaid": "Undo payment",
-    "paidFailed": "Could not change the payment status.",
-    "blikTitle": "Pay by BLIK phone transfer",
-    "blikPhone": "Phone number",
-    "blikName": "Recipient",
-    "blikAmount": "Amount",
-    "blikReference": "Transfer reference",
-    "blikPending": "We will send you the BLIK payment details soon.",
-    "paidCustomer": "Paid — thank you!"
+    "paidFailed": "Could not change the payment status."
   },
   "zonesPage": {
     "title": "Delivery zones",
@@ -625,7 +523,15 @@
       "BLIK_PHONE_FORMAT": "Enter a Polish BLIK phone number: 9 digits, optionally with +48.",
       "MENU_ITEM_NOT_FOUND": "Dish not found — it may already have been deleted.",
       "DOCUMENT_FORMAT_UNSUPPORTED": "Unsupported file format: {format}. Upload a PDF or an image.",
-      "DOCUMENT_TOO_LARGE": "The file is too large — {maxMb} MB at most."
+      "DOCUMENT_TOO_LARGE": "The file is too large — {maxMb} MB at most.",
+      "EMAIL_TAKEN": "This email address is already taken.",
+      "CANNOT_MODIFY_SUPER_ADMIN": "A super admin account cannot be changed.",
+      "CANNOT_MODIFY_SELF": "You cannot change your own account here.",
+      "ACCOUNT_DISABLED": "This account is disabled.",
+      "STAFF_NOT_FOUND": "Team account not found.",
+      "INVALID_PASSWORD": "The current password is incorrect.",
+      "PASSWORD_TOO_SHORT": "The password is too short.",
+      "PASSWORD_TOO_LONG": "The password is too long."
     },
     "fields": {
       "oneTimeShippingGrosze": "Shipping price",
@@ -654,7 +560,110 @@
       "tags": "Tags",
       "sortOrder": "Order",
       "descriptionPl": "Description (PL)",
-      "descriptionEn": "Description (EN)"
+      "descriptionEn": "Description (EN)",
+      "name": "Name",
+      "email": "Email"
+    }
+  },
+  "staffOnly": {
+    "metaTitle": "Team panel — BOBR",
+    "title": "This panel is for the BOBR team only",
+    "body": "You have been signed out. Your orders, diet and consultations are in your account on the BOBR shop.",
+    "account": "Go to your shop account",
+    "staffLogin": "Sign in as staff"
+  },
+  "profilePage": {
+    "title": "Profile",
+    "subtitle": "Your BOBR panel account.",
+    "accountTitle": "Account",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "passwordTitle": "Change password",
+    "passwordHint": "The new password must be at least {min} characters. Your other devices will be signed out.",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Repeat new password",
+    "submit": "Change password",
+    "saving": "Saving…",
+    "required": "Fill in all three fields.",
+    "tooShort": "The new password must be at least {min} characters.",
+    "mismatch": "The new passwords do not match.",
+    "sameAsCurrent": "The new password must differ from the current one.",
+    "changed": "Your password has been changed.",
+    "changedContinuing": "Your password has been changed. Continuing…",
+    "mustChangeTitle": "Set your own password",
+    "mustChangeBody": "You signed in with a temporary password. Change it to use the panel."
+  },
+  "staffPage": {
+    "title": "Team",
+    "subtitle": "Accounts with access to the panel.",
+    "explain": "Only a super admin adds accounts. A new admin gets a temporary password and must set their own at first sign-in.",
+    "add": "Add admin",
+    "loadFailed": "Could not load the team.",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "lastSignIn": "Last sign-in",
+    "actions": "Actions",
+    "openActions": "Actions for {email}",
+    "never": "Never",
+    "you": "(you)",
+    "active": "Active",
+    "inactive": "Disabled",
+    "resetPassword": "Reset password",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "back": "Cancel",
+    "actionFailed": "The action failed.",
+    "addTitle": "New admin",
+    "addDescription": "The server generates a temporary password — it is shown only once.",
+    "nameRequired": "Enter a name.",
+    "emailInvalid": "Enter a valid email address.",
+    "create": "Create account",
+    "creating": "Creating…",
+    "confirm": {
+      "reset": {
+        "title": "Reset password?",
+        "body": "{email} will be signed out everywhere and must set a new password at next sign-in.",
+        "action": "Reset password"
+      },
+      "deactivate": {
+        "title": "Deactivate account?",
+        "body": "{email} will be signed out and cannot sign in until the account is reactivated.",
+        "action": "Deactivate"
+      },
+      "reactivate": {
+        "title": "Reactivate account?",
+        "body": "{email} will be able to sign in again.",
+        "action": "Reactivate"
+      }
+    },
+    "secret": {
+      "createdTitle": "Account created",
+      "resetTitle": "New temporary password",
+      "body": "Give this password to {email} over a secure channel.",
+      "label": "Temporary password",
+      "copy": "Copy",
+      "copied": "Copied",
+      "warningTitle": "This is the only time you will see it",
+      "warning": "Once this window is closed it cannot be shown again — reset the password if it is lost.",
+      "done": "Done, I have saved it"
+    }
+  },
+  "readiness": {
+    "title": "The shop cannot take orders yet",
+    "body": "Fill in what is missing:",
+    "gaps": {
+      "meals": "No active meals — customers have nothing to order.",
+      "zones": "No active delivery zones — every order with an address is refused.",
+      "blik": "No BLIK number — customers cannot pay for a consultation."
+    },
+    "fix": {
+      "meals": "Add meals",
+      "zones": "Add delivery zones",
+      "blik": "Set the BLIK number"
     }
   }
 }

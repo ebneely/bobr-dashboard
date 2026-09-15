@@ -10,9 +10,6 @@
   "dashboard": {
     "title": "Panel",
     "overview": "Przegląd",
-    "myDiet": "Moja dieta",
-    "mealTracking": "Śledzenie posiłków",
-    "calendar": "Kalendarz",
     "orders": "Zamówienia",
     "consultations": "Konsultacje",
     "notes": "Uwagi i zgłoszenia",
@@ -21,9 +18,6 @@
     "meals": "Posiłki",
     "menu": "Menu",
     "hints": {
-      "myDiet": "Twój profil żywieniowy i zamówiony katering.",
-      "mealTracking": "Zaznaczaj zjedzone posiłki dzień po dniu.",
-      "calendar": "Dni dostaw Twoich zamówień.",
       "orders": "Wszystkie zamówienia i ich statusy.",
       "meals": "Oferta diet, ceny i zdjęcia.",
       "menu": "Menu do druku i dania widoczne na stronie.",
@@ -31,10 +25,12 @@
       "consultations": "Rezerwacje konsultacji z lekarzem.",
       "notes": "Uwagi, przypomnienia i reklamacje.",
       "zones": "Kody pocztowe, do których dowozimy, i koszt dostawy.",
-      "settings": "Numer BLIK do płatności za konsultacje."
+      "settings": "Numer BLIK do płatności za konsultacje.",
+      "staff": "Konta administratorów: dodawanie, reset hasła, blokowanie."
     },
     "zones": "Strefy dostaw",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "staff": "Zespół"
   },
   "notes": {
     "nudge": "Przypomnienie",
@@ -54,60 +50,28 @@
       "CUSTOMER": "Klient",
       "ADMIN": "Administrator",
       "SUPER_ADMIN": "Superadministrator"
-    }
+    },
+    "passwordChangeRequired": "Zanim zaczniesz korzystać z panelu, ustaw własne hasło."
   },
   "login": {
     "metaTitle": "Logowanie — BOBR Panel",
     "title": "Zaloguj się",
-    "subtitle": "Zaloguj się do panelu BOBR.",
+    "subtitle": "Panel dla zespołu BOBR.",
     "email": "E-mail",
     "password": "Hasło",
     "submit": "Zaloguj się",
     "submitting": "Logowanie…",
     "required": "Podaj e-mail i hasło.",
-    "invalidCredentials": "Nieprawidłowy e-mail lub hasło.",
-    "noAccount": "Nie masz konta?",
-    "register": "Zarejestruj się w sklepie"
+    "invalidCredentials": "Nieprawidłowy e-mail lub hasło."
   },
   "accessDenied": {
     "title": "Brak dostępu",
     "body": "Twoja rola nie ma dostępu do tej części panelu.",
     "back": "Wróć do panelu"
   },
-  "tracking": {
-    "title": "Śledzenie posiłków",
-    "subtitle": "Zaznacz, co zjedzone. To Twój dziennik.",
-    "noOrders": "Nie masz jeszcze zamówień.",
-    "orderOf": "Zamówienie z {date}",
-    "days": "dni",
-    "eaten": "Zjedzone",
-    "notEaten": "Do zjedzenia",
-    "upcoming": "Nadchodzące",
-    "past": "Minione",
-    "total": "Razem",
-    "discount": "Rabat",
-    "freeShipping": "Dostawa gratis",
-    "status": "Status",
-    "statuses": {
-      "PENDING": "Oczekujące",
-      "CONFIRMED": "Potwierdzone",
-      "PROCESSING": "W realizacji",
-      "DELIVERED": "Dostarczone",
-      "CANCELLED": "Anulowane"
-    }
-  },
   "notesPage": {
-    "title": "Uwagi i zgłoszenia",
-    "subtitle": "Napisz do nas — odpowiemy tutaj.",
-    "kind": "Rodzaj",
-    "body": "Treść",
-    "submit": "Wyślij",
-    "sending": "Wysyłam…",
-    "mine": "Twoje zgłoszenia",
     "none": "Nic tu jeszcze nie ma.",
-    "awaiting": "Czeka na odpowiedź",
     "answered": "Odpowiedziano",
-    "reply": "Odpowiedź",
     "queue": "Kolejka zgłoszeń",
     "unansweredOnly": "Tylko bez odpowiedzi",
     "replyPlaceholder": "Napisz odpowiedź…",
@@ -361,57 +325,6 @@
       "fileTooLarge": "Plik jest większy niż 15 MB."
     }
   },
-  "myDiet": {
-    "title": "Moja dieta",
-    "subtitle": "Twój profil i zamówiony katering w jednym miejscu.",
-    "loading": "Wczytywanie…",
-    "intakeTitle": "Profil żywieniowy",
-    "intakeLoadFailed": "Nie udało się wczytać profilu.",
-    "complete": "Kompletny",
-    "incomplete": "Niekompletny",
-    "noProfile": "Nie masz jeszcze profilu. Uzupełnij go przed zamówieniem kateringu.",
-    "incompleteHint": "Profil trzeba uzupełnić przed zamówieniem: waga, wzrost, aktywność i cztery zdjęcia.",
-    "startIntake": "Uzupełnij profil",
-    "finishIntake": "Dokończ profil",
-    "weight": "Waga",
-    "height": "Wzrost",
-    "kg": "{value} kg",
-    "cm": "{value} cm",
-    "bodyComposition": "Skład ciała",
-    "activities": "Aktywność fizyczna",
-    "notGiven": "Nie podano",
-    "completedOn": "Uzupełniony",
-    "missingPhotos": "Brakujące zdjęcia",
-    "activity": {
-      "NONE": "Brak sportu",
-      "GYM": "Siłownia",
-      "SWIMMER": "Pływanie",
-      "BOXING_MMA": "Boks lub MMA",
-      "OTHER": "Inne"
-    },
-    "photo": {
-      "FRONT": "przód",
-      "BACK": "tył",
-      "LEFT": "lewy bok",
-      "RIGHT": "prawy bok"
-    },
-    "ordersTitle": "Moje zamówienia",
-    "ordersLoadFailed": "Nie udało się wczytać zamówień.",
-    "noOrders": "Nie masz jeszcze zamówień.",
-    "trackDays": "Śledź dni w kalendarzu",
-    "orderLine": "{mode} · {days, plural, one {# dzień} few {# dni} many {# dni} other {# dni}} · złożone {date}",
-    "modes": {
-      "ONE_TIME": "Jednorazowe",
-      "CALENDAR": "Kalendarz"
-    },
-    "statuses": {
-      "PENDING": "Oczekujące",
-      "CONFIRMED": "Potwierdzone",
-      "PROCESSING": "W realizacji",
-      "DELIVERED": "Dostarczone",
-      "CANCELLED": "Anulowane"
-    }
-  },
   "adminCustomers": {
     "title": "Klienci",
     "subtitle": "Wszyscy klienci, od najnowszych, z profilem i zamówieniami kateringu.",
@@ -452,7 +365,6 @@
   },
   "consultationsPage": {
     "title": "Konsultacje",
-    "subtitleCustomer": "Twoje rezerwacje konsultacji z lekarzem.",
     "subtitleStaff": "Wszystkie rezerwacje, od najnowszych. Potwierdź termin i link do Google Meet.",
     "loadFailed": "Nie udało się wczytać konsultacji.",
     "contexts": {
@@ -467,13 +379,6 @@
     },
     "preferred": "Preferowany termin",
     "scheduled": "Termin",
-    "price": "Cena",
-    "note": "Uwagi",
-    "joinMeet": "Dołącz przez Google Meet",
-    "awaiting": "Czekamy na potwierdzenie lekarza.",
-    "emptyTitle": "Nie masz jeszcze konsultacji",
-    "emptyBody": "Umów konsultację z lekarzem przed posiłkiem lub przed planem diety.",
-    "book": "Umów konsultację",
     "none": "Brak rezerwacji.",
     "customer": "Klient",
     "email": "E-mail",
@@ -509,14 +414,7 @@
     "reference": "Tytuł przelewu",
     "markPaid": "Oznacz jako opłacone",
     "unmarkPaid": "Cofnij płatność",
-    "paidFailed": "Nie udało się zmienić statusu płatności.",
-    "blikTitle": "Zapłać BLIK-iem na telefon",
-    "blikPhone": "Numer telefonu",
-    "blikName": "Odbiorca",
-    "blikAmount": "Kwota",
-    "blikReference": "Tytuł przelewu",
-    "blikPending": "Dane do płatności BLIK prześlemy wkrótce.",
-    "paidCustomer": "Opłacone — dziękujemy!"
+    "paidFailed": "Nie udało się zmienić statusu płatności."
   },
   "zonesPage": {
     "title": "Strefy dostaw",
@@ -625,7 +523,15 @@
       "BLIK_PHONE_FORMAT": "Podaj polski numer telefonu do BLIK: 9 cyfr, opcjonalnie z +48.",
       "MENU_ITEM_NOT_FOUND": "Nie znaleziono dania — mogło zostać już usunięte.",
       "DOCUMENT_FORMAT_UNSUPPORTED": "Nieobsługiwany format pliku: {format}. Wgraj PDF albo zdjęcie.",
-      "DOCUMENT_TOO_LARGE": "Plik jest za duży — maksymalnie {maxMb} MB."
+      "DOCUMENT_TOO_LARGE": "Plik jest za duży — maksymalnie {maxMb} MB.",
+      "EMAIL_TAKEN": "Ten adres e-mail jest już zajęty.",
+      "CANNOT_MODIFY_SUPER_ADMIN": "Nie można zmieniać konta superadministratora.",
+      "CANNOT_MODIFY_SELF": "Nie możesz zmieniać własnego konta w tym miejscu.",
+      "ACCOUNT_DISABLED": "Konto jest wyłączone.",
+      "STAFF_NOT_FOUND": "Nie znaleziono konta w zespole.",
+      "INVALID_PASSWORD": "Obecne hasło jest nieprawidłowe.",
+      "PASSWORD_TOO_SHORT": "Hasło jest za krótkie.",
+      "PASSWORD_TOO_LONG": "Hasło jest za długie."
     },
     "fields": {
       "oneTimeShippingGrosze": "Cena dostawy",
@@ -654,7 +560,110 @@
       "tags": "Tagi",
       "sortOrder": "Kolejność",
       "descriptionPl": "Opis (PL)",
-      "descriptionEn": "Opis (EN)"
+      "descriptionEn": "Opis (EN)",
+      "name": "Imię i nazwisko",
+      "email": "E-mail"
+    }
+  },
+  "staffOnly": {
+    "metaTitle": "Panel dla zespołu — BOBR",
+    "title": "Ten panel jest tylko dla zespołu BOBR",
+    "body": "Wylogowaliśmy Cię. Swoje zamówienia, dietę i konsultacje znajdziesz na koncie w sklepie BOBR.",
+    "account": "Przejdź do konta w sklepie",
+    "staffLogin": "Zaloguj się jako pracownik"
+  },
+  "profilePage": {
+    "title": "Profil",
+    "subtitle": "Twoje konto w panelu BOBR.",
+    "accountTitle": "Konto",
+    "name": "Imię i nazwisko",
+    "email": "E-mail",
+    "role": "Rola",
+    "passwordTitle": "Zmiana hasła",
+    "passwordHint": "Nowe hasło musi mieć co najmniej {min} znaków. Po zmianie zostaniesz wylogowany na pozostałych urządzeniach.",
+    "currentPassword": "Obecne hasło",
+    "newPassword": "Nowe hasło",
+    "confirmPassword": "Powtórz nowe hasło",
+    "submit": "Zmień hasło",
+    "saving": "Zapisywanie…",
+    "required": "Wypełnij wszystkie trzy pola.",
+    "tooShort": "Nowe hasło musi mieć co najmniej {min} znaków.",
+    "mismatch": "Nowe hasła nie są takie same.",
+    "sameAsCurrent": "Nowe hasło musi się różnić od obecnego.",
+    "changed": "Hasło zostało zmienione.",
+    "changedContinuing": "Hasło zostało zmienione. Przechodzimy dalej…",
+    "mustChangeTitle": "Ustaw własne hasło",
+    "mustChangeBody": "Logujesz się hasłem tymczasowym. Zmień je, aby korzystać z panelu."
+  },
+  "staffPage": {
+    "title": "Zespół",
+    "subtitle": "Konta osób z dostępem do panelu.",
+    "explain": "Tylko superadministrator dodaje konta. Nowy administrator dostaje hasło tymczasowe i przy pierwszym logowaniu musi ustawić własne.",
+    "add": "Dodaj administratora",
+    "loadFailed": "Nie udało się wczytać listy zespołu.",
+    "name": "Imię i nazwisko",
+    "email": "E-mail",
+    "role": "Rola",
+    "status": "Status",
+    "lastSignIn": "Ostatnie logowanie",
+    "actions": "Akcje",
+    "openActions": "Akcje dla {email}",
+    "never": "Nigdy",
+    "you": "(Ty)",
+    "active": "Aktywne",
+    "inactive": "Wyłączone",
+    "resetPassword": "Resetuj hasło",
+    "deactivate": "Wyłącz konto",
+    "reactivate": "Włącz konto",
+    "back": "Anuluj",
+    "actionFailed": "Nie udało się wykonać operacji.",
+    "addTitle": "Nowy administrator",
+    "addDescription": "Hasło tymczasowe wygeneruje serwer — pokażemy je tylko raz.",
+    "nameRequired": "Podaj imię i nazwisko.",
+    "emailInvalid": "Podaj prawidłowy adres e-mail.",
+    "create": "Utwórz konto",
+    "creating": "Tworzenie…",
+    "confirm": {
+      "reset": {
+        "title": "Zresetować hasło?",
+        "body": "Konto {email} zostanie wylogowane ze wszystkich urządzeń, a przy następnym logowaniu trzeba będzie ustawić nowe hasło.",
+        "action": "Resetuj hasło"
+      },
+      "deactivate": {
+        "title": "Wyłączyć konto?",
+        "body": "Konto {email} zostanie wylogowane i nie da się na nie zalogować, dopóki nie włączysz go ponownie.",
+        "action": "Wyłącz konto"
+      },
+      "reactivate": {
+        "title": "Włączyć konto?",
+        "body": "Na konto {email} znów będzie można się zalogować.",
+        "action": "Włącz konto"
+      }
+    },
+    "secret": {
+      "createdTitle": "Konto utworzone",
+      "resetTitle": "Nowe hasło tymczasowe",
+      "body": "Przekaż to hasło właścicielowi konta {email} bezpiecznym kanałem.",
+      "label": "Hasło tymczasowe",
+      "copy": "Kopiuj",
+      "copied": "Skopiowano",
+      "warningTitle": "Hasło widzisz tylko teraz",
+      "warning": "Po zamknięciu tego okna nie da się go wyświetlić ponownie — w razie potrzeby zresetuj hasło.",
+      "done": "Gotowe, hasło zapisane"
+    }
+  },
+  "readiness": {
+    "title": "Sklep nie może jeszcze przyjmować zamówień",
+    "body": "Uzupełnij brakujące elementy:",
+    "gaps": {
+      "meals": "Brak aktywnych posiłków — klient nie ma czego zamówić.",
+      "zones": "Brak aktywnych stref dostaw — każde zamówienie z adresem zostanie odrzucone.",
+      "blik": "Brak numeru BLIK — klient nie zapłaci za konsultację."
+    },
+    "fix": {
+      "meals": "Dodaj posiłki",
+      "zones": "Dodaj strefy dostaw",
+      "blik": "Ustaw numer BLIK"
     }
   }
 }
