@@ -128,3 +128,43 @@ export async function apiFetch<T>(
 
   return payload as T;
 }
+
+/**
+ * Like `apiFetch`, but also returns response headers — the paginated admin
+ * lists (customers, notes, consultations) carry the total in `X-Total-Count`
+ * rather than in the JSON body, so existing callers of `apiFetch` on the same
+ * routes keep working unchanged.
+ */
+export async function apiFetchWithHeaders<T>(
+  path: string,
+  { body, auth = true, headers, ...init }: ApiFetchOptions = {},
+): Promise<{ data: T; headers: Headers }> {
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...init,
+    credentials: auth ? 'include' : 'omit',
+    headers: {
+      ...(isFormData || body === undefined
+        ? {}
+        : { 'Content-Type': 'application/json' }),
+      ...headers,
+    },
+    body: isFormData ? (body as FormData) : body === undefined ? undefined : JSON.stringify(body),
+  });
+
+  if (res.status === 204) return { data: undefined as T, headers: res.headers };
+
+  const payload = await res.json().catch(() => null);
+
+  if (!res.ok) throw new ApiError(res.status, payload as ApiErrorBody | null);
+
+  return { data: payload as T, headers: res.headers };
+}
+
+/** Reads `X-Total-Count`, falling back to the item count when the header is missing. */
+export function readTotalCount(headers: Headers, fallback: number): number {
+  const raw = headers.get('X-Total-Count');
+  const n = raw ? Number(raw) : NaN;
+  return Number.isFinite(n) ? n : fallback;
+}

@@ -12,6 +12,7 @@ import {
 
 const STAFF_PAGES = [
   '/dashboard',
+  '/dashboard/deliveries',
   '/dashboard/orders',
   '/dashboard/meals',
   '/dashboard/menu',
@@ -76,6 +77,14 @@ describe('roles', () => {
     expect(cardsFor('SUPER_ADMIN')).toEqual([...cardsFor('ADMIN'), 'staff']);
     // The profile page is reached from the shell footer, not the nav.
     expect(nav('ADMIN')).not.toContain('/dashboard/profile');
+  });
+
+  it('gives staff the deliveries screen, nav and overview card, CUSTOMER none', () => {
+    expect(canAccess('/dashboard/deliveries', 'ADMIN')).toBe(true);
+    expect(canAccess('/dashboard/deliveries', 'SUPER_ADMIN')).toBe(true);
+    expect(canAccess('/dashboard/deliveries', 'CUSTOMER')).toBe(false);
+    expect(navItemsFor('ADMIN').map((rule) => rule.path)).toContain('/dashboard/deliveries');
+    expect(cardsFor('ADMIN')).toContain('deliveries');
   });
 
   it('lists Menu for staff; segment-aware matching', () => {

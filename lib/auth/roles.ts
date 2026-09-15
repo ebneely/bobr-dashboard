@@ -50,6 +50,8 @@ export interface RouteRule {
  */
 export const ROUTE_ACCESS: readonly RouteRule[] = [
   { path: '/dashboard', messageKey: 'overview', roles: STAFF, nav: true },
+  // Kitchen production + courier stops for one day (gap G13).
+  { path: '/dashboard/deliveries', messageKey: 'deliveries', roles: STAFF, nav: true },
   { path: '/dashboard/orders', messageKey: 'orders', roles: STAFF, nav: true },
   { path: '/dashboard/meals', messageKey: 'meals', roles: STAFF, nav: true },
   // The printed menu and the dishes behind the storefront's public /menu page.
@@ -73,6 +75,7 @@ export const DASHBOARD_CARDS: readonly {
   readonly messageKey: string;
   readonly roles: readonly Role[];
 }[] = [
+  { messageKey: 'deliveries', roles: STAFF },
   { messageKey: 'orders', roles: STAFF },
   { messageKey: 'meals', roles: STAFF },
   { messageKey: 'menu', roles: STAFF },

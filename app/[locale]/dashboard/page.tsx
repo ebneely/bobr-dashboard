@@ -11,6 +11,7 @@ import { getServerSession } from '@/lib/auth/session';
 import { Link } from '@/lib/i18n/navigation';
 
 import { ReadinessAlert } from './ReadinessAlert';
+import { SummaryCounters } from './SummaryCounters';
 
 /** Where each overview card leads: the route sharing its message key. */
 function hrefFor(key: string): string {
@@ -45,6 +46,8 @@ export default async function DashboardPage({
       <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
 
       <ReadinessAlert />
+
+      <SummaryCounters />
 
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((key) => (

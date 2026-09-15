@@ -1,6 +1,11 @@
 import { TZDate } from '@date-fns/tz';
 
-import { apiFetch } from './client';
+import { apiFetch, apiFetchWithHeaders, readTotalCount } from './client';
+
+export interface PagedResult<T> {
+  items: T[];
+  total: number;
+}
 
 /**
  * Doctor consultations. Mirrors bobr_backend/src/consultations/.
@@ -41,8 +46,16 @@ export interface AdminConsultation extends Consultation {
   customer: { name: string; email: string };
 }
 
-export function apiAdminListConsultations() {
-  return apiFetch<AdminConsultation[]>('/consultations/admin');
+export function apiAdminListConsultations(
+  page = 1,
+  limit = 50,
+): Promise<PagedResult<AdminConsultation>> {
+  return apiFetchWithHeaders<AdminConsultation[]>(
+    `/consultations/admin?page=${page}&limit=${limit}`,
+  ).then(({ data, headers }) => ({
+    items: data,
+    total: readTotalCount(headers, data.length),
+  }));
 }
 
 export function apiAdminConfirmConsultation(

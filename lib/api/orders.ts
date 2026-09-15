@@ -1,4 +1,10 @@
-import { apiFetch } from './client';
+import { apiFetch, apiFetchWithHeaders, readTotalCount } from './client';
+import type { Allergen } from './menu';
+
+export interface PagedResult<T> {
+  items: T[];
+  total: number;
+}
 
 /**
  * Orders and the customer's notes.
@@ -108,11 +114,23 @@ export function formatWarsawDate(iso: string, locale: string): string {
 
 export interface AdminOrder extends Order {
   user?: { id: string; email: string; fullName: string | null };
+  /** Gap G18 — cash-on-delivery collection, recorded from the deliveries screen. */
+  paidAt?: string | null;
+  paidGrosze?: number | null;
+  paymentNote?: string | null;
+  contactPhone?: string | null;
+  deliveryNotes?: string | null;
 }
+
+export type ComplaintResolution = 'ACCEPTED' | 'REJECTED' | 'INFO';
 
 export interface AdminNote extends CustomerNote {
   user?: { id: string; email: string; fullName: string | null };
   order?: { id: string; totalGrosze: number; status: OrderStatus } | null;
+  /** Gap G33 — a COMPLAINT has a 14-day due date; other kinds carry null. */
+  dueAt: string | null;
+  overdue: boolean;
+  resolution: ComplaintResolution | null;
 }
 
 export function apiAdminListOrders(status?: OrderStatus) {
@@ -150,16 +168,29 @@ export function apiAdminSetOrderStatus(id: string, status: OrderStatus) {
 }
 
 /** Unanswered first — the reason to open this screen is to find what needs a reply. */
-export function apiAdminListNotes(onlyUnanswered = false) {
-  return apiFetch<AdminNote[]>(
-    `/notes/admin${onlyUnanswered ? '?unanswered=true' : ''}`,
+export function apiAdminListNotes(
+  onlyUnanswered = false,
+  page = 1,
+  limit = 50,
+): Promise<PagedResult<AdminNote>> {
+  const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (onlyUnanswered) query.set('unanswered', 'true');
+  return apiFetchWithHeaders<AdminNote[]>(`/notes/admin?${query}`).then(
+    ({ data, headers }) => ({ items: data, total: readTotalCount(headers, data.length) }),
   );
 }
 
-export function apiAdminReplyToNote(id: string, adminReply: string) {
+export function apiAdminReplyToNote(
+  id: string,
+  input: {
+    adminReply: string;
+    resolution?: ComplaintResolution;
+    overwrite?: boolean;
+  },
+) {
   return apiFetch<AdminNote>(`/notes/admin/${id}/reply`, {
     method: 'PATCH',
-    body: { adminReply },
+    body: input,
   });
 }
 
@@ -203,6 +234,9 @@ export interface AdminMeal {
   imageUrl?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  /** Gap G15 — allergens present in this diet; kcal is the typical daily energy. */
+  allergens: Allergen[];
+  kcal: number | null;
 }
 
 export interface MealInput {
@@ -213,6 +247,8 @@ export interface MealInput {
   descriptionEn?: string | null;
   priceGrosze: number;
   isActive?: boolean;
+  allergens?: Allergen[];
+  kcal?: number | null;
 }
 
 /** Every meal, deactivated ones included. */

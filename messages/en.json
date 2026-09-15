@@ -5,7 +5,12 @@
     "save": "Save",
     "cancel": "Cancel",
     "loading": "Loading…",
-    "language": "Language"
+    "language": "Language",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "range": "{from}–{to} of {total}"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -26,11 +31,23 @@
       "notes": "Notes, nudges and complaints.",
       "zones": "Postal codes we deliver to, and what shipping costs.",
       "settings": "The BLIK number for consultation payments.",
-      "staff": "Admin accounts: add, reset passwords, deactivate."
+      "staff": "Admin accounts: add, reset passwords, deactivate.",
+      "deliveries": "Kitchen production and courier routes for a chosen day."
     },
     "zones": "Delivery zones",
     "settings": "Settings",
-    "staff": "Team"
+    "staff": "Team",
+    "deliveries": "Deliveries",
+    "summary": {
+      "loading": "Loading counters…",
+      "pendingOrders": "Pending orders",
+      "deliveriesToday": "Deliveries today",
+      "unpaidOrders": "Unpaid orders",
+      "unansweredNotes": "Notes without a reply",
+      "overdueComplaints": "Overdue complaints",
+      "requestedConsultations": "New consultation requests",
+      "unpaidConsultations": "Unpaid consultations"
+    }
   },
   "notes": {
     "nudge": "Nudge",
@@ -76,7 +93,20 @@
     "unansweredOnly": "Unanswered only",
     "replyPlaceholder": "Write a reply…",
     "sendReply": "Reply",
-    "from": "from"
+    "from": "from",
+    "dueAt": "Due {date}",
+    "overdue": "Overdue",
+    "resolutionPlaceholder": "Resolution",
+    "resolutions": {
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "INFO": "Information"
+    },
+    "overwriteTitle": "This note already has a reply",
+    "overwriteConfirm": "Overwrite the previous reply with the new one?",
+    "overwriteCancel": "Back",
+    "overwriteYes": "Overwrite",
+    "replyFailed": "Failed to send the reply."
   },
   "adminOrders": {
     "title": "Orders",
@@ -118,7 +148,17 @@
     "address": "Delivery address",
     "noAddress": "No address",
     "zone": "Zone: {zone}",
-    "customerAddress": "Customer and address"
+    "customerAddress": "Customer and address",
+    "payment": "Payment",
+    "paid": "Paid",
+    "recordPayment": "Record payment",
+    "paymentDescription": "Cash collected on delivery from \"{name}\".",
+    "paymentAmount": "Amount (zł)",
+    "paymentNote": "Note",
+    "paymentAmountInvalid": "Enter a valid amount, e.g. 45.00.",
+    "paymentFailed": "Failed to record the payment.",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "adminMeals": {
     "title": "Meals",
@@ -162,7 +202,10 @@
       "KETOGENIC": "Ketogenic",
       "GLUTEN_FREE": "Gluten-free",
       "ALLERGIES": "Allergies"
-    }
+    },
+    "allergens": "Allergens",
+    "kcal": "Calories (kcal / day)",
+    "kcalInvalid": "Calories must be a whole number."
   },
   "menuPage": {
     "title": "Menu",
@@ -337,7 +380,8 @@
     "orders": "Orders",
     "lastOrder": "Last order",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "open": "Open"
   },
   "settingsPage": {
     "title": "Settings",
@@ -531,7 +575,14 @@
       "STAFF_NOT_FOUND": "Team account not found.",
       "INVALID_PASSWORD": "The current password is incorrect.",
       "PASSWORD_TOO_SHORT": "The password is too short.",
-      "PASSWORD_TOO_LONG": "The password is too long."
+      "PASSWORD_TOO_LONG": "The password is too long.",
+      "CUSTOMER_NOT_FOUND": "Customer not found.",
+      "DAY_STATUS_TRANSITION": "Cannot change the delivery status from \"{from, select, SCHEDULED {Scheduled} DELIVERED {Delivered} FAILED {Failed} SKIPPED {Skipped} CANCELLED {Cancelled} other {{from}}}\" to \"{to, select, SCHEDULED {Scheduled} DELIVERED {Delivered} FAILED {Failed} SKIPPED {Skipped} CANCELLED {Cancelled} other {{to}}}\".",
+      "ORDER_NOT_DELIVERABLE": "The order is \"{status, select, PENDING {Pending} CONFIRMED {Confirmed} PROCESSING {Processing} DELIVERED {Delivered} CANCELLED {Cancelled} other {{status}}}\" — its days cannot be marked delivered or failed right now.",
+      "FAIL_REASON_REQUIRED": "Say why the delivery failed.",
+      "NOTE_ALREADY_REPLIED": "This note already has a reply. Use \"Overwrite\" to correct it.",
+      "INVALID_LIMIT": "limit must be a whole number from 1 to 200.",
+      "INVALID_PAGE": "page must be a whole number of at least 1."
     },
     "fields": {
       "oneTimeShippingGrosze": "Shipping price",
@@ -664,6 +715,87 @@
       "meals": "Add meals",
       "zones": "Add delivery zones",
       "blik": "Set the BLIK number"
+    }
+  },
+  "deliveriesPage": {
+    "title": "Deliveries",
+    "subtitle": "Kitchen production and the courier route for a chosen day.",
+    "date": "Delivery date",
+    "print": "Print",
+    "kitchen": "Kitchen",
+    "couriers": "Couriers",
+    "loading": "Loading deliveries…",
+    "loadFailed": "Failed to load deliveries.",
+    "updateFailed": "Failed to save the change.",
+    "noProduction": "Nothing to prepare that day.",
+    "noStops": "No deliveries that day.",
+    "portions": "{count, plural, one {# portion} other {# portions}}",
+    "customer": "Customer",
+    "phone": "Phone",
+    "address": "Address",
+    "zone": "Zone",
+    "notes": "Notes for the courier",
+    "status": "Status",
+    "actions": "Actions",
+    "orderPending": "order not confirmed",
+    "noAddress": "No address",
+    "codToCollect": "To collect: {amount}",
+    "paid": "Paid",
+    "dayStatuses": {
+      "SCHEDULED": "Scheduled",
+      "DELIVERED": "Delivered",
+      "FAILED": "Failed",
+      "SKIPPED": "Skipped",
+      "CANCELLED": "Cancelled"
+    },
+    "markDelivered": "Mark delivered",
+    "markFailed": "Mark failed",
+    "deliverConfirm": "Confirm the delivery for \"{name}\".",
+    "failDescription": "Say why the delivery for \"{name}\" failed.",
+    "failReason": "Reason",
+    "failReasonRequired": "Say why the delivery failed.",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "customerDetail": {
+    "back": "← All customers",
+    "title": "Customer profile",
+    "loading": "Loading profile…",
+    "loadFailed": "Failed to load the customer profile.",
+    "email": "Email",
+    "phone": "Phone",
+    "locale": "Language",
+    "joined": "Joined",
+    "intake": {
+      "title": "Intake",
+      "none": "This customer has not completed the intake form yet.",
+      "weight": "Weight",
+      "height": "Height",
+      "bodyComposition": "Body composition",
+      "activity": "Activity",
+      "allergens": "Allergens",
+      "noAllergens": "No declared allergens.",
+      "dietaryNotes": "Dietary notes",
+      "photos": "Photos",
+      "completedAt": "Completed {date}",
+      "incomplete": "Intake incomplete."
+    },
+    "orders": {
+      "title": "Orders",
+      "none": "No orders.",
+      "paid": "Paid"
+    },
+    "notes": {
+      "title": "Notes and complaints",
+      "none": "No notes."
+    },
+    "consultations": {
+      "title": "Consultations",
+      "none": "No consultations."
+    },
+    "weight": {
+      "title": "Weight history",
+      "none": "No weight entries."
     }
   }
 }

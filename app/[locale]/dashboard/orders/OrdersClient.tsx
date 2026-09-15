@@ -18,11 +18,21 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -32,7 +42,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { apiRecordDeliveryPayment } from '@/lib/api/deliveries';
 import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiAdminListOrders,
@@ -40,6 +52,7 @@ import {
   formatGrosze,
   formatWarsawDate,
   nextStatuses,
+  zloteToGrosze,
   type AdminOrder,
   type OrderStatus,
 } from '@/lib/api/orders';
@@ -69,6 +82,12 @@ export function OrdersClient() {
   const [rowError, setRowError] = useState<string | null>(null);
   /** The order waiting on the "cancel for good?" confirmation, if any. */
   const [confirmCancel, setConfirmCancel] = useState<AdminOrder | null>(null);
+  /** The order whose COD payment dialog is open, if any (gap G18). */
+  const [paying, setPaying] = useState<AdminOrder | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentNote, setPaymentNote] = useState('');
+  const [paymentBusy, setPaymentBusy] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   // State is only set from the promise callbacks — see MealsClient for why.
   useEffect(() => {
@@ -120,6 +139,43 @@ export function OrdersClient() {
     }
   }
 
+  function openPayment(order: AdminOrder) {
+    setPaying(order);
+    setPaymentAmount('');
+    setPaymentNote('');
+    setPaymentError(null);
+  }
+
+  async function submitPayment() {
+    if (!paying) return;
+    const paidGrosze = zloteToGrosze(paymentAmount);
+    if (paidGrosze === null) {
+      setPaymentError(t('paymentAmountInvalid'));
+      return;
+    }
+    setPaymentBusy(true);
+    setPaymentError(null);
+    try {
+      await apiRecordDeliveryPayment(paying.id, {
+        paidGrosze,
+        paymentNote: paymentNote.trim() || undefined,
+      });
+      setOrders(
+        (current) =>
+          current?.map((o) =>
+            o.id === paying.id
+              ? { ...o, paidAt: new Date().toISOString(), paidGrosze, paymentNote: paymentNote.trim() || null }
+              : o,
+          ) ?? current,
+      );
+      setPaying(null);
+    } catch (error) {
+      setPaymentError(describeError(error, t('paymentFailed'), translateApiError));
+    } finally {
+      setPaymentBusy(false);
+    }
+  }
+
   if (orders === null) {
     return (
       <div className="flex flex-col gap-2" aria-label={t('loading')}>
@@ -160,6 +216,7 @@ export function OrdersClient() {
                 <TableHead className={`${headClass} text-right`}>{t('total')}</TableHead>
                 <TableHead className={headClass}>{t('status')}</TableHead>
                 <TableHead className={headClass}>{t('created')}</TableHead>
+                <TableHead className={headClass}>{t('payment')}</TableHead>
                 <TableHead className={headClass}>{t('advance')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -230,6 +287,27 @@ export function OrdersClient() {
                     <TableCell className="px-3 py-2.5 align-top">
                       {formatWarsawDate(order.createdAt, locale)}
                     </TableCell>
+                    <TableCell className="px-3 py-2.5 align-top" data-testid="order-payment">
+                      {order.paidAt ? (
+                        <Badge
+                          variant="outline"
+                          className="border-primary tracking-wider text-primary uppercase"
+                          data-testid="paid-badge"
+                        >
+                          {t('paid')}
+                        </Badge>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openPayment(order)}
+                          data-testid="record-payment"
+                        >
+                          {t('recordPayment')}
+                        </Button>
+                      )}
+                    </TableCell>
                     <TableCell className="px-3 py-2.5 align-top">
                       {next.length === 0 ? (
                         <span className="text-muted-foreground">{t('final')}</span>
@@ -297,6 +375,63 @@ export function OrdersClient() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog
+        open={paying !== null}
+        onOpenChange={(open) => {
+          if (!open) setPaying(null);
+        }}
+      >
+        <DialogContent data-testid="payment-dialog">
+          <DialogHeader>
+            <DialogTitle>{t('recordPayment')}</DialogTitle>
+            <DialogDescription>
+              {paying ? t('paymentDescription', { name: paying.user?.fullName ?? paying.user?.email ?? '' }) : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-1.5">
+            <Label htmlFor="payment-amount">{t('paymentAmount')}</Label>
+            <Input
+              id="payment-amount"
+              type="text"
+              inputMode="decimal"
+              value={paymentAmount}
+              onChange={(e) => setPaymentAmount(e.target.value)}
+              placeholder={paying ? formatGrosze(paying.totalGrosze, locale) : ''}
+              data-testid="payment-amount-input"
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor="payment-note">{t('paymentNote')}</Label>
+            <Textarea
+              id="payment-note"
+              value={paymentNote}
+              onChange={(e) => setPaymentNote(e.target.value)}
+              rows={2}
+              maxLength={500}
+              data-testid="payment-note-input"
+            />
+          </div>
+          {paymentError && (
+            <Alert variant="destructive">
+              <AlertDescription className="whitespace-pre-line">{paymentError}</AlertDescription>
+            </Alert>
+          )}
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPaying(null)}>
+              {t('cancel')}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => void submitPayment()}
+              disabled={paymentBusy}
+              data-testid="submit-payment"
+            >
+              {t('confirm')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -42,7 +42,9 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { ALLERGENS, parseWholeNumber, type Allergen } from '@/lib/api/menu';
 import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   apiAdminCreateMeal,
@@ -214,6 +216,20 @@ export function MealsClient() {
                     >
                       {meal.isActive ? t('active') : t('inactive')}
                     </Badge>
+                    {meal.kcal != null && (
+                      <span className="text-xs text-muted-foreground">
+                        {meal.kcal} kcal
+                      </span>
+                    )}
+                    {meal.allergens.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {meal.allergens.map((a) => (
+                          <Badge key={a} variant="outline" className="text-xs">
+                            {a}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
 
@@ -326,6 +342,9 @@ function MealForm({
   onSaved: () => Promise<void> | void;
 }) {
   const t = useTranslations('adminMeals');
+  // Allergen names are shared with the menu's dish dialog — the same EU-14
+  // list, worded once under menuPage.allergens.
+  const ta = useTranslations('menuPage');
   const translateApiError = useApiErrorTranslate();
   const fieldId = useId();
 
@@ -338,6 +357,8 @@ function MealForm({
   const [price, setPrice] = useState(
     meal ? groszeToZloteInput(meal.priceGrosze) : '',
   );
+  const [allergens, setAllergens] = useState<Allergen[]>(meal?.allergens ?? []);
+  const [kcalText, setKcalText] = useState(meal?.kcal != null ? String(meal.kcal) : '');
   const [isActive, setIsActive] = useState(meal?.isActive ?? true);
 
   const [busy, setBusy] = useState(false);
@@ -362,6 +383,12 @@ function MealForm({
       return;
     }
 
+    const kcal = parseWholeNumber(kcalText);
+    if (kcal === undefined) {
+      setError(t('kcalInvalid'));
+      return;
+    }
+
     setBusy(true);
     try {
       const input = {
@@ -372,6 +399,8 @@ function MealForm({
         descriptionEn: descriptionEn.trim() || null,
         priceGrosze,
         isActive,
+        allergens,
+        kcal,
       };
       if (meal) await apiAdminUpdateMeal(meal.id, input);
       else await apiAdminCreateMeal(input);
@@ -508,6 +537,48 @@ function MealForm({
               {t('priceHint')}
             </p>
           </div>
+
+          <div className="grid gap-1.5">
+            <Label htmlFor={id('kcal')}>{t('kcal')}</Label>
+            <Input
+              id={id('kcal')}
+              type="text"
+              inputMode="numeric"
+              value={kcalText}
+              onChange={(e) => setKcalText(e.target.value)}
+              placeholder="450"
+              className="w-32"
+              name="kcal"
+            />
+          </div>
+
+          <fieldset className="grid min-w-0 gap-3">
+            <legend className={cn(MUTED_LABEL, 'mb-1.5')}>{t('allergens')}</legend>
+            <ToggleGroup
+              type="multiple"
+              variant="outline"
+              size="sm"
+              value={allergens}
+              onValueChange={(value) => setAllergens(value as Allergen[])}
+              aria-label={t('allergens')}
+              className="w-full"
+              data-testid="meal-allergens"
+            >
+              {ALLERGENS.map((allergen) => (
+                <ToggleGroupItem
+                  key={allergen}
+                  value={allergen}
+                  className="gap-1.5 font-normal"
+                  data-testid={`meal-allergen-${allergen}`}
+                >
+                  <span className="text-[0.7rem] font-semibold opacity-70 tabular-nums">
+                    {ALLERGENS.indexOf(allergen) + 1}
+                  </span>
+                  {ta(`allergens.${allergen}`)}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </fieldset>
 
           <Label htmlFor={id('isActive')} className="font-normal">
             <Checkbox

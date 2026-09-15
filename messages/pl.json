@@ -5,7 +5,12 @@
     "save": "Zapisz",
     "cancel": "Anuluj",
     "loading": "Ładowanie…",
-    "language": "Język"
+    "language": "Język",
+    "pagination": {
+      "previous": "Poprzednia",
+      "next": "Następna",
+      "range": "{from}–{to} z {total}"
+    }
   },
   "dashboard": {
     "title": "Panel",
@@ -26,11 +31,23 @@
       "notes": "Uwagi, przypomnienia i reklamacje.",
       "zones": "Kody pocztowe, do których dowozimy, i koszt dostawy.",
       "settings": "Numer BLIK do płatności za konsultacje.",
-      "staff": "Konta administratorów: dodawanie, reset hasła, blokowanie."
+      "staff": "Konta administratorów: dodawanie, reset hasła, blokowanie.",
+      "deliveries": "Produkcja kuchni i trasy kurierów na wybrany dzień."
     },
     "zones": "Strefy dostaw",
     "settings": "Ustawienia",
-    "staff": "Zespół"
+    "staff": "Zespół",
+    "deliveries": "Dostawy",
+    "summary": {
+      "loading": "Wczytywanie liczników…",
+      "pendingOrders": "Oczekujące zamówienia",
+      "deliveriesToday": "Dostawy dzisiaj",
+      "unpaidOrders": "Nieopłacone zamówienia",
+      "unansweredNotes": "Uwagi bez odpowiedzi",
+      "overdueComplaints": "Reklamacje po terminie",
+      "requestedConsultations": "Nowe prośby o konsultację",
+      "unpaidConsultations": "Nieopłacone konsultacje"
+    }
   },
   "notes": {
     "nudge": "Przypomnienie",
@@ -76,7 +93,20 @@
     "unansweredOnly": "Tylko bez odpowiedzi",
     "replyPlaceholder": "Napisz odpowiedź…",
     "sendReply": "Odpowiedz",
-    "from": "od"
+    "from": "od",
+    "dueAt": "Termin: {date}",
+    "overdue": "Po terminie",
+    "resolutionPlaceholder": "Rozstrzygnięcie",
+    "resolutions": {
+      "ACCEPTED": "Uznana",
+      "REJECTED": "Odrzucona",
+      "INFO": "Informacja"
+    },
+    "overwriteTitle": "Ta uwaga ma już odpowiedź",
+    "overwriteConfirm": "Czy na pewno chcesz nadpisać poprzednią odpowiedź nową treścią?",
+    "overwriteCancel": "Wróć",
+    "overwriteYes": "Nadpisz",
+    "replyFailed": "Nie udało się wysłać odpowiedzi."
   },
   "adminOrders": {
     "title": "Zamówienia",
@@ -118,7 +148,17 @@
     "address": "Adres dostawy",
     "noAddress": "Brak adresu",
     "zone": "Strefa: {zone}",
-    "customerAddress": "Klient i adres"
+    "customerAddress": "Klient i adres",
+    "payment": "Płatność",
+    "paid": "Opłacone",
+    "recordPayment": "Zapisz płatność",
+    "paymentDescription": "Kwota pobrana gotówką przy dostawie od „{name}”.",
+    "paymentAmount": "Kwota (zł)",
+    "paymentNote": "Notatka",
+    "paymentAmountInvalid": "Podaj poprawną kwotę, np. 45,00.",
+    "paymentFailed": "Nie udało się zapisać płatności.",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź"
   },
   "adminMeals": {
     "title": "Posiłki",
@@ -162,7 +202,10 @@
       "KETOGENIC": "Ketogeniczna",
       "GLUTEN_FREE": "Bezglutenowa",
       "ALLERGIES": "Dla alergików"
-    }
+    },
+    "allergens": "Alergeny",
+    "kcal": "Kalorie (kcal / dzień)",
+    "kcalInvalid": "Kalorie muszą być liczbą całkowitą."
   },
   "menuPage": {
     "title": "Menu",
@@ -337,7 +380,8 @@
     "orders": "Zamówienia",
     "lastOrder": "Ostatnie zamówienie",
     "yes": "Tak",
-    "no": "Nie"
+    "no": "Nie",
+    "open": "Otwórz"
   },
   "settingsPage": {
     "title": "Ustawienia",
@@ -531,7 +575,14 @@
       "STAFF_NOT_FOUND": "Nie znaleziono konta w zespole.",
       "INVALID_PASSWORD": "Obecne hasło jest nieprawidłowe.",
       "PASSWORD_TOO_SHORT": "Hasło jest za krótkie.",
-      "PASSWORD_TOO_LONG": "Hasło jest za długie."
+      "PASSWORD_TOO_LONG": "Hasło jest za długie.",
+      "CUSTOMER_NOT_FOUND": "Nie znaleziono klienta.",
+      "DAY_STATUS_TRANSITION": "Nie można zmienić statusu dostawy z „{from, select, SCHEDULED {Zaplanowana} DELIVERED {Dostarczona} FAILED {Nieudana} SKIPPED {Pominięta} CANCELLED {Anulowana} other {{from}}}” na „{to, select, SCHEDULED {Zaplanowana} DELIVERED {Dostarczona} FAILED {Nieudana} SKIPPED {Pominięta} CANCELLED {Anulowana} other {{to}}}”.",
+      "ORDER_NOT_DELIVERABLE": "Zamówienie ma status „{status, select, PENDING {Oczekujące} CONFIRMED {Potwierdzone} PROCESSING {W realizacji} DELIVERED {Dostarczone} CANCELLED {Anulowane} other {{status}}}” — nie można teraz oznaczyć dnia jako dostarczonego lub nieudanego.",
+      "FAIL_REASON_REQUIRED": "Podaj powód nieudanej dostawy.",
+      "NOTE_ALREADY_REPLIED": "Ta uwaga ma już odpowiedź. Użyj „Nadpisz”, aby ją poprawić.",
+      "INVALID_LIMIT": "limit musi być liczbą całkowitą od 1 do 200.",
+      "INVALID_PAGE": "page musi być liczbą całkowitą, co najmniej 1."
     },
     "fields": {
       "oneTimeShippingGrosze": "Cena dostawy",
@@ -664,6 +715,87 @@
       "meals": "Dodaj posiłki",
       "zones": "Dodaj strefy dostaw",
       "blik": "Ustaw numer BLIK"
+    }
+  },
+  "deliveriesPage": {
+    "title": "Dostawy",
+    "subtitle": "Produkcja kuchni i trasa kurierów na wybrany dzień.",
+    "date": "Data dostawy",
+    "print": "Drukuj",
+    "kitchen": "Kuchnia",
+    "couriers": "Kurierzy",
+    "loading": "Wczytywanie dostaw…",
+    "loadFailed": "Nie udało się wczytać dostaw.",
+    "updateFailed": "Nie udało się zapisać zmiany.",
+    "noProduction": "Brak posiłków do przygotowania tego dnia.",
+    "noStops": "Brak dostaw tego dnia.",
+    "portions": "{count, plural, one {# porcja} few {# porcje} many {# porcji} other {# porcji}}",
+    "customer": "Klient",
+    "phone": "Telefon",
+    "address": "Adres",
+    "zone": "Strefa",
+    "notes": "Uwagi dla kuriera",
+    "status": "Status",
+    "actions": "Akcje",
+    "orderPending": "zamówienie niepotwierdzone",
+    "noAddress": "Brak adresu",
+    "codToCollect": "Do pobrania: {amount}",
+    "paid": "Opłacone",
+    "dayStatuses": {
+      "SCHEDULED": "Zaplanowana",
+      "DELIVERED": "Dostarczona",
+      "FAILED": "Nieudana",
+      "SKIPPED": "Pominięta",
+      "CANCELLED": "Anulowana"
+    },
+    "markDelivered": "Oznacz jako dostarczoną",
+    "markFailed": "Oznacz jako nieudaną",
+    "deliverConfirm": "Potwierdź dostarczenie zamówienia dla „{name}”.",
+    "failDescription": "Podaj powód nieudanej dostawy dla „{name}”.",
+    "failReason": "Powód",
+    "failReasonRequired": "Podaj powód nieudanej dostawy.",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź"
+  },
+  "customerDetail": {
+    "back": "← Wszyscy klienci",
+    "title": "Profil klienta",
+    "loading": "Wczytywanie profilu…",
+    "loadFailed": "Nie udało się wczytać profilu klienta.",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "locale": "Język",
+    "joined": "Dołączył",
+    "intake": {
+      "title": "Ankieta",
+      "none": "Klient nie wypełnił jeszcze ankiety.",
+      "weight": "Waga",
+      "height": "Wzrost",
+      "bodyComposition": "Skład ciała",
+      "activity": "Aktywność",
+      "allergens": "Alergeny",
+      "noAllergens": "Brak zadeklarowanych alergenów.",
+      "dietaryNotes": "Uwagi żywieniowe",
+      "photos": "Zdjęcia",
+      "completedAt": "Ukończono {date}",
+      "incomplete": "Ankieta niekompletna."
+    },
+    "orders": {
+      "title": "Zamówienia",
+      "none": "Brak zamówień.",
+      "paid": "Opłacone"
+    },
+    "notes": {
+      "title": "Uwagi i zgłoszenia",
+      "none": "Brak uwag."
+    },
+    "consultations": {
+      "title": "Konsultacje",
+      "none": "Brak konsultacji."
+    },
+    "weight": {
+      "title": "Historia wagi",
+      "none": "Brak wpisów wagi."
     }
   }
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { MoreHorizontalIcon } from 'lucide-react';
 
+import { PaginationBar } from '@/components/PaginationBar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   AlertDialog,
@@ -48,6 +49,8 @@ import {
 import { ConfirmConsultationDialog } from './ConfirmConsultationDialog';
 import { ConsultationStatusBadge } from './StatusBadge';
 
+const LIMIT = 50;
+
 function describeError(
   error: unknown,
   fallback: string,
@@ -70,7 +73,9 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
   const [paidBusyId, setPaidBusyId] = useState<string | null>(null);
   const [paidError, setPaidError] = useState<string | null>(null);
 
+  const [page, setPage] = useState(1);
   const [rows, setRows] = useState<AdminConsultation[] | null>(null);
+  const [total, setTotal] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<AdminConsultation | null>(null);
   const [move, setMove] = useState<StatusMove | null>(null);
@@ -79,9 +84,12 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
 
   useEffect(() => {
     let alive = true;
-    apiAdminListConsultations()
-      .then((list) => {
-        if (alive) setRows(list);
+    apiAdminListConsultations(page, LIMIT)
+      .then(({ items, total: totalCount }) => {
+        if (alive) {
+          setRows(items);
+          setTotal(totalCount);
+        }
       })
       .catch((error: unknown) => {
         if (!alive) return;
@@ -92,7 +100,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page]);
 
   /** Merge a PATCH response into the row; the response carries no customer. */
   function applyUpdate(updated: Consultation) {
@@ -303,6 +311,14 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
           </Table>
         </CardContent>
       </Card>
+
+      <PaginationBar
+        page={page}
+        limit={LIMIT}
+        total={total}
+        count={rows.length}
+        onPageChange={setPage}
+      />
 
       <ConfirmConsultationDialog
         consultation={confirming}

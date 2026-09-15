@@ -75,7 +75,7 @@ export function DashboardShell({
 
   return (
     <div className="md:grid md:min-h-screen md:grid-cols-[15rem_minmax(0,1fr)]">
-      <aside className="flex flex-col gap-4 border-b bg-sidebar px-4 py-4 text-sidebar-foreground md:sticky md:top-0 md:h-screen md:border-r md:border-b-0 md:py-6">
+      <aside className="flex flex-col gap-4 border-b bg-sidebar px-4 py-4 text-sidebar-foreground md:sticky md:top-0 md:h-screen md:border-r md:border-b-0 md:py-6 print:hidden">
         <div className="flex items-center justify-between gap-3">
           <span className="text-xl font-semibold tracking-tight">
             {tCommon('appName')}
