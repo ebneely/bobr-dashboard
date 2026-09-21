@@ -370,6 +370,9 @@
     }
   },
   "adminCustomers": {
+    "search": "Search customers",
+    "searchPlaceholder": "Name, email or phone",
+    "noMatches": "No customer matches this search.",
     "title": "Customers",
     "subtitle": "Every customer, newest first, with their profile and catering orders.",
     "loading": "Loading customers…",

@@ -370,6 +370,9 @@
     }
   },
   "adminCustomers": {
+    "search": "Szukaj klientów",
+    "searchPlaceholder": "Imię i nazwisko, e-mail lub telefon",
+    "noMatches": "Żaden klient nie pasuje do wyszukiwania.",
     "title": "Klienci",
     "subtitle": "Wszyscy klienci, od najnowszych, z profilem i zamówieniami kateringu.",
     "loading": "Wczytywanie klientów…",

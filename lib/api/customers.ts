@@ -22,12 +22,15 @@ export interface PagedResult<T> {
   total: number;
 }
 
+/** `q` matches name, email or phone; every word must match (ebneely/bobr-backend#59). */
 export function apiAdminListCustomers(
   page = 1,
   limit = 50,
+  q = '',
 ): Promise<PagedResult<AdminCustomer>> {
+  const search = q.trim() ? `&q=${encodeURIComponent(q.trim())}` : '';
   return apiFetchWithHeaders<AdminCustomer[]>(
-    `/customers/admin?page=${page}&limit=${limit}`,
+    `/customers/admin?page=${page}&limit=${limit}${search}`,
   ).then(({ data, headers }) => ({
     items: data,
     total: readTotalCount(headers, data.length),

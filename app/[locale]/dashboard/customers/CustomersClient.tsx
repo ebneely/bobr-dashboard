@@ -7,6 +7,7 @@ import { PaginationBar } from '@/components/PaginationBar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -45,10 +46,21 @@ export function CustomersClient() {
   const [customers, setCustomers] = useState<AdminCustomer[] | null>(null);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [search, setSearch] = useState('');
+
+  // Debounced, so typing a name costs one request, not one per keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(query.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   useEffect(() => {
     let alive = true;
-    apiAdminListCustomers(page, LIMIT)
+    apiAdminListCustomers(page, LIMIT, search)
       .then(({ items, total: totalCount }) => {
         if (alive) {
           setCustomers(items);
@@ -66,7 +78,19 @@ export function CustomersClient() {
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, search]);
+
+  const searchBox = (
+    <Input
+      type="search"
+      value={query}
+      onChange={(event) => setQuery(event.target.value)}
+      placeholder={t('searchPlaceholder')}
+      aria-label={t('search')}
+      className="max-w-sm"
+      data-testid="customers-search"
+    />
+  );
 
   if (customers === null) {
     return (
@@ -85,11 +109,17 @@ export function CustomersClient() {
     );
   }
   if (customers.length === 0) {
-    return <p className="text-muted-foreground">{t('none')}</p>;
+    return (
+      <div className="flex flex-col gap-3">
+        {searchBox}
+        <p className="text-muted-foreground">{search ? t('noMatches') : t('none')}</p>
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col gap-3">
+      {searchBox}
       <div className="max-w-full overflow-hidden rounded-lg border bg-card">
         <Table data-testid="customers-table">
           <TableHeader>
