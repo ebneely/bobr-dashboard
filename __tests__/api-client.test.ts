@@ -1,4 +1,4 @@
-import { formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { apiAssetUrl, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
 
 const words: Record<string, string> = {
   ZONE_PREFIX_CLASH: 'Prefiks {prefix} należy już do strefy „{zone}”.',
@@ -82,5 +82,17 @@ describe('formatApiError', () => {
     };
     expect(formatApiError(body, translate)).toBe('first\nsecond');
     expect(formatApiError({ ...body, message: 'plain' }, translate)).toBe('plain');
+  });
+});
+
+describe('apiAssetUrl', () => {
+  it('makes a server-relative API path absolute against the API origin (#47)', () => {
+    expect(apiAssetUrl('/v1/customers/admin/abc/photos/FRONT')).toMatch(
+      /^https?:\/\/[^/]+\/v1\/customers\/admin\/abc\/photos\/FRONT$/,
+    );
+  });
+
+  it('leaves an absolute URL alone', () => {
+    expect(apiAssetUrl('https://img.example/x.webp')).toBe('https://img.example/x.webp');
   });
 });

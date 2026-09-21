@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
+import { ApiError, apiAssetUrl, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
 import {
   apiAdminGetCustomer,
   type AdminCustomerDetail,
@@ -162,7 +162,7 @@ export function CustomerDetailClient({ id }: { id: string }) {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         key={position}
-                        src={url}
+                        src={apiAssetUrl(url)}
                         alt={position}
                         className="aspect-3/4 w-full rounded-md object-cover"
                       />

@@ -6,7 +6,20 @@
  * error shape, and all three are a few lines each.
  */
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8003'}/v1`;
+const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8003';
+const BASE_URL = `${API_ORIGIN}/v1`;
+
+/**
+ * Turns a server-relative API path (e.g. `/v1/customers/admin/:id/photos/FRONT`)
+ * into an absolute URL for a plain `<img>` — never `next/image`, since the
+ * bytes are behind the session cookie, not a static asset. Copied from the
+ * storefront's client. Without it the relative path resolved against this
+ * app's origin, which only works where the `/v1` rewrite exists
+ * (ebneely/bobr-dashboard#47).
+ */
+export function apiAssetUrl(path: string): string {
+  return path.startsWith('/') ? `${API_ORIGIN}${path}` : path;
+}
 
 /** One item of a 422 validation failure. `code`/`params` are what a client translates. */
 export interface FieldIssue {
