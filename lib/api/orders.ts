@@ -123,7 +123,26 @@ export interface AdminOrder extends Order {
   paymentNote?: string | null;
   contactPhone?: string | null;
   deliveryNotes?: string | null;
+  /** Issue #51 — set when the order was cancelled; staff must give a reason. */
+  cancelReason?: string | null;
+  cancelledAt?: string | null;
+  /** The acting staff user; null when the customer cancelled their own order. */
+  cancelledById?: string | null;
+  /** The latest total adjustment, read back from the audit log. */
+  totalAdjustment?: TotalAdjustment | null;
 }
+
+export interface TotalAdjustment {
+  note: string | null;
+  adjustedById: string | null;
+  adjustedAt: string;
+}
+
+/** Trimmed length bounds of a staff cancellation reason (backend: 3..500). */
+export const CANCEL_REASON_MIN = 3;
+export const CANCEL_REASON_MAX = 500;
+/** Upper bound of a total-adjustment note (backend: trimmed, ≤ 500). */
+export const ADJUST_NOTE_MAX = 500;
 
 export type ComplaintResolution = 'ACCEPTED' | 'REJECTED' | 'INFO';
 
@@ -163,10 +182,37 @@ export function nextStatuses(status: OrderStatus): readonly OrderStatus[] {
   return ALLOWED_TRANSITIONS[status] ?? [];
 }
 
-export function apiAdminSetOrderStatus(id: string, status: OrderStatus) {
-  return apiFetch<Order>(`/orders/admin/${id}/status`, {
+/**
+ * Moves an order along its lifecycle. CANCELLED requires `cancelReason`
+ * (trimmed, 3..500 chars); every other status must NOT carry one — the backend
+ * answers either mistake with a 422 — so the reason is only put on the wire
+ * for a cancel.
+ */
+export function apiAdminSetOrderStatus(
+  id: string,
+  status: OrderStatus,
+  cancelReason?: string,
+) {
+  const body =
+    status === 'CANCELLED' ? { status, cancelReason: cancelReason?.trim() } : { status };
+  return apiFetch<AdminOrder>(`/orders/admin/${id}/status`, {
     method: 'PATCH',
-    body: { status },
+    body,
+  });
+}
+
+/**
+ * Overrides what the customer owes. `adjustedTotalGrosze` is integer grosze —
+ * convert with zloteToGrosze, never a float — or null to clear the override,
+ * which puts the order back to owing `totalGrosze`.
+ */
+export function apiAdminAdjustOrderTotal(
+  id: string,
+  input: { adjustedTotalGrosze: number | null; note?: string },
+) {
+  return apiFetch<AdminOrder>(`/orders/admin/${id}/total`, {
+    method: 'PATCH',
+    body: input,
   });
 }
 
@@ -240,7 +286,14 @@ export interface AdminMeal {
   /** Gap G15 — allergens present in this diet; kcal is the typical daily energy. */
   allergens: Allergen[];
   kcal: number | null;
+  /** Issue #51 — the VAT rate on this meal, one of VAT_RATES. DB default 8. */
+  vatRatePercent?: VatRate;
 }
+
+/** The only VAT rates the backend accepts for a meal (Polish rates). */
+export const VAT_RATES = [0, 5, 8, 23] as const;
+export type VatRate = (typeof VAT_RATES)[number];
+export const DEFAULT_VAT_RATE: VatRate = 8;
 
 export interface MealInput {
   type: MealType;
@@ -252,6 +305,8 @@ export interface MealInput {
   isActive?: boolean;
   allergens?: Allergen[];
   kcal?: number | null;
+  /** Sent as a JSON number; "8" or null is a 422 VAT_RATE_INVALID. */
+  vatRatePercent?: VatRate;
 }
 
 /** Every meal, deactivated ones included. */

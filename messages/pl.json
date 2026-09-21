@@ -160,7 +160,27 @@
     "paymentAmountInvalid": "Podaj poprawną kwotę, np. 45,00.",
     "paymentFailed": "Nie udało się zapisać płatności.",
     "cancel": "Anuluj",
-    "confirm": "Potwierdź"
+    "confirm": "Potwierdź",
+    "cancelTitle": "Anuluj zamówienie",
+    "cancelReason": "Powód anulowania",
+    "cancelReasonHint": "Od {min} do {max} znaków. Zapisywany w zamówieniu.",
+    "cancelReasonTooShort": "Powód musi mieć co najmniej {min} znaki.",
+    "charCount": "{count}/{max}",
+    "cancelledOn": "Anulowano {date}",
+    "cancelledReason": "Powód: {reason}",
+    "orderChangedReloaded": "Ktoś zmienił to zamówienie w międzyczasie — wczytano jego aktualny stan.",
+    "adjustTotal": "Zmień kwotę",
+    "adjustTitle": "Zmień kwotę zamówienia",
+    "adjustDescription": "Pierwotna kwota: {original}. Klient będzie winien nową kwotę zamiast pierwotnej.",
+    "adjustAmount": "Nowa kwota (zł)",
+    "adjustNote": "Notatka (opcjonalnie)",
+    "adjustSave": "Zapisz kwotę",
+    "adjustClear": "Przywróć pierwotną kwotę",
+    "adjustFailed": "Nie udało się zmienić kwoty.",
+    "originalTotal": "Pierwotna kwota",
+    "adjustedTotal": "Kwota po zmianie",
+    "adjustedAt": "Zmieniono {date}",
+    "adjustedNote": "Notatka: {note}"
   },
   "adminMeals": {
     "title": "Posiłki",
@@ -204,7 +224,10 @@
     },
     "allergens": "Alergeny",
     "kcal": "Kalorie (kcal / dzień)",
-    "kcalInvalid": "Kalorie muszą być liczbą całkowitą."
+    "kcalInvalid": "Kalorie muszą być liczbą całkowitą.",
+    "vatRate": "Stawka VAT",
+    "vatOption": "{rate}%",
+    "vatBadge": "VAT {rate}%"
   },
   "menuPage": {
     "title": "Menu",
@@ -767,7 +790,17 @@
       "DAY_NOT_DELIVERED": "Nie dowozimy w ten dzień tygodnia ({day}) — wybierz inny dzień.",
       "DAY_CLOSED": "{day} jesteśmy nieczynni — wybierz inny dzień.",
       "INTAKE_STALE": "Twój profil ma ponad {maxAgeDays, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} — sprawdź go i zapisz ponownie, zanim złożysz zamówienie.",
-      "CONSULTATION_SLOT_INVALID": "Wybierz godzinę od {start} do {end}, co {stepMinutes} min (czas polski)."
+      "CONSULTATION_SLOT_INVALID": "Wybierz godzinę od {start} do {end}, co {stepMinutes} min (czas polski).",
+      "CANCEL_REASON_REQUIRED": "Podaj powód anulowania zamówienia",
+      "CANCEL_REASON_LENGTH": "Powód anulowania musi mieć od 3 do 500 znaków",
+      "CANCEL_REASON_NOT_ALLOWED": "Powód podaje się tylko przy anulowaniu zamówienia",
+      "ORDER_CHANGED": "Ktoś właśnie zmienił to zamówienie — odśwież stronę i spróbuj ponownie",
+      "TOTAL_OUT_OF_RANGE": "Kwota musi mieścić się w przedziale od 0 do 1 000 000 zł, w pełnych groszach",
+      "ADJUST_NOTE_TOO_LONG": "Notatka może mieć najwyżej 500 znaków",
+      "ORDER_CANCELLED_NO_ADJUST": "Nie można zmienić kwoty anulowanego zamówienia",
+      "ORDER_PAID_NO_ADJUST": "To zamówienie jest już opłacone — jego kwoty nie można już zmienić",
+      "ADJUSTED_BELOW_PAID": "Kwota nie może być niższa niż już wpłacona ({paidGrosze} gr)",
+      "VAT_RATE_INVALID": "Stawka VAT musi wynosić 0, 5, 8 lub 23%"
     },
     "fields": {
       "oneTimeShippingGrosze": "Cena dostawy",
@@ -798,7 +831,11 @@
       "descriptionPl": "Opis (PL)",
       "descriptionEn": "Opis (EN)",
       "name": "Imię i nazwisko",
-      "email": "E-mail"
+      "email": "E-mail",
+      "cancelReason": "Powód anulowania",
+      "adjustedTotalGrosze": "Nowa kwota",
+      "note": "Notatka",
+      "vatRatePercent": "Stawka VAT"
     }
   },
   "staffOnly": {

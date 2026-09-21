@@ -55,9 +55,12 @@ import {
   formatGrosze,
   groszeToZloteInput,
   zloteToGrosze,
+  DEFAULT_VAT_RATE,
   MEAL_TYPES,
+  VAT_RATES,
   type AdminMeal,
   type MealType,
+  type VatRate,
 } from '@/lib/api/orders';
 import { cn } from '@/lib/cn';
 
@@ -216,6 +219,14 @@ export function MealsClient() {
                     >
                       {meal.isActive ? t('active') : t('inactive')}
                     </Badge>
+                    {meal.vatRatePercent != null && (
+                      <span
+                        className="text-xs text-muted-foreground"
+                        data-testid="meal-vat"
+                      >
+                        {t('vatBadge', { rate: meal.vatRatePercent })}
+                      </span>
+                    )}
                     {meal.kcal != null && (
                       <span className="text-xs text-muted-foreground">
                         {meal.kcal} kcal
@@ -360,6 +371,10 @@ function MealForm({
   const [allergens, setAllergens] = useState<Allergen[]>(meal?.allergens ?? []);
   const [kcalText, setKcalText] = useState(meal?.kcal != null ? String(meal.kcal) : '');
   const [isActive, setIsActive] = useState(meal?.isActive ?? true);
+  // A number on the wire: the backend refuses "8" (VAT_RATE_INVALID).
+  const [vatRate, setVatRate] = useState<VatRate>(
+    meal?.vatRatePercent ?? DEFAULT_VAT_RATE,
+  );
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -400,6 +415,7 @@ function MealForm({
         isActive,
         allergens,
         kcal,
+        vatRatePercent: vatRate,
       };
       if (meal) await apiAdminUpdateMeal(meal.id, input);
       else await apiAdminCreateMeal(input);
@@ -516,6 +532,29 @@ function MealForm({
             <p id={id('priceHint')} className="text-xs text-muted-foreground">
               {t('priceHint')}
             </p>
+          </div>
+
+          <div className="grid gap-1.5">
+            <Label htmlFor={id('vatRate')}>{t('vatRate')}</Label>
+            <Select
+              value={String(vatRate)}
+              onValueChange={(value) => {
+                const rate = VAT_RATES.find((r) => String(r) === value);
+                if (rate !== undefined) setVatRate(rate);
+              }}
+              name="vatRatePercent"
+            >
+              <SelectTrigger id={id('vatRate')} className="w-32" data-testid="meal-vat-rate">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {VAT_RATES.map((rate) => (
+                  <SelectItem key={rate} value={String(rate)}>
+                    {t('vatOption', { rate })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid gap-1.5">

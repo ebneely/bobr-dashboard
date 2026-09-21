@@ -160,7 +160,27 @@
     "paymentAmountInvalid": "Enter a valid amount, e.g. 45.00.",
     "paymentFailed": "Failed to record the payment.",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "cancelTitle": "Cancel the order",
+    "cancelReason": "Reason for cancelling",
+    "cancelReasonHint": "{min} to {max} characters. Stored on the order.",
+    "cancelReasonTooShort": "The reason must be at least {min} characters long.",
+    "charCount": "{count}/{max}",
+    "cancelledOn": "Cancelled {date}",
+    "cancelledReason": "Reason: {reason}",
+    "orderChangedReloaded": "Someone changed this order meanwhile — its current state has been reloaded.",
+    "adjustTotal": "Adjust total",
+    "adjustTitle": "Adjust the order total",
+    "adjustDescription": "Original total: {original}. The customer will owe the new amount instead.",
+    "adjustAmount": "New total (zł)",
+    "adjustNote": "Note (optional)",
+    "adjustSave": "Save total",
+    "adjustClear": "Clear adjustment",
+    "adjustFailed": "Could not adjust the total.",
+    "originalTotal": "Original total",
+    "adjustedTotal": "Adjusted total",
+    "adjustedAt": "Adjusted {date}",
+    "adjustedNote": "Note: {note}"
   },
   "adminMeals": {
     "title": "Meals",
@@ -204,7 +224,10 @@
     },
     "allergens": "Allergens",
     "kcal": "Calories (kcal / day)",
-    "kcalInvalid": "Calories must be a whole number."
+    "kcalInvalid": "Calories must be a whole number.",
+    "vatRate": "VAT rate",
+    "vatOption": "{rate}%",
+    "vatBadge": "VAT {rate}%"
   },
   "menuPage": {
     "title": "Menu",
@@ -767,7 +790,17 @@
       "DAY_NOT_DELIVERED": "We don't deliver on that day of the week ({day}) — choose another day.",
       "DAY_CLOSED": "We're closed on {day} — choose another day.",
       "INTAKE_STALE": "Your profile is more than {maxAgeDays, plural, one {# day} other {# days}} old — review and save it before ordering.",
-      "CONSULTATION_SLOT_INVALID": "Choose a time from {start} to {end}, every {stepMinutes} minutes (Warsaw time)."
+      "CONSULTATION_SLOT_INVALID": "Choose a time from {start} to {end}, every {stepMinutes} minutes (Warsaw time).",
+      "CANCEL_REASON_REQUIRED": "Say why the order is being cancelled",
+      "CANCEL_REASON_LENGTH": "A cancellation reason is 3 to 500 characters long",
+      "CANCEL_REASON_NOT_ALLOWED": "A reason is only given when cancelling an order",
+      "ORDER_CHANGED": "Someone else changed this order just now — reload and try again",
+      "TOTAL_OUT_OF_RANGE": "The total must be between 0 and 1,000,000 PLN, in whole grosze",
+      "ADJUST_NOTE_TOO_LONG": "The note can be at most 500 characters long",
+      "ORDER_CANCELLED_NO_ADJUST": "A cancelled order’s total cannot be adjusted",
+      "ORDER_PAID_NO_ADJUST": "This order is already paid — its total can no longer be adjusted",
+      "ADJUSTED_BELOW_PAID": "The total cannot be less than what has already been paid ({paidGrosze} grosze)",
+      "VAT_RATE_INVALID": "VAT rate must be 0, 5, 8 or 23%"
     },
     "fields": {
       "oneTimeShippingGrosze": "Shipping price",
@@ -798,7 +831,11 @@
       "descriptionPl": "Description (PL)",
       "descriptionEn": "Description (EN)",
       "name": "Name",
-      "email": "Email"
+      "email": "Email",
+      "cancelReason": "Cancellation reason",
+      "adjustedTotalGrosze": "Adjusted total",
+      "note": "Note",
+      "vatRatePercent": "VAT rate"
     }
   },
   "staffOnly": {
