@@ -30,7 +30,7 @@
       "consultations": "Rezerwacje konsultacji z lekarzem.",
       "notes": "Uwagi, przypomnienia i reklamacje.",
       "zones": "Kody pocztowe, do których dowozimy, i koszt dostawy.",
-      "settings": "Numer BLIK do płatności za konsultacje.",
+      "settings": "Konsultacje, płatności BLIK, dostawy, ceny i rabaty, treści strony oraz dni wolne.",
       "staff": "Konta administratorów: dodawanie, reset hasła, blokowanie.",
       "deliveries": "Produkcja kuchni i trasy kurierów na wybrany dzień."
     },
@@ -382,29 +382,203 @@
     "no": "Nie",
     "open": "Otwórz"
   },
-  "settingsPage": {
-    "title": "Ustawienia",
-    "subtitle": "Ustawienia sklepu obowiązujące wszystkich klientów.",
-    "save": "Zapisz",
-    "saving": "Zapisuję…",
-    "savedTitle": "Zapisano",
-    "errorTitle": "Nie zapisano",
-    "blikTitle": "BLIK",
-    "blikDescription": "Numer telefonu, na który klienci wysyłają przelew BLIK za konsultację.",
-    "current": "Obecnie: {phone}",
-    "currentRecipient": "Odbiorca: {name}",
-    "notSet": "Numer BLIK nie jest ustawiony — klienci zobaczą, że dane do płatności prześlemy wkrótce.",
-    "phoneLabel": "Numer telefonu BLIK",
-    "phoneHint": "Np. +48 600 123 456 — spacje i myślniki są dozwolone. Zostaw puste, aby usunąć.",
-    "recipientLabel": "Nazwa odbiorcy",
-    "recipientHint": "Np. BOBR Sp. z o.o. — od 2 do 100 znaków. Opcjonalnie.",
-    "saved": "Dane BLIK zostały zapisane.",
-    "loadFailed": "Nie udało się wczytać ustawień płatności.",
-    "saveFailed": "Nie udało się zapisać danych BLIK.",
-    "zonesNote": "Koszt dostawy zamówień jednorazowych ustalasz teraz w strefach dostaw.",
-    "zonesLink": "Przejdź do stref dostaw",
-    "blikRequirementTitle": "Zanim podasz numer",
-    "blikRequirement": "Numer musi być zarejestrowany do odbioru przelewów na telefon BLIK w aplikacji Twojego banku i powiązany z kontem, na które mają trafiać wpłaty — inaczej klient zobaczy, że ten numer nie przyjmuje przelewów BLIK. Nie każdy bank pozwala podpiąć konto firmowe. Wpłaty nie potwierdzają się same: sprawdź je w banku i oznacz konsultację jako opłaconą."
+  "settings": {
+    "page": {
+      "title": "Ustawienia",
+      "subtitle": "Wszystko, co zmieniasz w sklepie bez programisty: konsultacje, płatności, dostawy, ceny, treści strony i dni wolne."
+    },
+    "sections": {
+      "consultations": "Konsultacje",
+      "payments": "Płatności",
+      "delivery": "Dostawy",
+      "ordering": "Zamówienia",
+      "pricing": "Ceny i rabaty",
+      "site": "Strona"
+    },
+    "sectionHelp": {
+      "payments": "Dane, na które klienci płacą za konsultacje przelewem BLIK na telefon.",
+      "delivery": "Koszt dostawy zamówień jednorazowych ustalasz w strefach dostaw."
+    },
+    "fields": {
+      "consultationPriceGrosze": {
+        "label": "Cena konsultacji",
+        "help": "Tyle klient płaci za jedną konsultację. Rezerwacja zapamiętuje cenę z chwili złożenia — zmiana nie dotyczy już zarezerwowanych konsultacji."
+      },
+      "doctorName": {
+        "label": "Imię i nazwisko lekarza",
+        "help": "Tak klienci widzą lekarza prowadzącego konsultacje — po polsku i po angielsku."
+      },
+      "consultationSlotStart": {
+        "label": "Pierwszy termin w ciągu dnia",
+        "help": "Najwcześniejsza godzina, na którą można zarezerwować konsultację (czas polski)."
+      },
+      "consultationSlotEnd": {
+        "label": "Ostatni termin w ciągu dnia",
+        "help": "Najpóźniejsza godzina konsultacji (czas polski) — musi być późniejsza niż pierwszy termin."
+      },
+      "consultationSlotStepMinutes": {
+        "label": "Odstęp między terminami",
+        "help": "Co ile minut zaczyna się kolejny termin konsultacji."
+      },
+      "blikPhone": {
+        "label": "Numer telefonu BLIK",
+        "help": "Np. +48 600 123 456 — spacje i myślniki są dozwolone, puste pole usuwa numer. Numer musi być zarejestrowany do odbioru przelewów na telefon BLIK w aplikacji Twojego banku i powiązany z kontem, na które mają trafiać wpłaty — inaczej klient zobaczy, że ten numer nie przyjmuje przelewów BLIK. Wpłaty nie potwierdzają się same: sprawdź je w banku i oznacz konsultację jako opłaconą."
+      },
+      "blikRecipientName": {
+        "label": "Nazwa odbiorcy BLIK",
+        "help": "Np. BOBR Sp. z o.o. — od 2 do 100 znaków. Opcjonalnie."
+      },
+      "deliveryWeekdays": {
+        "label": "Dni dostaw",
+        "help": "Dni tygodnia, w które dowozimy posiłki. Wybierz co najmniej jeden."
+      },
+      "orderCutoffHour": {
+        "label": "Godzina zamykania zamówień",
+        "help": "Do której godziny (0–23, czas polski) zamówienie łapie się jeszcze na najbliższy możliwy dzień. Puste pole = bez limitu godzinowego."
+      },
+      "leadDays": {
+        "label": "Minimalne wyprzedzenie",
+        "help": "Ile dni przed pierwszą dostawą trzeba złożyć zamówienie."
+      },
+      "orderWindowMonths": {
+        "label": "Jak daleko naprzód można zamawiać",
+        "help": "W miesiącach. Przy 1 ostatni dostępny dzień to koniec miesiąca następującego po miesiącu najwcześniejszej dostawy."
+      },
+      "changeCutoffDays": {
+        "label": "Termin na zmiany",
+        "help": "Ile dni przed dostawą klient może jeszcze zmienić albo przesunąć dzień."
+      },
+      "calendarMinDays": {
+        "label": "Minimalna liczba dni w kalendarzu",
+        "help": "Najmniej dni, jakie klient musi wybrać, zamawiając z kalendarza."
+      },
+      "oneTimeDayCount": {
+        "label": "Liczba dni zamówienia jednorazowego",
+        "help": "Ile dni obejmuje jedno zamówienie jednorazowe."
+      },
+      "intakeMaxAgeDays": {
+        "label": "Ważność ankiety",
+        "help": "Po ilu dniach ankieta zdrowotna klienta uznawana jest za nieaktualną. Puste pole = nigdy się nie przedawnia."
+      },
+      "discountTiers": {
+        "label": "Progi rabatowe",
+        "help": "Rabat za zamówienie na co najmniej podaną liczbę dni. Każdy próg musi zaczynać się od innej liczby dni; po zapisaniu progi układają się rosnąco.",
+        "minDays": "Od liczby dni",
+        "percent": "Rabat"
+      },
+      "wholeMonthPercent": {
+        "label": "Rabat za cały miesiąc",
+        "help": "Rabat procentowy, gdy klient zamawia pełny miesiąc."
+      },
+      "calendarFreeShipping": {
+        "label": "Darmowa dostawa przy zamówieniu z kalendarza",
+        "help": "Zamówienia z kalendarza nie płacą za dostawę."
+      },
+      "heroImage": {
+        "label": "Zdjęcie na stronie głównej",
+        "help": "Duże zdjęcie na górze strony sklepu. Bez niego sklep pokazuje swoje domyślne zdjęcie."
+      },
+      "contactEmail": {
+        "label": "E-mail kontaktowy",
+        "help": "Adres pokazywany klientom na stronie. Puste pole = nie pokazuj."
+      },
+      "contactPhone": {
+        "label": "Telefon kontaktowy",
+        "help": "Np. +48 600 123 456. Puste pole = nie pokazuj."
+      },
+      "contactAddress": {
+        "label": "Adres firmy",
+        "help": "Adres pokazywany na stronie, do 300 znaków. Puste pole = nie pokazuj."
+      },
+      "footerTagline": {
+        "label": "Hasło w stopce",
+        "help": "Krótkie zdanie w stopce strony — po polsku i po angielsku."
+      }
+    },
+    "options": {
+      "consultationSlotStepMinutes": {
+        "15": "15 minut",
+        "20": "20 minut",
+        "30": "30 minut",
+        "60": "1 godzina"
+      }
+    },
+    "units": {
+      "grosze": "gr",
+      "zloty": "zł",
+      "days": "dni",
+      "months": "mies.",
+      "hours": "godz.",
+      "minutes": "min",
+      "percent": "%"
+    },
+    "ui": {
+      "sectionsLabel": "Sekcje ustawień",
+      "save": "Zapisz",
+      "saving": "Zapisuję…",
+      "reset": "Cofnij zmiany",
+      "saved": "Zapisano: {section}.",
+      "saveFailed": "Nie udało się zapisać ustawień.",
+      "loadFailed": "Nie udało się wczytać ustawień.",
+      "errorTitle": "Nie zapisano",
+      "fixFields": "Popraw zaznaczone pola.",
+      "unsaved": "{count, plural, one {# niezapisana zmiana} few {# niezapisane zmiany} many {# niezapisanych zmian} other {# niezapisanej zmiany}}",
+      "upToDate": "Wszystko zapisane.",
+      "unsavedTab": "niezapisane zmiany",
+      "notEnforced": "Jeszcze nie działa",
+      "notEnforcedHint": "Wartość jest zapisywana i widoczna w sklepie, ale zamówienia jeszcze jej nie stosują.",
+      "choose": "Wybierz…",
+      "emptyMeansNone": "brak",
+      "language": {
+        "pl": "Po polsku",
+        "en": "Po angielsku"
+      },
+      "addRow": "Dodaj wiersz",
+      "removeRow": "Usuń wiersz {index}",
+      "listEmpty": "Brak wierszy.",
+      "listFull": "Najwyżej {maximum} wierszy.",
+      "duplicateRow": "Ta wartość powtarza się w innym wierszu.",
+      "sortedOnSave": "Po zapisaniu wiersze ułożą się rosnąco według kolumny „{column}”.",
+      "clearImage": "Usuń zdjęcie",
+      "clearingImage": "Usuwam…",
+      "noImage": "Brak zdjęcia — sklep pokazuje domyślne.",
+      "imageSaved": "Zdjęcie zapisane.",
+      "imageCleared": "Zdjęcie usunięte."
+    },
+    "errors": {
+      "SETTING_UNKNOWN": "Takiego ustawienia już nie ma — odśwież stronę.",
+      "SETTING_IMAGE_UPLOAD_ONLY": "Zdjęcie można tylko wgrać albo usunąć.",
+      "SETTING_TIME_FORMAT": "Podaj godzinę w formacie GG:MM, np. 08:30.",
+      "SETTING_SLOT_RANGE": "Ostatni termin musi być późniejszy niż pierwszy.",
+      "SETTING_TIERS_DUPLICATE": "Dwa progi zaczynają się od tej samej liczby dni ({minDays}).",
+      "SETTING_LIST_DUPLICATE": "Wartość {value} powtarza się w innym wierszu.",
+      "SETTING_WHOLE_NUMBER": "Podaj liczbę całkowitą.",
+      "SETTING_MONEY_FORMAT": "Podaj kwotę w złotych, np. 120,50.",
+      "EMPTY_UPDATE": "Nie ma nic do zapisania.",
+      "CLOSED_DAY_EXISTS": "Ten dzień jest już na liście dni wolnych.",
+      "CLOSED_DAY_NOT_FOUND": "Tego dnia nie ma już na liście."
+    },
+    "closedDays": {
+      "tab": "Dni wolne",
+      "title": "Dni bez dostaw",
+      "description": "Święta i przerwy, w które nie dowozimy. Klienci zobaczą je jako niedostępne; powód widzi tylko zespół. Zamówienia jeszcze ich nie blokują — zacznie się to po wdrożeniu nowych zasad zamawiania.",
+      "date": "Data",
+      "reason": "Powód",
+      "reasonPlaceholder": "np. Boże Narodzenie",
+      "reasonHint": "Powód widzi tylko zespół, do 200 znaków.",
+      "add": "Dodaj dzień",
+      "adding": "Dodaję…",
+      "added": "Dodano: {day}.",
+      "addFailed": "Nie udało się dodać dnia.",
+      "remove": "Usuń: {day}",
+      "removed": "Usunięto: {day}.",
+      "removeFailed": "Nie udało się usunąć dnia.",
+      "loadFailed": "Nie udało się wczytać dni wolnych.",
+      "empty": "Brak zaplanowanych dni wolnych.",
+      "dateRequired": "Wybierz datę.",
+      "reasonRequired": "Wpisz powód.",
+      "actions": "Akcje"
+    }
   },
   "consultationsPage": {
     "title": "Konsultacje",

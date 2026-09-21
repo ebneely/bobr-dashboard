@@ -30,7 +30,7 @@
       "consultations": "Bookings for consultations with the doctor.",
       "notes": "Notes, nudges and complaints.",
       "zones": "Postal codes we deliver to, and what shipping costs.",
-      "settings": "The BLIK number for consultation payments.",
+      "settings": "Consultations, BLIK payments, delivery, prices and discounts, site content and closed days.",
       "staff": "Admin accounts: add, reset passwords, deactivate.",
       "deliveries": "Kitchen production and courier routes for a chosen day."
     },
@@ -382,29 +382,203 @@
     "no": "No",
     "open": "Open"
   },
-  "settingsPage": {
-    "title": "Settings",
-    "subtitle": "Shop settings that apply to every customer.",
-    "save": "Save",
-    "saving": "Saving…",
-    "savedTitle": "Saved",
-    "errorTitle": "Not saved",
-    "blikTitle": "BLIK",
-    "blikDescription": "The phone number customers send a BLIK transfer to when paying for a consultation.",
-    "current": "Currently: {phone}",
-    "currentRecipient": "Recipient: {name}",
-    "notSet": "No BLIK number is set — customers will be told payment details are coming soon.",
-    "phoneLabel": "BLIK phone number",
-    "phoneHint": "E.g. +48 600 123 456 — spaces and dashes are fine. Leave empty to remove it.",
-    "recipientLabel": "Recipient name",
-    "recipientHint": "E.g. BOBR Sp. z o.o. — 2 to 100 characters. Optional.",
-    "saved": "BLIK details saved.",
-    "loadFailed": "Could not load payment settings.",
-    "saveFailed": "Could not save the BLIK details.",
-    "zonesNote": "One-time shipping is now set per delivery zone.",
-    "zonesLink": "Go to delivery zones",
-    "blikRequirementTitle": "Before you enter a number",
-    "blikRequirement": "The number must be registered to receive BLIK phone transfers in your bank's app, linked to the account the money should go to — otherwise customers are told the number does not accept BLIK transfers. Not every bank allows a business account. Payments are not confirmed automatically: check your bank and mark the consultation as paid."
+  "settings": {
+    "page": {
+      "title": "Settings",
+      "subtitle": "Everything about the shop you can change without a developer: consultations, payments, delivery, prices, site content and closed days."
+    },
+    "sections": {
+      "consultations": "Consultations",
+      "payments": "Payments",
+      "delivery": "Delivery",
+      "ordering": "Ordering",
+      "pricing": "Prices and discounts",
+      "site": "Website"
+    },
+    "sectionHelp": {
+      "payments": "Where customers pay for consultations by BLIK phone transfer.",
+      "delivery": "The delivery charge for one-time orders is set per delivery zone."
+    },
+    "fields": {
+      "consultationPriceGrosze": {
+        "label": "Consultation price",
+        "help": "What a customer pays for one consultation. A booking keeps the price from when it was made — a change does not affect consultations already booked."
+      },
+      "doctorName": {
+        "label": "Doctor's name",
+        "help": "How customers see the doctor who runs consultations — in Polish and in English."
+      },
+      "consultationSlotStart": {
+        "label": "First slot of the day",
+        "help": "The earliest time a consultation can be booked for (Polish time)."
+      },
+      "consultationSlotEnd": {
+        "label": "Last slot of the day",
+        "help": "The latest consultation time (Polish time) — it must be later than the first slot."
+      },
+      "consultationSlotStepMinutes": {
+        "label": "Time between slots",
+        "help": "How many minutes apart consultation slots start."
+      },
+      "blikPhone": {
+        "label": "BLIK phone number",
+        "help": "E.g. +48 600 123 456 — spaces and dashes are fine; leave it empty to remove the number. The number must be registered to receive BLIK phone transfers in your bank's app, linked to the account the money should go to — otherwise customers are told the number does not accept BLIK transfers. Payments are not confirmed automatically: check your bank and mark the consultation as paid."
+      },
+      "blikRecipientName": {
+        "label": "BLIK recipient name",
+        "help": "E.g. BOBR Sp. z o.o. — 2 to 100 characters. Optional."
+      },
+      "deliveryWeekdays": {
+        "label": "Delivery days",
+        "help": "The days of the week meals are delivered. Pick at least one."
+      },
+      "orderCutoffHour": {
+        "label": "Order cut-off hour",
+        "help": "Until which hour (0–23, Polish time) an order still makes the earliest possible day. Empty = no cut-off."
+      },
+      "leadDays": {
+        "label": "Lead time",
+        "help": "How many days before the first delivery an order must be placed."
+      },
+      "orderWindowMonths": {
+        "label": "How far ahead customers can order",
+        "help": "In months. With 1, the latest day is the end of the month after the earliest delivery day's month."
+      },
+      "changeCutoffDays": {
+        "label": "Change deadline",
+        "help": "How many days before a delivery a customer can still change or move it."
+      },
+      "calendarMinDays": {
+        "label": "Minimum days in the calendar",
+        "help": "The fewest days a customer must pick when ordering from the calendar."
+      },
+      "oneTimeDayCount": {
+        "label": "Days in a one-time order",
+        "help": "How many days one one-time order covers."
+      },
+      "intakeMaxAgeDays": {
+        "label": "Intake form validity",
+        "help": "After how many days a customer's health intake counts as out of date. Empty = it never expires."
+      },
+      "discountTiers": {
+        "label": "Discount tiers",
+        "help": "A discount for ordering at least the given number of days. Each tier needs a different day count; tiers are sorted ascending on save.",
+        "minDays": "From days",
+        "percent": "Discount"
+      },
+      "wholeMonthPercent": {
+        "label": "Whole-month discount",
+        "help": "The percentage off when a customer orders a full month."
+      },
+      "calendarFreeShipping": {
+        "label": "Free delivery for calendar orders",
+        "help": "Calendar orders pay no delivery charge."
+      },
+      "heroImage": {
+        "label": "Home page image",
+        "help": "The large picture at the top of the storefront. Without one, the storefront shows its built-in picture."
+      },
+      "contactEmail": {
+        "label": "Contact email",
+        "help": "The address shown to customers on the site. Empty = hide it."
+      },
+      "contactPhone": {
+        "label": "Contact phone",
+        "help": "E.g. +48 600 123 456. Empty = hide it."
+      },
+      "contactAddress": {
+        "label": "Business address",
+        "help": "The address shown on the site, up to 300 characters. Empty = hide it."
+      },
+      "footerTagline": {
+        "label": "Footer tagline",
+        "help": "A short line in the site footer — in Polish and in English."
+      }
+    },
+    "options": {
+      "consultationSlotStepMinutes": {
+        "15": "15 minutes",
+        "20": "20 minutes",
+        "30": "30 minutes",
+        "60": "1 hour"
+      }
+    },
+    "units": {
+      "grosze": "gr",
+      "zloty": "zł",
+      "days": "days",
+      "months": "months",
+      "hours": "h",
+      "minutes": "min",
+      "percent": "%"
+    },
+    "ui": {
+      "sectionsLabel": "Settings sections",
+      "save": "Save",
+      "saving": "Saving…",
+      "reset": "Discard changes",
+      "saved": "Saved: {section}.",
+      "saveFailed": "Could not save the settings.",
+      "loadFailed": "Could not load the settings.",
+      "errorTitle": "Not saved",
+      "fixFields": "Fix the highlighted fields.",
+      "unsaved": "{count, plural, one {# unsaved change} other {# unsaved changes}}",
+      "upToDate": "Everything is saved.",
+      "unsavedTab": "unsaved changes",
+      "notEnforced": "Not in effect yet",
+      "notEnforcedHint": "The value is saved and shown on the storefront, but ordering does not apply it yet.",
+      "choose": "Choose…",
+      "emptyMeansNone": "none",
+      "language": {
+        "pl": "In Polish",
+        "en": "In English"
+      },
+      "addRow": "Add a row",
+      "removeRow": "Remove row {index}",
+      "listEmpty": "No rows.",
+      "listFull": "At most {maximum} rows.",
+      "duplicateRow": "This value repeats in another row.",
+      "sortedOnSave": "On save, rows are sorted ascending by “{column}”.",
+      "clearImage": "Remove image",
+      "clearingImage": "Removing…",
+      "noImage": "No image — the storefront shows its default.",
+      "imageSaved": "Image saved.",
+      "imageCleared": "Image removed."
+    },
+    "errors": {
+      "SETTING_UNKNOWN": "That setting no longer exists — reload the page.",
+      "SETTING_IMAGE_UPLOAD_ONLY": "An image can only be uploaded or removed.",
+      "SETTING_TIME_FORMAT": "Enter a time as HH:MM, e.g. 08:30.",
+      "SETTING_SLOT_RANGE": "The last slot must be later than the first.",
+      "SETTING_TIERS_DUPLICATE": "Two tiers start at the same day count ({minDays}).",
+      "SETTING_LIST_DUPLICATE": "The value {value} repeats in another row.",
+      "SETTING_WHOLE_NUMBER": "Enter a whole number.",
+      "SETTING_MONEY_FORMAT": "Enter an amount in złoty, e.g. 120.50.",
+      "EMPTY_UPDATE": "There is nothing to save.",
+      "CLOSED_DAY_EXISTS": "That day is already on the closed-days list.",
+      "CLOSED_DAY_NOT_FOUND": "That day is no longer on the list."
+    },
+    "closedDays": {
+      "tab": "Closed days",
+      "title": "Days without delivery",
+      "description": "Holidays and breaks when nothing is delivered. Customers see them as unavailable; only staff see the reason. Ordering does not block them yet — that starts when the new ordering rules ship.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Christmas Day",
+      "reasonHint": "Only staff see the reason, up to 200 characters.",
+      "add": "Add day",
+      "adding": "Adding…",
+      "added": "Added: {day}.",
+      "addFailed": "Could not add the day.",
+      "remove": "Remove: {day}",
+      "removed": "Removed: {day}.",
+      "removeFailed": "Could not remove the day.",
+      "loadFailed": "Could not load the closed days.",
+      "empty": "No closed days planned.",
+      "dateRequired": "Choose a date.",
+      "reasonRequired": "Enter a reason.",
+      "actions": "Actions"
+    }
   },
   "consultationsPage": {
     "title": "Consultations",

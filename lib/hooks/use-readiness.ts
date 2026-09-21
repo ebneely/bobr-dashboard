@@ -32,7 +32,8 @@ export function readinessGaps(input: ReadinessInput): ReadinessGap[] {
 export const READINESS_FIX_PATH: Record<ReadinessGap, string> = {
   meals: '/dashboard/meals',
   zones: '/dashboard/zones',
-  blik: '/dashboard/settings',
+  // The payments tab of the generated settings form (SettingsClient reads ?tab=).
+  blik: '/dashboard/settings?tab=payments',
 };
 
 /** Reads the three admin lists the overview checklist is built from. */

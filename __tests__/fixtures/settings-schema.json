@@ -1,0 +1,467 @@
+{
+  "version": 1,
+  "sections": [
+    {
+      "id": "consultations",
+      "labelKey": "settings.sections.consultations",
+      "fields": [
+        {
+          "key": "consultationPriceGrosze",
+          "section": "consultations",
+          "control": "money",
+          "labelKey": "settings.fields.consultationPriceGrosze.label",
+          "helpKey": "settings.fields.consultationPriceGrosze.help",
+          "unit": "grosze",
+          "nullable": false,
+          "public": true,
+          "enforced": true,
+          "default": 10000,
+          "validation": {
+            "integer": true,
+            "min": 0,
+            "max": 1000000
+          }
+        },
+        {
+          "key": "doctorName",
+          "section": "consultations",
+          "control": "localizedText",
+          "labelKey": "settings.fields.doctorName.label",
+          "helpKey": "settings.fields.doctorName.help",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": {
+            "pl": "Dr Abdelrahman",
+            "en": "Dr Abdelrahman"
+          },
+          "validation": {
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        {
+          "key": "consultationSlotStart",
+          "section": "consultations",
+          "control": "time",
+          "labelKey": "settings.fields.consultationSlotStart.label",
+          "helpKey": "settings.fields.consultationSlotStart.help",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": "08:00",
+          "validation": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "before": "consultationSlotEnd"
+          }
+        },
+        {
+          "key": "consultationSlotEnd",
+          "section": "consultations",
+          "control": "time",
+          "labelKey": "settings.fields.consultationSlotEnd.label",
+          "helpKey": "settings.fields.consultationSlotEnd.help",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": "20:00",
+          "validation": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "after": "consultationSlotStart"
+          }
+        },
+        {
+          "key": "consultationSlotStepMinutes",
+          "section": "consultations",
+          "control": "select",
+          "labelKey": "settings.fields.consultationSlotStepMinutes.label",
+          "helpKey": "settings.fields.consultationSlotStepMinutes.help",
+          "unit": "minutes",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": 30,
+          "validation": {},
+          "options": [
+            {
+              "value": 15,
+              "labelKey": "settings.options.consultationSlotStepMinutes.15"
+            },
+            {
+              "value": 20,
+              "labelKey": "settings.options.consultationSlotStepMinutes.20"
+            },
+            {
+              "value": 30,
+              "labelKey": "settings.options.consultationSlotStepMinutes.30"
+            },
+            {
+              "value": 60,
+              "labelKey": "settings.options.consultationSlotStepMinutes.60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "payments",
+      "labelKey": "settings.sections.payments",
+      "fields": [
+        {
+          "key": "blikPhone",
+          "section": "payments",
+          "control": "text",
+          "labelKey": "settings.fields.blikPhone.label",
+          "helpKey": "settings.fields.blikPhone.help",
+          "nullable": true,
+          "public": false,
+          "enforced": true,
+          "default": null,
+          "validation": {
+            "format": "blikPhone",
+            "maxLength": 20
+          }
+        },
+        {
+          "key": "blikRecipientName",
+          "section": "payments",
+          "control": "text",
+          "labelKey": "settings.fields.blikRecipientName.label",
+          "helpKey": "settings.fields.blikRecipientName.help",
+          "nullable": true,
+          "public": false,
+          "enforced": true,
+          "default": null,
+          "validation": {
+            "minLength": 2,
+            "maxLength": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "delivery",
+      "labelKey": "settings.sections.delivery",
+      "fields": [
+        {
+          "key": "deliveryWeekdays",
+          "section": "delivery",
+          "control": "weekdays",
+          "labelKey": "settings.fields.deliveryWeekdays.label",
+          "helpKey": "settings.fields.deliveryWeekdays.help",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "validation": {
+            "minItems": 1,
+            "maxItems": 7,
+            "min": 1,
+            "max": 7
+          }
+        },
+        {
+          "key": "orderCutoffHour",
+          "section": "delivery",
+          "control": "number",
+          "labelKey": "settings.fields.orderCutoffHour.label",
+          "helpKey": "settings.fields.orderCutoffHour.help",
+          "unit": "hours",
+          "nullable": true,
+          "public": true,
+          "enforced": false,
+          "default": null,
+          "validation": {
+            "integer": true,
+            "min": 0,
+            "max": 23
+          }
+        },
+        {
+          "key": "leadDays",
+          "section": "delivery",
+          "control": "number",
+          "labelKey": "settings.fields.leadDays.label",
+          "helpKey": "settings.fields.leadDays.help",
+          "unit": "days",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": 2,
+          "validation": {
+            "integer": true,
+            "min": 0,
+            "max": 30
+          }
+        },
+        {
+          "key": "orderWindowMonths",
+          "section": "delivery",
+          "control": "number",
+          "labelKey": "settings.fields.orderWindowMonths.label",
+          "helpKey": "settings.fields.orderWindowMonths.help",
+          "unit": "months",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": 1,
+          "validation": {
+            "integer": true,
+            "min": 1,
+            "max": 12
+          }
+        },
+        {
+          "key": "changeCutoffDays",
+          "section": "delivery",
+          "control": "number",
+          "labelKey": "settings.fields.changeCutoffDays.label",
+          "helpKey": "settings.fields.changeCutoffDays.help",
+          "unit": "days",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": 2,
+          "validation": {
+            "integer": true,
+            "min": 0,
+            "max": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "ordering",
+      "labelKey": "settings.sections.ordering",
+      "fields": [
+        {
+          "key": "calendarMinDays",
+          "section": "ordering",
+          "control": "number",
+          "labelKey": "settings.fields.calendarMinDays.label",
+          "helpKey": "settings.fields.calendarMinDays.help",
+          "unit": "days",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": 5,
+          "validation": {
+            "integer": true,
+            "min": 1,
+            "max": 31
+          }
+        },
+        {
+          "key": "oneTimeDayCount",
+          "section": "ordering",
+          "control": "number",
+          "labelKey": "settings.fields.oneTimeDayCount.label",
+          "helpKey": "settings.fields.oneTimeDayCount.help",
+          "unit": "days",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": 1,
+          "validation": {
+            "integer": true,
+            "min": 1,
+            "max": 7
+          }
+        },
+        {
+          "key": "intakeMaxAgeDays",
+          "section": "ordering",
+          "control": "number",
+          "labelKey": "settings.fields.intakeMaxAgeDays.label",
+          "helpKey": "settings.fields.intakeMaxAgeDays.help",
+          "unit": "days",
+          "nullable": true,
+          "public": false,
+          "enforced": false,
+          "default": null,
+          "validation": {
+            "integer": true,
+            "min": 1,
+            "max": 3650
+          }
+        }
+      ]
+    },
+    {
+      "id": "pricing",
+      "labelKey": "settings.sections.pricing",
+      "fields": [
+        {
+          "key": "discountTiers",
+          "section": "pricing",
+          "control": "list",
+          "labelKey": "settings.fields.discountTiers.label",
+          "helpKey": "settings.fields.discountTiers.help",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": [
+            {
+              "minDays": 10,
+              "percent": 10
+            },
+            {
+              "minDays": 20,
+              "percent": 15
+            }
+          ],
+          "validation": {
+            "minItems": 0,
+            "maxItems": 10,
+            "uniqueBy": "minDays",
+            "sortedBy": "minDays"
+          },
+          "item": {
+            "fields": [
+              {
+                "key": "minDays",
+                "control": "number",
+                "labelKey": "settings.fields.discountTiers.minDays",
+                "unit": "days",
+                "validation": {
+                  "integer": true,
+                  "min": 1,
+                  "max": 366
+                }
+              },
+              {
+                "key": "percent",
+                "control": "number",
+                "labelKey": "settings.fields.discountTiers.percent",
+                "unit": "percent",
+                "validation": {
+                  "integer": true,
+                  "min": 0,
+                  "max": 100
+                }
+              }
+            ]
+          }
+        },
+        {
+          "key": "wholeMonthPercent",
+          "section": "pricing",
+          "control": "number",
+          "labelKey": "settings.fields.wholeMonthPercent.label",
+          "helpKey": "settings.fields.wholeMonthPercent.help",
+          "unit": "percent",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": 20,
+          "validation": {
+            "integer": true,
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "key": "calendarFreeShipping",
+          "section": "pricing",
+          "control": "toggle",
+          "labelKey": "settings.fields.calendarFreeShipping.label",
+          "helpKey": "settings.fields.calendarFreeShipping.help",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": true,
+          "validation": {}
+        }
+      ]
+    },
+    {
+      "id": "site",
+      "labelKey": "settings.sections.site",
+      "fields": [
+        {
+          "key": "heroImage",
+          "section": "site",
+          "control": "image",
+          "labelKey": "settings.fields.heroImage.label",
+          "helpKey": "settings.fields.heroImage.help",
+          "nullable": true,
+          "public": true,
+          "enforced": false,
+          "default": null,
+          "validation": {
+            "maxBytes": 15728640
+          }
+        },
+        {
+          "key": "contactEmail",
+          "section": "site",
+          "control": "text",
+          "labelKey": "settings.fields.contactEmail.label",
+          "helpKey": "settings.fields.contactEmail.help",
+          "nullable": true,
+          "public": true,
+          "enforced": false,
+          "default": "kontakt@bobr.pl",
+          "validation": {
+            "format": "email",
+            "maxLength": 254
+          }
+        },
+        {
+          "key": "contactPhone",
+          "section": "site",
+          "control": "text",
+          "labelKey": "settings.fields.contactPhone.label",
+          "helpKey": "settings.fields.contactPhone.help",
+          "nullable": true,
+          "public": true,
+          "enforced": false,
+          "default": null,
+          "validation": {
+            "pattern": "^\\+?[0-9 ()-]{6,20}$",
+            "maxLength": 21
+          }
+        },
+        {
+          "key": "contactAddress",
+          "section": "site",
+          "control": "textarea",
+          "labelKey": "settings.fields.contactAddress.label",
+          "helpKey": "settings.fields.contactAddress.help",
+          "nullable": true,
+          "public": true,
+          "enforced": false,
+          "default": null,
+          "validation": {
+            "maxLength": 300
+          }
+        },
+        {
+          "key": "footerTagline",
+          "section": "site",
+          "control": "localizedText",
+          "labelKey": "settings.fields.footerTagline.label",
+          "helpKey": "settings.fields.footerTagline.help",
+          "nullable": false,
+          "public": true,
+          "enforced": false,
+          "default": {
+            "pl": "Katering dietetyczny z dostawą.",
+            "en": "Diet catering, delivered."
+          },
+          "validation": {
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      ]
+    }
+  ]
+}
