@@ -494,6 +494,10 @@
       "footerTagline": {
         "label": "Footer tagline",
         "help": "A short line in the site footer — in Polish and in English."
+      },
+      "complaintDueDays": {
+        "label": "Complaint reply deadline",
+        "help": "How many days after it is filed a complaint counts as overdue (the \"Overdue complaints\" counter and the due date on the note)."
       }
     },
     "options": {

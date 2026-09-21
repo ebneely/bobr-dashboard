@@ -494,6 +494,10 @@
       "footerTagline": {
         "label": "Hasło w stopce",
         "help": "Krótkie zdanie w stopce strony — po polsku i po angielsku."
+      },
+      "complaintDueDays": {
+        "label": "Termin odpowiedzi na reklamację",
+        "help": "Ile dni po zgłoszeniu reklamacja jest uznawana za przeterminowaną (licznik „Reklamacje po terminie” i termin przy zgłoszeniu)."
       }
     },
     "options": {
