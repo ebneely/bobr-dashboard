@@ -156,15 +156,17 @@ export function OrdersClient() {
     setPaymentBusy(true);
     setPaymentError(null);
     try {
-      await apiRecordDeliveryPayment(paying.id, {
+      const saved = await apiRecordDeliveryPayment(paying.id, {
         paidGrosze,
         paymentNote: paymentNote.trim() || undefined,
       });
+      // The server decides whether this settled the order: a part payment
+      // accumulates and leaves paidAt null.
       setOrders(
         (current) =>
           current?.map((o) =>
             o.id === paying.id
-              ? { ...o, paidAt: new Date().toISOString(), paidGrosze, paymentNote: paymentNote.trim() || null }
+              ? { ...o, paidAt: saved.paidAt, paidGrosze: saved.paidGrosze, paymentNote: saved.paymentNote }
               : o,
           ) ?? current,
       );
@@ -297,15 +299,25 @@ export function OrdersClient() {
                           {t('paid')}
                         </Badge>
                       ) : (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openPayment(order)}
-                          data-testid="record-payment"
-                        >
-                          {t('recordPayment')}
-                        </Button>
+                        <div className="flex flex-col items-start gap-1">
+                          {(order.paidGrosze ?? 0) > 0 && (
+                            <span className="text-xs text-muted-foreground" data-testid="part-paid">
+                              {t('partPaid', {
+                                paid: formatGrosze(order.paidGrosze ?? 0, locale),
+                                due: formatGrosze(order.adjustedTotalGrosze ?? order.totalGrosze, locale),
+                              })}
+                            </span>
+                          )}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openPayment(order)}
+                            data-testid="record-payment"
+                          >
+                            {t('recordPayment')}
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                     <TableCell className="px-3 py-2.5 align-top">

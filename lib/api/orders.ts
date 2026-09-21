@@ -117,6 +117,8 @@ export interface AdminOrder extends Order {
   /** Gap G18 — cash-on-delivery collection, recorded from the deliveries screen. */
   paidAt?: string | null;
   paidGrosze?: number | null;
+  /** What is actually due when an admin adjusted the total; else totalGrosze. */
+  adjustedTotalGrosze?: number | null;
   paymentNote?: string | null;
   contactPhone?: string | null;
   deliveryNotes?: string | null;

@@ -81,7 +81,14 @@ export function apiRecordDeliveryPayment(
   orderId: string,
   input: { paidGrosze: number; paymentNote?: string },
 ) {
-  return apiFetch<{ id: string; paidAt: string | null }>(
+  // paidAt is set only once paidGrosze reaches the amount due
+  // (ebneely/bobr-backend#58); a part payment comes back with paidAt null.
+  return apiFetch<{
+    id: string;
+    paidAt: string | null;
+    paidGrosze: number | null;
+    paymentNote: string | null;
+  }>(
     `/deliveries/admin/orders/${orderId}/payment`,
     { method: 'PATCH', body: input },
   );
