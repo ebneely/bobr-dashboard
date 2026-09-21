@@ -584,7 +584,11 @@
       "FAIL_REASON_REQUIRED": "Say why the delivery failed.",
       "NOTE_ALREADY_REPLIED": "This note already has a reply. Use \"Overwrite\" to correct it.",
       "INVALID_LIMIT": "limit must be a whole number from 1 to 200.",
-      "INVALID_PAGE": "page must be a whole number of at least 1."
+      "INVALID_PAGE": "page must be a whole number of at least 1.",
+      "DAY_NOT_DELIVERED": "We don't deliver on that day of the week ({day}) — choose another day.",
+      "DAY_CLOSED": "We're closed on {day} — choose another day.",
+      "INTAKE_STALE": "Your profile is more than {maxAgeDays, plural, one {# day} other {# days}} old — review and save it before ordering.",
+      "CONSULTATION_SLOT_INVALID": "Choose a time from {start} to {end}, every {stepMinutes} minutes (Warsaw time)."
     },
     "fields": {
       "oneTimeShippingGrosze": "Shipping price",

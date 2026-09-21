@@ -584,7 +584,11 @@
       "FAIL_REASON_REQUIRED": "Podaj powód nieudanej dostawy.",
       "NOTE_ALREADY_REPLIED": "Ta uwaga ma już odpowiedź. Użyj „Nadpisz”, aby ją poprawić.",
       "INVALID_LIMIT": "limit musi być liczbą całkowitą od 1 do 200.",
-      "INVALID_PAGE": "page musi być liczbą całkowitą, co najmniej 1."
+      "INVALID_PAGE": "page musi być liczbą całkowitą, co najmniej 1.",
+      "DAY_NOT_DELIVERED": "Nie dowozimy w ten dzień tygodnia ({day}) — wybierz inny dzień.",
+      "DAY_CLOSED": "{day} jesteśmy nieczynni — wybierz inny dzień.",
+      "INTAKE_STALE": "Twój profil ma ponad {maxAgeDays, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} — sprawdź go i zapisz ponownie, zanim złożysz zamówienie.",
+      "CONSULTATION_SLOT_INVALID": "Wybierz godzinę od {start} do {end}, co {stepMinutes} min (czas polski)."
     },
     "fields": {
       "oneTimeShippingGrosze": "Cena dostawy",
