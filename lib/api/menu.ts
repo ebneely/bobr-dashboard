@@ -1,4 +1,5 @@
 import { apiFetch } from './client';
+import { uploadFileName } from '@/lib/image-crop';
 import type { MealType } from './orders';
 
 /**
@@ -130,7 +131,6 @@ export interface PublicMenu {
 export const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 export const DOCUMENT_ACCEPT =
   'application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif';
-export const PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic,image/heif';
 
 // ---------------------------------------------------------------------------
 // Requests
@@ -161,9 +161,9 @@ export function apiAdminDeleteMenuItem(id: string) {
   return apiFetch<void>(`/menu/admin/items/${id}`, { method: 'DELETE' });
 }
 
-export function apiAdminUploadMenuItemImage(id: string, file: File) {
+export function apiAdminUploadMenuItemImage(id: string, file: Blob) {
   const form = new FormData();
-  form.append('file', file);
+  form.append('file', file, uploadFileName(file));
   return apiFetch<AdminMenuItem>(`/menu/admin/items/${id}/image`, {
     method: 'POST',
     body: form,

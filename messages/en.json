@@ -192,9 +192,6 @@
     "cancel": "Cancel",
     "photo": "Photograph",
     "noPhoto": "No photograph",
-    "choosePhoto": "Choose a photograph",
-    "uploading": "Uploading…",
-    "uploadFailed": "The photograph could not be uploaded.",
     "uploadNote": "Image storage is not configured locally — uploads may fail.",
     "loadFailed": "The meals could not be loaded.",
     "saveFailed": "The changes could not be saved.",
@@ -316,11 +313,9 @@
       "tagsPlaceholder": "vegan, no sugar",
       "tagsHint": "Comma-separated. They help search.",
       "photo": "Photo",
-      "photoChoose": "Choose a photo",
-      "photoReplace": "Change photo",
-      "photoHint": "JPG, PNG, WebP or HEIC, up to 15 MB",
       "isActive": "Visible on the website",
-      "isActiveHint": "Turn off to hide the dish without deleting it."
+      "isActiveHint": "Turn off to hide the dish without deleting it.",
+      "photoOnSave": "The photo is uploaded when you save the dish."
     },
     "preview": {
       "title": "How customers see it",
@@ -803,6 +798,32 @@
     "weight": {
       "title": "Weight history",
       "none": "No weight entries."
+    }
+  },
+  "imageField": {
+    "dropHint": "Drop an image here or click to choose one",
+    "replaceHint": "Drop a new image or click to change it",
+    "dropNow": "Release to use this image",
+    "choose": "Choose an image",
+    "replace": "Change image",
+    "formats": "JPG, PNG or WebP, up to 15 MB",
+    "uploading": "Uploading the image…",
+    "crop": {
+      "title": "Crop the image",
+      "descriptionFixed": "Move the frame to choose what is shown. The proportions are fixed.",
+      "descriptionFree": "Move and resize the frame to choose what is shown.",
+      "alt": "Image to crop",
+      "cancel": "Cancel",
+      "confirm": "Use this crop",
+      "cropping": "Cropping…"
+    },
+    "errors": {
+      "type": "Only a JPG, PNG or WebP image can be used.",
+      "tooLarge": "The image is larger than 15 MB.",
+      "unreadable": "This file could not be opened as an image.",
+      "noCrop": "Select part of the image first.",
+      "cropFailed": "The image could not be cropped. Try another file.",
+      "uploadFailed": "The image could not be uploaded."
     }
   }
 }

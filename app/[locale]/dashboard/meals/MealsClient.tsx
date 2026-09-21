@@ -4,12 +4,12 @@ import {
   useEffect,
   useId,
   useState,
-  type ChangeEvent,
   type FormEvent,
 } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Form } from 'radix-ui';
 
+import { ImageField } from '@/components/ImageField';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   AlertDialog,
@@ -364,8 +364,7 @@ function MealForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  // What the upload endpoint answered, so the new photo shows without a refetch.
   const [uploaded, setUploaded] = useState<AdminMeal | null>(null);
 
   async function submit(event: FormEvent) {
@@ -409,25 +408,6 @@ function MealForm({
       setError(describeError(err, t('saveFailed'), translateApiError));
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function upload(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file || !meal) return;
-    setUploading(true);
-    setUploadError(null);
-    try {
-      setUploaded(await apiAdminUploadMealImage(meal.id, file));
-    } catch (err) {
-      // Garage and imgproxy live in Dokploy, not in the local compose file, so
-      // a failure here is the expected local outcome. Say so rather than
-      // pretending the upload worked.
-      setUploadError(describeError(err, t('uploadFailed'), translateApiError));
-    } finally {
-      setUploading(false);
-      // Let the same file be chosen again after a failure.
-      event.target.value = '';
     }
   }
 
@@ -592,31 +572,15 @@ function MealForm({
           </Label>
 
           {meal && (
-            <fieldset className="min-w-0 rounded-lg border p-3">
-              <legend className={cn(MUTED_LABEL, 'px-1')}>{t('photo')}</legend>
-              {/* Capped: a 4:3 frame across the full width of a desktop form is a
-                  lot of empty grey for a picture that may not exist yet. */}
-              <div className="max-w-80">
-                <MealThumbnail meal={uploaded ?? meal} label={t('noPhoto')} />
-              </div>
-              <Input
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                onChange={(e) => void upload(e)}
-                disabled={uploading}
-                aria-label={t('choosePhoto')}
-                className="mt-3 h-auto max-w-full cursor-pointer py-1.5"
-              />
-              {uploading && (
-                <p className="mt-2 text-sm text-muted-foreground">{t('uploading')}</p>
-              )}
-              {uploadError && (
-                <div className="mt-2">
-                  <ErrorAlert message={uploadError} />
-                </div>
-              )}
-              <p className="mt-2 text-xs text-muted-foreground">{t('uploadNote')}</p>
-            </fieldset>
+            <ImageField
+              label={t('photo')}
+              value={(uploaded ?? meal).imageUrl ?? null}
+              aspect={4 / 3}
+              onUpload={async (file) => {
+                setUploaded(await apiAdminUploadMealImage(meal.id, file));
+              }}
+              hint={t('uploadNote')}
+            />
           )}
 
           {error && <ErrorAlert message={error} />}

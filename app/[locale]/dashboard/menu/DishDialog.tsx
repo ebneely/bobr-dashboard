@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, type ChangeEvent } from 'react';
-import { ImageUpIcon } from 'lucide-react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { ImageField } from '@/components/ImageField';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,9 +32,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
   ALLERGENS,
-  MAX_UPLOAD_BYTES,
   MENU_COURSES,
-  PHOTO_ACCEPT,
   nextSortOrder,
   parseTags,
   parseWholeNumber,
@@ -123,14 +121,13 @@ function DishForm({
   const [allergens, setAllergens] = useState<Allergen[]>(item?.allergens ?? []);
   const [tagText, setTagText] = useState(item?.tags.join(', ') ?? '');
   const [isActive, setIsActive] = useState(item?.isActive ?? true);
-  const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null);
+  const [photo, setPhoto] = useState<{ file: Blob; url: string } | null>(null);
   const [previewLocale, setPreviewLocale] = useState(locale === 'en' ? 'en' : 'pl');
   const [error, setError] = useState<string | null>(null);
   const [showInvalid, setShowInvalid] = useState(false);
 
-  const fileInput = useRef<HTMLInputElement>(null);
   // The object URL of a chosen photo is revoked when it is replaced (in the
-  // change handler) and when the dialog closes (here).
+  // upload handler) and when the dialog closes (here).
   const photoUrl = useRef<string | null>(null);
   useEffect(
     () => () => {
@@ -147,21 +144,6 @@ function DishForm({
   const diet = linkedMeal?.type ?? (mealId === item?.mealId ? (item?.diet ?? null) : null);
 
   const nameMissing = { pl: namePl.trim() === '', en: nameEn.trim() === '' };
-
-  function choosePhoto(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
-    if (file.size > MAX_UPLOAD_BYTES) {
-      setError(t('errors.fileTooLarge'));
-      return;
-    }
-    if (photoUrl.current) URL.revokeObjectURL(photoUrl.current);
-    const url = URL.createObjectURL(file);
-    photoUrl.current = url;
-    setPhoto({ file, url });
-    setError(null);
-  }
 
   async function submit() {
     setError(null);
@@ -421,47 +403,21 @@ function DishForm({
               )}
             </div>
 
-            <div className="grid min-w-0 content-start gap-1.5">
-              <span className="text-sm leading-none font-medium">{t('fields.photo')}</span>
-              <div className="flex items-center gap-3">
-                {imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={imageUrl}
-                    alt=""
-                    className="size-14 shrink-0 rounded-md object-cover ring-1 ring-foreground/10"
-                  />
-                ) : (
-                  <div className="flex size-14 shrink-0 items-center justify-center rounded-md border border-dashed bg-secondary">
-                    <ImageUpIcon className="size-5 text-muted-foreground" aria-hidden />
-                  </div>
-                )}
-                <div className="flex min-w-0 flex-col gap-1">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInput.current?.click()}
-                    data-testid="dish-photo-choose"
-                  >
-                    {imageUrl ? t('fields.photoReplace') : t('fields.photoChoose')}
-                  </Button>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {photo ? photo.file.name : t('fields.photoHint')}
-                  </span>
-                </div>
-              </div>
-              <Input
-                ref={fileInput}
-                type="file"
-                accept={PHOTO_ACCEPT}
-                className="hidden"
-                tabIndex={-1}
-                aria-hidden
-                onChange={choosePhoto}
-                data-testid="dish-photo-input"
-              />
-            </div>
+            <ImageField
+              label={t('fields.photo')}
+              value={imageUrl}
+              aspect={4 / 3}
+              hint={t('fields.photoOnSave')}
+              // Staged, not sent: a new dish has no id to upload against until
+              // it is saved, so useSaveMenuItem uploads the crop after the save.
+              onUpload={async (file) => {
+                if (photoUrl.current) URL.revokeObjectURL(photoUrl.current);
+                const url = URL.createObjectURL(file);
+                photoUrl.current = url;
+                setPhoto({ file, url });
+                setError(null);
+              }}
+            />
 
             <div className="flex items-start gap-3 sm:col-span-2">
               <Switch

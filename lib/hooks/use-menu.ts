@@ -66,7 +66,7 @@ export function useSaveMenuItem() {
     }: {
       id: string | null;
       input: MenuItemInput;
-      photo: File | null;
+      photo: Blob | null;
     }) => {
       const saved = id
         ? await apiAdminUpdateMenuItem(id, input)

@@ -192,9 +192,6 @@
     "cancel": "Anuluj",
     "photo": "Zdjęcie",
     "noPhoto": "Brak zdjęcia",
-    "choosePhoto": "Wybierz zdjęcie",
-    "uploading": "Wysyłam zdjęcie…",
-    "uploadFailed": "Nie udało się wysłać zdjęcia.",
     "uploadNote": "Magazyn zdjęć nie jest skonfigurowany lokalnie — wysyłka może się nie powieść.",
     "loadFailed": "Nie udało się wczytać posiłków.",
     "saveFailed": "Nie udało się zapisać zmian.",
@@ -316,11 +313,9 @@
       "tagsPlaceholder": "wegańskie, bez cukru",
       "tagsHint": "Po przecinku. Pomagają w wyszukiwaniu.",
       "photo": "Zdjęcie",
-      "photoChoose": "Wybierz zdjęcie",
-      "photoReplace": "Zmień zdjęcie",
-      "photoHint": "JPG, PNG, WebP lub HEIC, do 15 MB",
       "isActive": "Widoczne na stronie",
-      "isActiveHint": "Wyłącz, żeby ukryć danie bez usuwania."
+      "isActiveHint": "Wyłącz, żeby ukryć danie bez usuwania.",
+      "photoOnSave": "Zdjęcie zostanie wysłane po zapisaniu dania."
     },
     "preview": {
       "title": "Tak zobaczą to klienci",
@@ -803,6 +798,32 @@
     "weight": {
       "title": "Historia wagi",
       "none": "Brak wpisów wagi."
+    }
+  },
+  "imageField": {
+    "dropHint": "Upuść zdjęcie tutaj lub kliknij, aby wybrać",
+    "replaceHint": "Upuść nowe zdjęcie lub kliknij, aby je zmienić",
+    "dropNow": "Puść, aby użyć tego zdjęcia",
+    "choose": "Wybierz zdjęcie",
+    "replace": "Zmień zdjęcie",
+    "formats": "JPG, PNG lub WebP, do 15 MB",
+    "uploading": "Wysyłam zdjęcie…",
+    "crop": {
+      "title": "Przytnij zdjęcie",
+      "descriptionFixed": "Przesuń ramkę, aby wybrać widoczny fragment. Proporcje są stałe.",
+      "descriptionFree": "Przesuń i zmień rozmiar ramki, aby wybrać widoczny fragment.",
+      "alt": "Zdjęcie do przycięcia",
+      "cancel": "Anuluj",
+      "confirm": "Użyj tego kadru",
+      "cropping": "Przycinam…"
+    },
+    "errors": {
+      "type": "Można użyć tylko zdjęcia JPG, PNG lub WebP.",
+      "tooLarge": "Zdjęcie jest większe niż 15 MB.",
+      "unreadable": "Tego pliku nie da się otworzyć jako zdjęcia.",
+      "noCrop": "Najpierw zaznacz fragment zdjęcia.",
+      "cropFailed": "Nie udało się przyciąć zdjęcia. Spróbuj innego pliku.",
+      "uploadFailed": "Nie udało się wysłać zdjęcia."
     }
   }
 }

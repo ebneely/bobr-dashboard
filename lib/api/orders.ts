@@ -1,4 +1,5 @@
 import { apiFetch, apiFetchWithHeaders, readTotalCount } from './client';
+import { uploadFileName } from '@/lib/image-crop';
 import type { Allergen } from './menu';
 
 export interface PagedResult<T> {
@@ -277,9 +278,9 @@ export function apiAdminUpdateMeal(id: string, input: Partial<MealInput>) {
  * for FormData so the browser can add its own multipart boundary, and forcing
  * one makes the body unparseable server-side with no useful error.
  */
-export function apiAdminUploadMealImage(id: string, file: File) {
+export function apiAdminUploadMealImage(id: string, file: Blob) {
   const form = new FormData();
-  form.append('file', file);
+  form.append('file', file, uploadFileName(file));
   return apiFetch<AdminMeal>(`/meals/admin/${id}/image`, {
     method: 'POST',
     body: form,
