@@ -9,6 +9,10 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1' },
   testMatch: ['**/__tests__/**/*.test.{ts,tsx}'],
+  // Agent worktrees live in .claude/worktrees INSIDE this repo; their copies
+  // of __tests__ would otherwise run against this checkout's lib.
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.claude/'],
+  modulePathIgnorePatterns: ['<rootDir>/.claude/'],
   collectCoverageFrom: [
     'lib/**/*.{ts,tsx}',
     'app/**/*.{ts,tsx}',
