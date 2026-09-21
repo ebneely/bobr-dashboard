@@ -37,13 +37,13 @@ import {
 import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/client';
 import { useApiErrorTranslate } from '@/lib/api/use-api-error';
 import {
-  CONSULTATION_STATUS_MOVES,
   apiAdminListConsultations,
   apiAdminSetConsultationPaid,
   apiAdminSetConsultationStatus,
   formatWarsawDateTime,
+  meetCode,
   type AdminConsultation,
-  type Consultation,
+  type StaffConsultation,
 } from '@/lib/api/consultations';
 
 import { ConfirmConsultationDialog } from './ConfirmConsultationDialog';
@@ -103,7 +103,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
   }, [page]);
 
   /** Merge a PATCH response into the row; the response carries no customer. */
-  function applyUpdate(updated: Consultation) {
+  function applyUpdate(updated: StaffConsultation) {
     setRows((current) =>
       (current ?? []).map((row) =>
         row.id === updated.id ? { ...row, ...updated, customer: row.customer } : row,
@@ -188,9 +188,13 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
             </TableHeader>
             <TableBody>
               {rows.map((row) => {
-                const moves = CONSULTATION_STATUS_MOVES[row.status];
-                const canConfirm = row.status === 'REQUESTED';
-                const statusActions = canConfirm || moves.length > 0;
+                // Offered exactly as the backend allows (#67). CONFIRMED has
+                // its own action (slot + link); the rest go through /status.
+                const next = row.allowedNext ?? [];
+                const canConfirm = next.includes('CONFIRMED');
+                const canComplete = next.includes('COMPLETED');
+                const canCancel = next.includes('CANCELLED');
+                const statusActions = canConfirm || canComplete || canCancel;
                 return (
                   <TableRow key={row.id} data-consultation-id={row.id}>
                     <TableCell className="pl-4">
@@ -238,7 +242,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
                       {row.meetUrl ? (
                         <Button asChild variant="link" size="sm" className="px-0">
                           <a href={row.meetUrl} target="_blank" rel="noopener noreferrer">
-                            {row.meetUrl.replace('https://meet.google.com/', '')}
+                            {meetCode(row.meetUrl)}
                           </a>
                         </Button>
                       ) : (
@@ -266,7 +270,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
                                 {t('confirm')}
                               </DropdownMenuItem>
                             ) : null}
-                            {moves.includes('COMPLETED') ? (
+                            {canComplete ? (
                               <DropdownMenuItem
                                 onSelect={() => {
                                   setMoveError(null);
@@ -276,7 +280,7 @@ export function StaffConsultationsClient({ canMarkPaid }: { canMarkPaid: boolean
                                 {t('complete')}
                               </DropdownMenuItem>
                             ) : null}
-                            {moves.includes('CANCELLED') ? (
+                            {canCancel ? (
                               <DropdownMenuItem
                                 variant="destructive"
                                 onSelect={() => {

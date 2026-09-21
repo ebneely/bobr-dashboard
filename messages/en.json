@@ -643,6 +643,7 @@
     "pickTime": "Pick a time",
     "meetUrl": "Google Meet link",
     "meetUrlHint": "Format: https://meet.google.com/abc-defg-hij",
+    "meetUrlPlaceholder": "https://meet.google.com/abc-defg-hij",
     "meetUrlInvalid": "That is not a Google Meet link. Required format: https://meet.google.com/abc-defg-hij",
     "dateTimeRequired": "Pick a date and a time.",
     "confirming": "Confirming…",
@@ -727,7 +728,7 @@
       "INTAKE_INCOMPLETE": "Finish the intake form first.",
       "ORDER_NOT_FOUND": "Order not found.",
       "ORDER_ALREADY_PAID": "This order is already fully paid.",
-      "PAYMENT_EXCEEDS_DUE": "That is more than is still due.",
+      "PAYMENT_EXCEEDS_DUE": "That is more than is still due ({outstandingGrosze}).",
       "PAYMENT_CHANGED": "Someone else just recorded a payment on this order. Reload and try again.",
       "DELIVERY_DAY_NOT_FOUND": "Delivery day not found.",
       "ORDER_STATUS_TRANSITION": "An order cannot move from “{from, select, PENDING {Pending} CONFIRMED {Confirmed} PROCESSING {Processing} DELIVERED {Delivered} CANCELLED {Cancelled} other {{from}}}” to “{to, select, PENDING {Pending} CONFIRMED {Confirmed} PROCESSING {Processing} DELIVERED {Delivered} CANCELLED {Cancelled} other {{to}}}”.",
@@ -799,7 +800,7 @@
       "ADJUST_NOTE_TOO_LONG": "The note can be at most 500 characters long",
       "ORDER_CANCELLED_NO_ADJUST": "A cancelled order’s total cannot be adjusted",
       "ORDER_PAID_NO_ADJUST": "This order is already paid — its total can no longer be adjusted",
-      "ADJUSTED_BELOW_PAID": "The total cannot be less than what has already been paid ({paidGrosze} grosze)",
+      "ADJUSTED_BELOW_PAID": "The total cannot be less than what has already been paid ({paidGrosze}).",
       "VAT_RATE_INVALID": "VAT rate must be 0, 5, 8 or 23%"
     },
     "fields": {

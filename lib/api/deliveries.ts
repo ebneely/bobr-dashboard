@@ -1,3 +1,6 @@
+import { TZDate } from '@date-fns/tz';
+import { addDays, format } from 'date-fns';
+
 import { apiFetch } from './client';
 
 /**
@@ -24,6 +27,13 @@ export interface DeliveryStop {
   orderDayId: string;
   orderId: string;
   dayStatus: DeliveryDayStatus;
+  /**
+   * What this day may move to next, from the backend's one table
+   * (ebneely/bobr-backend#67). DELIVERED and FAILED are already dropped when
+   * the order is not CONFIRMED/PROCESSING, so an `orderPending` stop never
+   * offers them. `[]` for a terminal day.
+   */
+  allowedNext: DeliveryDayStatus[];
   /** The order itself is not yet CONFIRMED — listed anyway, flagged. */
   orderPending: boolean;
   mealType: string;
@@ -52,26 +62,11 @@ export function apiAdminListDeliveries(date?: string) {
   return apiFetch<AdminDeliveriesView>(`/deliveries/admin${query}`);
 }
 
-/**
- * Legal moves for one delivery day — a copy of `DAY_TRANSITIONS` in
- * `bobr_backend/src/deliveries/deliveries.service.ts`. Only offer what the
- * backend will actually accept; it enforces the rule regardless.
- */
-export const DAY_TRANSITIONS: Readonly<
-  Record<DeliveryDayStatus, readonly DeliveryDayStatus[]>
-> = {
-  SCHEDULED: ['DELIVERED', 'FAILED', 'CANCELLED'],
-  FAILED: ['DELIVERED'],
-  DELIVERED: [],
-  SKIPPED: [],
-  CANCELLED: [],
-};
-
 export function apiSetDeliveryDayStatus(
   dayId: string,
   input: { status: DeliveryDayStatus; failReason?: string },
 ) {
-  return apiFetch<{ id: string; status: DeliveryDayStatus }>(
+  return apiFetch<{ id: string; status: DeliveryDayStatus; allowedNext: DeliveryDayStatus[] }>(
     `/deliveries/admin/days/${dayId}`,
     { method: 'PATCH', body: input },
   );
@@ -104,9 +99,10 @@ export function warsawTodayIso(now: Date = new Date()): string {
   }).format(now);
 }
 
-/** Warsaw "tomorrow" as `YYYY-MM-DD` — the deliveries page's default date. */
+/**
+ * Warsaw "tomorrow" as `YYYY-MM-DD` — the deliveries page's default date.
+ * The calendar day after today IN WARSAW, whatever zone the browser runs in.
+ */
 export function warsawTomorrowIso(now: Date = new Date()): string {
-  const [y, m, d] = warsawTodayIso(now).split('-').map(Number);
-  const next = new Date(Date.UTC(y, m - 1, d + 1));
-  return next.toISOString().slice(0, 10);
+  return format(addDays(new TZDate(now.getTime(), 'Europe/Warsaw'), 1), 'yyyy-MM-dd');
 }

@@ -1,4 +1,4 @@
-import { groszeToZloteInput, zloteToGrosze } from '@/lib/api/orders';
+import { formatGrosze, groszeToZloteInput, zloteToGrosze } from '@/lib/api/orders';
 
 /**
  * The COD payment dialog (gap G18) and the meal price field both parse złote
@@ -48,5 +48,12 @@ describe('groszeToZloteInput', () => {
     expect(groszeToZloteInput(4510)).toBe('45.10');
     expect(groszeToZloteInput(1)).toBe('0.01');
     expect(groszeToZloteInput(0)).toBe('0.00');
+  });
+});
+
+describe('formatGrosze', () => {
+  it('renders integer grosze as Polish złote', () => {
+    // Intl puts a (narrow) no-break space before the currency.
+    expect(formatGrosze(45000, 'pl').replace(/\s/g, ' ')).toBe('450,00 zł');
   });
 });

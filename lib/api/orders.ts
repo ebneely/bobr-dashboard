@@ -1,5 +1,6 @@
 import { apiFetch, apiFetchWithHeaders, readTotalCount } from './client';
 import { uploadFileName } from '@/lib/image-crop';
+import type { DeliveryDayStatus } from './deliveries';
 import type { Allergen } from './menu';
 
 export interface PagedResult<T> {
@@ -113,7 +114,21 @@ export function formatWarsawDate(iso: string, locale: string): string {
 // for the functions not to be there at all.
 // ---------------------------------------------------------------------------
 
+/**
+ * What the acting staff member may move a row to next, computed by the backend
+ * from its one transition table (ebneely/bobr-backend#67). The UI offers
+ * exactly these and nothing else; there is no client-side copy of the table
+ * to drift. Terminal states arrive as `[]`. The backend still refuses an
+ * illegal move regardless.
+ */
+export interface AdminOrderDay extends OrderDay {
+  allowedNext: DeliveryDayStatus[];
+}
+
 export interface AdminOrder extends Order {
+  /** The statuses this order may move to next — see AdminOrderDay. */
+  allowedNext: OrderStatus[];
+  days: AdminOrderDay[];
   user?: { id: string; email: string; fullName: string | null };
   /** Gap G18 — cash-on-delivery collection, recorded from the deliveries screen. */
   paidAt?: string | null;
@@ -158,28 +173,6 @@ export interface AdminNote extends CustomerNote {
 export function apiAdminListOrders(status?: OrderStatus) {
   const query = status ? `?status=${status}` : '';
   return apiFetch<AdminOrder[]>(`/orders/admin${query}`);
-}
-
-/**
- * The order lifecycle — a copy of `ALLOWED_TRANSITIONS` in
- * bobr_backend/src/orders/orders.service.ts. Change both together.
- *
- * The backend refuses an illegal move regardless; this copy exists so the UI
- * only ever OFFERS a legal one, instead of offering five buttons and answering
- * four of them with a 400. Terminal states list nothing.
- */
-export const ALLOWED_TRANSITIONS: Readonly<
-  Record<OrderStatus, readonly OrderStatus[]>
-> = {
-  PENDING: ['CONFIRMED', 'CANCELLED'],
-  CONFIRMED: ['PROCESSING', 'CANCELLED'],
-  PROCESSING: ['DELIVERED', 'CANCELLED'],
-  DELIVERED: [],
-  CANCELLED: [],
-};
-
-export function nextStatuses(status: OrderStatus): readonly OrderStatus[] {
-  return ALLOWED_TRANSITIONS[status] ?? [];
 }
 
 /**

@@ -45,7 +45,6 @@ import { ApiError, formatApiError, type ApiErrorTranslate } from '@/lib/api/clie
 import {
   apiAdminListDeliveries,
   apiSetDeliveryDayStatus,
-  DAY_TRANSITIONS,
   warsawTodayIso,
   warsawTomorrowIso,
   type AdminDeliveriesView,
@@ -250,7 +249,11 @@ export function DeliveriesClient() {
                   </TableHeader>
                   <TableBody>
                     {view.stops.map((stop) => {
-                      const legal = DAY_TRANSITIONS[stop.dayStatus];
+                      // The backend's own answer (#67): it already drops
+                      // DELIVERED/FAILED while the order is not confirmed.
+                      const legal = stop.allowedNext ?? [];
+                      const canDeliver = legal.includes('DELIVERED');
+                      const canFail = legal.includes('FAILED');
                       return (
                         <TableRow
                           key={stop.orderDayId}
@@ -329,17 +332,15 @@ export function DeliveriesClient() {
                             </Badge>
                           </TableCell>
                           <TableCell className={`${cellClass} print:hidden`}>
-                            {stop.orderPending ? (
-                              // The order itself is not CONFIRMED yet — the
-                              // backend refuses DELIVERED/FAILED on its days
-                              // with ORDER_NOT_DELIVERABLE, so do not offer
-                              // an action that would only ever 409.
-                              <span className="text-muted-foreground">{t('orderPending')}</span>
-                            ) : legal.length === 0 ? (
-                              <span className="text-muted-foreground">—</span>
+                            {!canDeliver && !canFail ? (
+                              // Nothing this screen offers is allowed. For an
+                              // order not yet CONFIRMED, say why.
+                              <span className="text-muted-foreground">
+                                {stop.orderPending ? t('orderPending') : '—'}
+                              </span>
                             ) : (
                               <div className="flex flex-wrap gap-1.5">
-                                {legal.includes('DELIVERED') && (
+                                {canDeliver && (
                                   <Button
                                     type="button"
                                     size="sm"
@@ -350,7 +351,7 @@ export function DeliveriesClient() {
                                     {t('markDelivered')}
                                   </Button>
                                 )}
-                                {legal.includes('FAILED') && (
+                                {canFail && (
                                   <Button
                                     type="button"
                                     size="sm"

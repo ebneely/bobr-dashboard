@@ -1,32 +1,10 @@
-import {
-  DAY_TRANSITIONS,
-  warsawTodayIso,
-  warsawTomorrowIso,
-} from '@/lib/api/deliveries';
+import { warsawTodayIso, warsawTomorrowIso } from '@/lib/api/deliveries';
 
-/**
- * A UI-side copy of the backend's legal delivery-day moves
- * (bobr_backend/src/deliveries/deliveries.service.ts `DAY_TRANSITIONS`) — the
- * deliveries screen must only OFFER a move the backend will actually accept.
+/*
+ * The legal delivery-day moves are no longer copied here: each stop carries
+ * the backend's `allowedNext` (ebneely/bobr-backend#67), covered in
+ * deliveries-admin.test.tsx.
  */
-describe('DAY_TRANSITIONS', () => {
-  it('lets a SCHEDULED day become DELIVERED, FAILED or CANCELLED', () => {
-    expect(DAY_TRANSITIONS.SCHEDULED).toEqual(
-      expect.arrayContaining(['DELIVERED', 'FAILED', 'CANCELLED']),
-    );
-  });
-
-  it('lets a FAILED delivery be retried to DELIVERED, and nothing else', () => {
-    expect(DAY_TRANSITIONS.FAILED).toEqual(['DELIVERED']);
-  });
-
-  it('treats DELIVERED, SKIPPED and CANCELLED as terminal', () => {
-    expect(DAY_TRANSITIONS.DELIVERED).toEqual([]);
-    expect(DAY_TRANSITIONS.SKIPPED).toEqual([]);
-    expect(DAY_TRANSITIONS.CANCELLED).toEqual([]);
-  });
-});
-
 describe('warsaw date helpers', () => {
   it('computes tomorrow as exactly one day after today', () => {
     const now = new Date('2026-06-15T10:00:00Z');
@@ -39,5 +17,18 @@ describe('warsaw date helpers', () => {
     const now = new Date('2026-06-15T23:30:00Z');
     expect(warsawTodayIso(now)).toBe('2026-06-16');
     expect(warsawTomorrowIso(now)).toBe('2026-06-17');
+  });
+
+  it('rolls over the year in Warsaw', () => {
+    // 23:30 UTC on 31 Dec is 00:30 on 1 Jan in Warsaw (CET, UTC+1).
+    expect(warsawTomorrowIso(new Date('2026-12-31T23:30:00Z'))).toBe('2027-01-02');
+    expect(warsawTomorrowIso(new Date('2026-12-31T12:00:00Z'))).toBe('2027-01-01');
+  });
+
+  it('gives the next calendar day across the DST changes', () => {
+    // The night the clocks go forward (29 Mar 2026) and back (25 Oct 2026).
+    expect(warsawTomorrowIso(new Date('2026-03-28T23:30:00Z'))).toBe('2026-03-30');
+    expect(warsawTomorrowIso(new Date('2026-10-24T22:30:00Z'))).toBe('2026-10-26');
+    expect(warsawTomorrowIso(new Date('2026-10-25T22:30:00Z'))).toBe('2026-10-26');
   });
 });

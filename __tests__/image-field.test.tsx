@@ -32,6 +32,7 @@ jest.mock('next-intl', () => {
         { has: (key: string) => typeof lookup(full(key)) === 'string' },
       );
     },
+    useLocale: () => 'pl',
   };
 });
 

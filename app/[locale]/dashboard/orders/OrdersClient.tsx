@@ -46,7 +46,6 @@ import {
   formatGrosze,
   formatWarsawDate,
   groszeToZloteInput,
-  nextStatuses,
   zloteToGrosze,
   type AdminOrder,
   type OrderStatus,
@@ -354,7 +353,8 @@ export function OrdersClient() {
             </TableHeader>
             <TableBody>
               {orders.map((order) => {
-                const next = nextStatuses(order.status);
+                // Exactly what the backend allows next (#67); [] when final.
+                const next = order.allowedNext ?? [];
                 return (
                   <TableRow
                     key={order.id}

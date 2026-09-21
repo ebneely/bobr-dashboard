@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { OrdersClient } from '@/app/[locale]/dashboard/orders/OrdersClient';
 import type { AdminOrder } from '@/lib/api/orders';
+import pl from '@/messages/pl.json';
 
 /**
  * Issue #51 — staff cancel needs a reason, and the total can be adjusted.
@@ -30,32 +31,18 @@ jest.mock('next-intl', () => {
   return { useTranslations: translator, useLocale: () => 'pl' };
 });
 
-/**
- * Opening Radix's DropdownMenu spins jsdom (positioning never settles), so the
- * status menu is stubbed: items render inline and a click calls onSelect. The
- * dialogs, which are what this file tests, stay real.
+/*
+ * The status menu is the real Radix DropdownMenu, no longer stubbed
+ * (bobr-dashboard#52 item 3; the "hang" is explained in jest.setup.ts). It
+ * captures pointers and scrolls items into view, which jsdom does not
+ * implement, so those are stubbed as for Radix Select in meal-vat.test.tsx.
  */
-jest.mock('@/components/ui/dropdown-menu', () => {
-  const Pass = ({ children }: { children?: React.ReactNode }) => <>{children}</>;
-  return {
-    DropdownMenu: Pass,
-    DropdownMenuTrigger: Pass,
-    DropdownMenuContent: Pass,
-    DropdownMenuItem: ({
-      children,
-      onSelect,
-      ...rest
-    }: {
-      children?: React.ReactNode;
-      onSelect?: () => void;
-      variant?: string;
-      'data-testid'?: string;
-    }) => (
-      <button type="button" data-testid={rest['data-testid']} onClick={() => onSelect?.()}>
-        {children}
-      </button>
-    ),
-  };
+beforeAll(() => {
+  const proto = window.HTMLElement.prototype as unknown as Record<string, unknown>;
+  proto.hasPointerCapture ??= () => false;
+  proto.setPointerCapture ??= () => {};
+  proto.releasePointerCapture ??= () => {};
+  proto.scrollIntoView ??= () => {};
 });
 
 function order(overrides: Partial<AdminOrder> = {}): AdminOrder {
@@ -63,6 +50,7 @@ function order(overrides: Partial<AdminOrder> = {}): AdminOrder {
     id: 'o1',
     mode: 'ONE_TIME',
     status: 'PENDING',
+    allowedNext: ['CONFIRMED', 'CANCELLED'],
     paymentMethod: 'COD',
     unitPriceGrosze: 4500,
     goodsGrosze: 22500,
@@ -89,7 +77,11 @@ let calls: Call[] = [];
 let replies: Array<{ match: string; status: number; body: unknown }> = [];
 let listRows: AdminOrder[] = [];
 
+let user: ReturnType<typeof userEvent.setup>;
+
 beforeEach(() => {
+  // Set up before render, as user-event expects; each test reuses it.
+  user = userEvent.setup();
   calls = [];
   replies = [];
   global.fetch = jest.fn(async (url: string, init: RequestInit = {}) => {
@@ -106,9 +98,27 @@ beforeEach(() => {
 const patches = () => calls.filter((c) => c.method === 'PATCH');
 const money = (text: string | null | undefined) => (text ?? '').replace(/\s/g, ' ');
 
-/** The stubbed menu renders its items inline; choosing one fires onSelect. */
+/**
+ * Opens the row's status menu (the real Radix one, clicked like a user would)
+ * and returns the statuses it offers, in order.
+ */
+async function openMenu(row?: HTMLElement): Promise<string[]> {
+  const scope = row ? within(row) : screen;
+  await user.click(await scope.findByTestId('order-actions'));
+  const menu = await screen.findByRole('menu');
+  return within(menu)
+    .getAllByRole('menuitem')
+    .map((item) => (item.getAttribute('data-testid') ?? '').replace('move-', ''));
+}
+
 async function chooseMove(status: string) {
-  fireEvent.click(await screen.findByTestId(`move-${status}`));
+  await openMenu();
+  await user.click(screen.getByRole('menuitem', { name: new RegExp(`^${moveLabel(status)}`) }));
+}
+
+/** The menu item's visible label for a status, from the real Polish messages. */
+function moveLabel(status: string): string {
+  return (pl.adminOrders.moveTo as Record<string, string>)[status];
 }
 
 async function openCancel() {
@@ -116,10 +126,51 @@ async function openCancel() {
   return screen.findByTestId('cancel-dialog');
 }
 
+describe('OrdersClient: the status menu follows allowedNext (bobr-backend#67)', () => {
+  it('offers exactly the statuses the row allows, in the server order', async () => {
+    // A CONFIRMED order the server says may go to PROCESSING or CANCELLED.
+    listRows = [order({ status: 'CONFIRMED', allowedNext: ['PROCESSING', 'CANCELLED'] })];
+    render(<OrdersClient />);
+    expect(await openMenu()).toEqual(['PROCESSING', 'CANCELLED']);
+  });
+
+  it('trusts the server over the status: what is not in allowedNext is not offered', async () => {
+    // Same status as above; the server allows only the cancel.
+    listRows = [order({ status: 'CONFIRMED', allowedNext: ['CANCELLED'] })];
+    render(<OrdersClient />);
+    expect(await openMenu()).toEqual(['CANCELLED']);
+  });
+
+  it('offers no menu at all for a row with allowedNext []', async () => {
+    listRows = [order({ status: 'PROCESSING', allowedNext: [] })];
+    render(<OrdersClient />);
+    const row = await screen.findByTestId('order-row');
+    expect(within(row).queryByTestId('order-actions')).not.toBeInTheDocument();
+    expect(row).toHaveTextContent(pl.adminOrders.final);
+  });
+
+  it('moves the row and takes the new allowedNext from the response', async () => {
+    listRows = [order({ status: 'CONFIRMED', allowedNext: ['PROCESSING', 'CANCELLED'] })];
+    replies.push({
+      match: 'PATCH http://localhost:8003/v1/orders/admin/o1/status',
+      status: 200,
+      body: { ...order(), status: 'PROCESSING', allowedNext: ['DELIVERED', 'CANCELLED'] },
+    });
+    render(<OrdersClient />);
+
+    await chooseMove('PROCESSING');
+    await waitFor(() => expect(patches()).toHaveLength(1));
+    expect(patches()[0].body).toEqual({ status: 'PROCESSING' });
+    await waitFor(() =>
+      expect(screen.getByTestId('order-status')).toHaveTextContent(pl.adminOrders.statuses.PROCESSING),
+    );
+    expect(await openMenu()).toEqual(['DELIVERED', 'CANCELLED']);
+  });
+});
+
 describe('OrdersClient: cancel with a reason', () => {
   it('blocks the cancel until a reason of 3+ characters is given', async () => {
     listRows = [order()];
-    const user = userEvent.setup();
     render(<OrdersClient />);
 
     const dialog = await openCancel();
@@ -147,7 +198,6 @@ describe('OrdersClient: cancel with a reason', () => {
         user: undefined,
       },
     });
-    const user = userEvent.setup();
     render(<OrdersClient />);
 
     const dialog = await openCancel();
@@ -183,7 +233,6 @@ describe('OrdersClient: cancel with a reason', () => {
 
   it('reloads the row on 409 ORDER_CHANGED', async () => {
     listRows = [order()];
-    const user = userEvent.setup();
     render(<OrdersClient />);
     const dialog = await openCancel();
 
@@ -214,7 +263,6 @@ describe('OrdersClient: adjust the total', () => {
         totalAdjustment: { note: 'Rabat', adjustedById: 'a1', adjustedAt: '2026-09-21T09:00:00.000Z' },
       },
     });
-    const user = userEvent.setup();
     render(<OrdersClient />);
 
     await user.click(await screen.findByTestId('adjust-total'));
@@ -234,7 +282,6 @@ describe('OrdersClient: adjust the total', () => {
 
   it('refuses an amount that is not złote without sending anything', async () => {
     listRows = [order()];
-    const user = userEvent.setup();
     render(<OrdersClient />);
     await user.click(await screen.findByTestId('adjust-total'));
     const dialog = await screen.findByTestId('adjust-dialog');
@@ -251,7 +298,6 @@ describe('OrdersClient: adjust the total', () => {
       status: 200,
       body: { ...order(), adjustedTotalGrosze: null },
     });
-    const user = userEvent.setup();
     render(<OrdersClient />);
 
     await user.click(await screen.findByTestId('adjust-total'));

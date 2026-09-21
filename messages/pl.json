@@ -643,6 +643,7 @@
     "pickTime": "Wybierz godzinę",
     "meetUrl": "Link Google Meet",
     "meetUrlHint": "Format: https://meet.google.com/abc-defg-hij",
+    "meetUrlPlaceholder": "https://meet.google.com/abc-defg-hij",
     "meetUrlInvalid": "To nie jest link Google Meet. Wymagany format: https://meet.google.com/abc-defg-hij",
     "dateTimeRequired": "Wybierz datę i godzinę.",
     "confirming": "Potwierdzam…",
@@ -727,7 +728,7 @@
       "INTAKE_INCOMPLETE": "Najpierw dokończ ankietę.",
       "ORDER_NOT_FOUND": "Nie znaleziono zamówienia.",
       "ORDER_ALREADY_PAID": "To zamówienie jest już w pełni opłacone.",
-      "PAYMENT_EXCEEDS_DUE": "To więcej, niż pozostało do zapłaty.",
+      "PAYMENT_EXCEEDS_DUE": "To więcej, niż pozostało do zapłaty ({outstandingGrosze}).",
       "PAYMENT_CHANGED": "Ktoś właśnie zapisał płatność do tego zamówienia — odśwież i spróbuj ponownie.",
       "DELIVERY_DAY_NOT_FOUND": "Nie znaleziono dnia dostawy.",
       "ORDER_STATUS_TRANSITION": "Nie można zmienić statusu zamówienia z „{from, select, PENDING {Oczekujące} CONFIRMED {Potwierdzone} PROCESSING {W realizacji} DELIVERED {Dostarczone} CANCELLED {Anulowane} other {{from}}}” na „{to, select, PENDING {Oczekujące} CONFIRMED {Potwierdzone} PROCESSING {W realizacji} DELIVERED {Dostarczone} CANCELLED {Anulowane} other {{to}}}”.",
@@ -799,7 +800,7 @@
       "ADJUST_NOTE_TOO_LONG": "Notatka może mieć najwyżej 500 znaków",
       "ORDER_CANCELLED_NO_ADJUST": "Nie można zmienić kwoty anulowanego zamówienia",
       "ORDER_PAID_NO_ADJUST": "To zamówienie jest już opłacone — jego kwoty nie można już zmienić",
-      "ADJUSTED_BELOW_PAID": "Kwota nie może być niższa niż już wpłacona ({paidGrosze} gr)",
+      "ADJUSTED_BELOW_PAID": "Kwota nie może być niższa niż już wpłacona ({paidGrosze}).",
       "VAT_RATE_INVALID": "Stawka VAT musi wynosić 0, 5, 8 lub 23%"
     },
     "fields": {

@@ -1,5 +1,7 @@
 import { apiFetch, apiFetchWithHeaders, readTotalCount } from './client';
+import type { ConsultationStatus } from './consultations';
 import type { Allergen } from './menu';
+import type { OrderStatus } from './orders';
 
 /**
  * Admin: the customer list and detail. Mirrors `GET /v1/customers/admin` and
@@ -62,7 +64,9 @@ export interface CustomerIntake {
 export interface CustomerOrderSummary {
   id: string;
   mode: 'ONE_TIME' | 'CALENDAR';
-  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'DELIVERED' | 'CANCELLED';
+  status: OrderStatus;
+  /** What the acting staff member may move it to next (bobr-backend#67). */
+  allowedNext: OrderStatus[];
   totalGrosze: number;
   adjustedTotalGrosze: number | null;
   paidAt: string | null;
@@ -82,7 +86,9 @@ export interface CustomerNoteSummary {
 
 export interface CustomerConsultationSummary {
   id: string;
-  status: 'REQUESTED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+  status: ConsultationStatus;
+  /** What the acting staff member may move it to next (bobr-backend#67). */
+  allowedNext: ConsultationStatus[];
   scheduledAt: string | null;
   paidAt: string | null;
   createdAt: string;

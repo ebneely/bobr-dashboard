@@ -30,10 +30,10 @@ import {
   CONFIRM_TIME_SLOTS,
   apiAdminConfirmConsultation,
   formatWarsawDateTime,
-  isMeetUrl,
+  matchesMeetUrlPattern,
   warsawWallClockToIso,
   type AdminConsultation,
-  type Consultation,
+  type StaffConsultation,
 } from '@/lib/api/consultations';
 
 /** Today as YYYY-MM-DD in Warsaw — the earliest day the date field offers. */
@@ -53,7 +53,7 @@ export function ConfirmConsultationDialog({
 }: {
   consultation: AdminConsultation | null;
   onOpenChange: (open: boolean) => void;
-  onConfirmed: (updated: Consultation) => void;
+  onConfirmed: (updated: StaffConsultation) => void;
 }) {
   return (
     <Dialog open={consultation !== null} onOpenChange={onOpenChange}>
@@ -78,7 +78,7 @@ function ConfirmForm({
 }: {
   consultation: AdminConsultation;
   onCancel: () => void;
-  onConfirmed: (updated: Consultation) => void;
+  onConfirmed: (updated: StaffConsultation) => void;
 }) {
   const t = useTranslations('consultationsPage');
   const translateApiError = useApiErrorTranslate();
@@ -100,7 +100,8 @@ function ConfirmForm({
       setError(t('dateTimeRequired'));
       return;
     }
-    if (!isMeetUrl(meetUrl)) {
+    // The backend's own pattern, sent on the row; it validates again anyway.
+    if (!matchesMeetUrlPattern(meetUrl, consultation.meetUrlPattern)) {
       setMeetInvalid(true);
       setError(t('meetUrlInvalid'));
       return;
@@ -175,7 +176,7 @@ function ConfirmForm({
           type="url"
           inputMode="url"
           autoComplete="off"
-          placeholder="https://meet.google.com/abc-defg-hij"
+          placeholder={t('meetUrlPlaceholder')}
           value={meetUrl}
           aria-invalid={meetInvalid || undefined}
           aria-describedby="confirm-meet-hint"

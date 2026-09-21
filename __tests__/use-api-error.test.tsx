@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 
 import { formatApiError } from '@/lib/api/client';
-import { useApiErrorTranslate } from '@/lib/api/use-api-error';
+import { localiseErrorParams, useApiErrorTranslate } from '@/lib/api/use-api-error';
 import en from '@/messages/en.json';
 import pl from '@/messages/pl.json';
 
@@ -19,8 +19,11 @@ jest.mock('next-intl', () => {
       String(lookup(key)).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? '')),
     { has: (key: string) => typeof lookup(key) === 'string' },
   );
-  return { useTranslations: () => t };
+  return { useTranslations: () => t, useLocale: () => 'pl' };
 });
+
+/** "20,00 zł" with Intl's non-breaking spaces made plain, for readable asserts. */
+const plain = (text: string | null) => (text ?? '').replace(/\s/g, ' ');
 
 describe('useApiErrorTranslate', () => {
   const translate = renderHook(() => useApiErrorTranslate()).result.current;
@@ -45,6 +48,26 @@ describe('useApiErrorTranslate', () => {
     expect(translate('field:delivery.postalCode')).toBeNull();
   });
 
+  it('shows a *Grosze param as złoty, not raw grosze (bobr-dashboard#52)', () => {
+    expect(
+      plain(
+        formatApiError(
+          {
+            statusCode: 422,
+            message: 'english',
+            error: 'Unprocessable Entity',
+            code: 'ADJUSTED_BELOW_PAID',
+            params: { paidGrosze: 2000 },
+          },
+          translate,
+        ),
+      ),
+    ).toBe('Kwota nie może być niższa niż już wpłacona (20,00 zł).');
+    expect(plain(translate('PAYMENT_EXCEEDS_DUE', { outstandingGrosze: 3050 }))).toBe(
+      'To więcej, niż pozostało do zapłaty (30,50 zł).',
+    );
+  });
+
   it('returns null for a code without wording', () => {
     expect(translate('BRAND_NEW')).toBeNull();
   });
@@ -54,5 +77,23 @@ describe('useApiErrorTranslate', () => {
     expect(Object.keys(pl.apiErrors.fields).sort()).toEqual(
       Object.keys(en.apiErrors.fields).sort(),
     );
+  });
+});
+
+describe('localiseErrorParams', () => {
+  it('formats every param ending in Grosze for the locale and leaves the rest', () => {
+    const out = localiseErrorParams(
+      { paidGrosze: 2000, outstandingGrosze: 5, zone: 'Warszawa', count: 3 },
+      'en',
+    );
+    expect(plain(String(out?.paidGrosze))).toBe('PLN 20.00');
+    expect(plain(String(out?.outstandingGrosze))).toBe('PLN 0.05');
+    expect(out?.zone).toBe('Warszawa');
+    expect(out?.count).toBe(3);
+  });
+
+  it('passes through undefined and non-numeric grosze untouched', () => {
+    expect(localiseErrorParams(undefined, 'pl')).toBeUndefined();
+    expect(localiseErrorParams({ paidGrosze: 'n/a' }, 'pl')).toEqual({ paidGrosze: 'n/a' });
   });
 });

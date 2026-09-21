@@ -41,7 +41,22 @@ export interface Consultation {
   paymentReference: string;
 }
 
-export interface AdminConsultation extends Consultation {
+/**
+ * What staff get back from every admin consultation endpoint (list, confirm,
+ * status, paid). The customer endpoints carry neither extra field.
+ */
+export interface StaffConsultation extends Consultation {
+  /**
+   * What this booking may move to next, from the backend's one table
+   * (ebneely/bobr-backend#67). CONFIRMED is reached through the confirm
+   * endpoint (slot + link); COMPLETED and CANCELLED through the status one.
+   */
+  allowedNext: ConsultationStatus[];
+  /** Regex source the backend validates `meetUrl` with; `new RegExp(it)`, no flags. */
+  meetUrlPattern: string;
+}
+
+export interface AdminConsultation extends StaffConsultation {
   /** `name` is "" when the customer never gave one. */
   customer: { name: string; email: string };
 }
@@ -62,7 +77,7 @@ export function apiAdminConfirmConsultation(
   id: string,
   input: { scheduledAt: string; meetUrl: string },
 ) {
-  return apiFetch<Consultation>(`/consultations/admin/${id}/confirm`, {
+  return apiFetch<StaffConsultation>(`/consultations/admin/${id}/confirm`, {
     method: 'PATCH',
     body: input,
   });
@@ -72,7 +87,7 @@ export function apiAdminSetConsultationStatus(
   id: string,
   status: 'COMPLETED' | 'CANCELLED',
 ) {
-  return apiFetch<Consultation>(`/consultations/admin/${id}/status`, {
+  return apiFetch<StaffConsultation>(`/consultations/admin/${id}/status`, {
     method: 'PATCH',
     body: { status },
   });
@@ -80,31 +95,33 @@ export function apiAdminSetConsultationStatus(
 
 /** Staff only (ADMIN, SUPER_ADMIN) — CUSTOMER gets a 403. Sets or clears `paidAt`. */
 export function apiAdminSetConsultationPaid(id: string, paid: boolean) {
-  return apiFetch<Consultation>(`/consultations/admin/${id}/paid`, {
+  return apiFetch<StaffConsultation>(`/consultations/admin/${id}/paid`, {
     method: 'PATCH',
     body: { paid },
   });
 }
 
 /**
- * A copy of the backend's rule, so the UI only OFFERS legal moves:
- * REQUESTED → CANCELLED (confirming is its own action); CONFIRMED →
- * COMPLETED | CANCELLED; terminal states nothing. The backend refuses the rest.
+ * Whether `value` is a link the backend will accept, judged by the pattern the
+ * backend itself sends on the row (`meetUrlPattern`, the source of its
+ * MEET_URL_PATTERN — ebneely/bobr-backend#67). Inline feedback only: the
+ * backend validates again and answers MEET_URL. A pattern that does not
+ * compile lets the value through to that server check rather than blocking
+ * every confirmation.
  */
-export const CONSULTATION_STATUS_MOVES: Readonly<
-  Record<ConsultationStatus, readonly ('COMPLETED' | 'CANCELLED')[]>
-> = {
-  REQUESTED: ['CANCELLED'],
-  CONFIRMED: ['COMPLETED', 'CANCELLED'],
-  COMPLETED: [],
-  CANCELLED: [],
-};
+export function matchesMeetUrlPattern(value: string, pattern: string): boolean {
+  let regex: RegExp;
+  try {
+    regex = new RegExp(pattern);
+  } catch {
+    return true;
+  }
+  return regex.test(value.trim());
+}
 
-/** Same pattern the backend validates with (src/consultations/meet-url.ts). */
-export const MEET_URL_PATTERN = /^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/;
-
-export function isMeetUrl(value: string): boolean {
-  return MEET_URL_PATTERN.test(value.trim());
+/** The meeting code at the end of a Meet link ("abc-defg-hij"), for display. */
+export function meetCode(url: string): string {
+  return url.slice(url.lastIndexOf('/') + 1) || url;
 }
 
 /** 08:00–20:00 every 30 minutes, as "HH:mm". */
