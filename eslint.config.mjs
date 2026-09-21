@@ -29,7 +29,7 @@ const SHADCN_INSTEAD = {
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', '.claude/**']),
   {
     files: ['app/**/*.tsx'],
     rules: {
